@@ -1,28 +1,28 @@
 {
-  "name": "friday-app",
-  "description": "React Native Starter Kit, using TypeScript with React Native Navigation",
+  "name": "thrift-finance",
+  "description": "Thrift Finance mobile wallet",
   "keywords": [
     "react native",
     "typescript",
-    "starter kit",
+    "wallet",
+    "cardano",
     "redux thunk",
-    "react native navigation",
-    "boilerplate"
+    "react native navigation"
   ],
-  "version": "0.4.5",
+  "version": "0.1.0",
   "author": {
-    "name": "Amit Mangal",
-    "email": "mangalamitash@gmail.com",
-    "url": "https://github.com/AmitM30"
+    "name": "Jaime Caso",
+    "email": "",
+    "url": "https://github.com/jimcase"
   },
   "private": false,
   "repository": {
     "type": "git",
-    "url": "git://github.com/AmitM30/react-native-typescript-boilerplate"
+    "url": "git://github.com/Thrift-Finance-main/thrift-mobile"
   },
   "bugs": {
-    "url": "https://github.com/AmitM30/react-native-typescript-boilerplate/issues",
-    "email": "mangalamitash@gmail.com"
+    "url": "https://github.com/Thrift-Finance-main/thrift-mobile/issues",
+    "email": ""
   },
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
