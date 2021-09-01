@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { Navigation } from 'react-native-navigation';
 import { SafeAreaView, TouchableOpacity, Image } from 'react-native';
-
 import styles from './styles';
 import { CText } from '../../elements/custom';
 import router from '../../../navigators/router';
 import { BUTTON_DEFAULT } from '../../elements/buttons';
+import { getCurrentLang, translateCell } from '../../../i18n';
+import i18next from 'i18next';
 
 export interface Props {
   name: string;
@@ -14,6 +15,10 @@ export interface Props {
 
 interface State {
   name: string;
+}
+
+function translateCell2(cell:string) {
+  return (i18next.t(cell));
 }
 
 class Home extends React.PureComponent<Props, State> {
@@ -61,6 +66,8 @@ class Home extends React.PureComponent<Props, State> {
         </TouchableOpacity>
         <CText>Home</CText>
         <CText>{name}</CText>
+        <CText>Result: {translateCell('key')}</CText>
+        <CText>Lang: {getCurrentLang()}</CText>
         <BUTTON_DEFAULT onClick={this.showPushScreen} title={'Push Screen'} style={styles.button} />
       </SafeAreaView>
     );
