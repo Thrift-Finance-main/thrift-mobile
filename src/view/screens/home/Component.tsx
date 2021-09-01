@@ -66,7 +66,7 @@ class Home extends React.PureComponent<Props, State> {
         </TouchableOpacity>
         <CText>Home</CText>
         <CText>{name}</CText>
-        <CText>Result: {translateCell('key')}</CText>
+        <CText>Result: {translateCell('title')}</CText>
         <CText>Lang: {getCurrentLang()}</CText>
         <BUTTON_DEFAULT onClick={this.showPushScreen} title={'Push Screen'} style={styles.button} />
       </SafeAreaView>

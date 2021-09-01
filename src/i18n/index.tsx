@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import enJson from './locales/en.json';
 import esJson from './locales/es.json';
-import { initReactI18next, useTranslation } from 'react-i18next';
+import { initReactI18next } from 'react-i18next';
 import { AsyncStorage } from 'react-native';
 
 export const STORAGE_KEY = '@APP:languageCode';
@@ -25,10 +25,10 @@ export async function changeLang(lang:string) {
 
 export const resources = {
   en: {
-    enJson,
+    translation: enJson,
   },
   es: {
-    esJson,
+    translation: esJson,
   },
 } as const;
 
@@ -37,14 +37,7 @@ i18next
     .init({
       lng: 'en',
         // tslint:disable-next-line:object-shorthand-properties-first
-      resources: {
-        en: {
-          translation: {
-            key: 'hello world',
-          },
-        },
-      },
+      resources,
       debug: true,
-      backend: { loadPath: `${process.env.PUBLIC_URL}/locales/{{lng}}/{{ns}}.json` },
         // tslint:disable-next-line:ter-arrow-parens
-    }).then(r => {});
+    });
