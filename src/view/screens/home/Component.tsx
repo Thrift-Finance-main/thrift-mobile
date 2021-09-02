@@ -5,8 +5,8 @@ import styles from './styles';
 import { CText } from '../../elements/custom';
 import router from '../../../navigators/router';
 import { BUTTON_DEFAULT } from '../../elements/buttons';
-import { getCurrentLang, translateCell } from '../../../i18n';
-import i18next from 'i18next';
+import { getCurrentLang, translate } from '../../../i18n';
+import {withTranslation} from "react-i18next";
 
 export interface Props {
   name: string;
@@ -15,10 +15,7 @@ export interface Props {
 
 interface State {
   name: string;
-}
-
-function translateCell2(cell:string) {
-  return (i18next.t(cell));
+  title: string;
 }
 
 class Home extends React.PureComponent<Props, State> {
@@ -27,6 +24,7 @@ class Home extends React.PureComponent<Props, State> {
     Navigation.events().bindComponent(this);
     this.state = {
       name: props.name || 'Redux + TypeScript + React Native Navigation + 2',
+      title: '',
     };
   }
 
@@ -51,6 +49,9 @@ class Home extends React.PureComponent<Props, State> {
       },
     });
   }
+  updateTitle = () => {
+    // this.setState({ title: translate('title') });
+  }
 
   render() {
     const { name } = this.state;
@@ -66,12 +67,13 @@ class Home extends React.PureComponent<Props, State> {
         </TouchableOpacity>
         <CText>Home</CText>
         <CText>{name}</CText>
-        <CText>Result: {translateCell('title')}</CText>
+        <CText>Result: {translate('title')}</CText>
         <CText>Lang: {getCurrentLang()}</CText>
+        <BUTTON_DEFAULT onClick={this.updateTitle} title={'update Title'}/>
         <BUTTON_DEFAULT onClick={this.showPushScreen} title={'Push Screen'} style={styles.button} />
       </SafeAreaView>
     );
   }
 }
 
-export default Home;
+export default withTranslation()(Home);

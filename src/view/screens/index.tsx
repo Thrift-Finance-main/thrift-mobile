@@ -10,6 +10,8 @@ import * as Settings from './settings';
 import * as Drawer from './drawer';
 import * as Dummy from './dummy';
 
+import '../../i18n';
+
 const registerComponentWithRedux = (redux: any) => (
   name: string,
   screen: any,

@@ -6,7 +6,7 @@ import { AsyncStorage } from 'react-native';
 
 export const STORAGE_KEY = '@APP:languageCode';
 
-export function translateCell(cell:string) {
+export function translate(cell:string) {
   return (i18next.t(cell));
 }
 
@@ -15,12 +15,14 @@ export function getCurrentLang() {
 }
 
 export async function changeLang(lang:string) {
+  i18next.changeLanguage(lang);
+  /*
   try {
-    await i18next.changeLanguage(lang);
     await AsyncStorage.setItem(STORAGE_KEY, lang);
   } catch (error) {
     console.log(` changeLanguage() Error : ${error}`);
   }
+  */
 }
 
 export const resources = {
