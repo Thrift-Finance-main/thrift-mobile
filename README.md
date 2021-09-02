@@ -6,8 +6,8 @@
 - [x] Configuring React+Typescript.
 - [ ] Adding common libraries, including cardano-serializacion-lib.
 - [x] Add Redux for state management.
-- [ ] Add SQLite and models for data persistence.
-- [ ] Add i18n for easy translations.
+- [ ] Add Realm and models for data persistence.
+- [x] Add i18n for easy translations.
 - [ ] Add the styles Framework, template.
 - [x] Testing Running on Android & iOS envs.
 - [ ] Compilation and getting executables for both platforms.

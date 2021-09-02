@@ -4,7 +4,7 @@ import { AsyncStorage, SafeAreaView } from 'react-native';
 import styles from './styles';
 import { CText } from '../../elements/custom';
 import i18next from 'i18next';
-import { getCurrentLang, STORAGE_KEY, translate} from '../../../i18n';
+import { STORAGE_KEY, translate } from '../../../i18n';
 import { BUTTON_DEFAULT } from '../../elements/buttons';
 import { withTranslation } from 'react-i18next';
 
