@@ -1,9 +1,7 @@
 import * as React from 'react';
-import { Navigation } from 'react-native-navigation';
 import { SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import styles from './styles';
 import { CText } from '../../elements/custom';
-import router from '../../../navigators/router';
 import { BUTTON_DEFAULT } from '../../elements/buttons';
 import { getCurrentLang, translate } from '../../../i18n';
 import {withTranslation} from "react-i18next";
@@ -21,7 +19,6 @@ interface State {
 class Home extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
-    Navigation.events().bindComponent(this);
     this.state = {
       name: props.name || 'Redux + TypeScript + React Native Navigation + 2',
       title: '',
@@ -31,23 +28,12 @@ class Home extends React.PureComponent<Props, State> {
   componentDidMount() {}
 
   showBurgerMenu () {
-    Navigation.mergeOptions('drawerComponentId', {
-      sideMenu: {
-        left: {
-          visible: true,
-        },
-      },
-    });
+
   }
 
   showPushScreen = () => {
     const { componentId } = this.props;
-    router.showPushScreen({
-      componentId,
-      passProps: {
-        dummyText: 'Hello from Home !!!',
-      },
-    });
+
   }
   updateTitle = () => {
     // this.setState({ title: translate('title') });
@@ -62,7 +48,7 @@ class Home extends React.PureComponent<Props, State> {
           <Image
             style={styles.image}
             resizeMode="contain"
-            source={require('../../assets/images/burger-menu.png')}
+            source={require('../../../assets/images/burger-menu.png')}
           />
         </TouchableOpacity>
         <CText>Home</CText>

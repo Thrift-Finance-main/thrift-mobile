@@ -2,7 +2,6 @@ import i18next from 'i18next';
 import enJson from './locales/en.json';
 import esJson from './locales/es.json';
 import { initReactI18next } from 'react-i18next';
-import { AsyncStorage } from 'react-native';
 
 export const STORAGE_KEY = '@APP:languageCode';
 

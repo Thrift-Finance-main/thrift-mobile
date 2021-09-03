@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AsyncStorage, SafeAreaView } from 'react-native';
+import { AsyncStorage, SafeAreaView, Button } from 'react-native';
 
 import styles from './styles';
 import { CText } from '../../elements/custom';
@@ -24,12 +24,14 @@ class Settings extends React.PureComponent<Props, State> {
 
   onChangeLang = async (lang: string) => {
     await i18next.changeLanguage(lang);
+    /*
     try {
       await AsyncStorage.setItem(STORAGE_KEY, lang);
       this.setState({});
     } catch (error) {
       console.log(`onChangeLang() Error : ${error}`);
     }
+    */
     console.log(i18next.dir());
   }
 
@@ -39,6 +41,7 @@ class Settings extends React.PureComponent<Props, State> {
         <CText>Settings</CText>
         <BUTTON_DEFAULT onClick={() => this.onChangeLang('es')} title={'Español'} />
         <BUTTON_DEFAULT onClick={() => this.onChangeLang('en')} title={'Ingles'} />
+        <Button title={'Español'} onPress={() => this.onChangeLang('es')}/>
         <CText>Result: {translate('title')}</CText>
       </SafeAreaView>
     );
