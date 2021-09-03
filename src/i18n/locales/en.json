@@ -2,6 +2,10 @@
   "title": "hello world1222",
   "navBottomTabs": {
     "home": "Home",
-    "settings": "Settings"
+    "settings": "Settings",
+    "movements": "Movements",
+    "analytics": "Analytics",
+    "services": "Services"
+
   }
 }
