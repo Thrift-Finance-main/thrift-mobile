@@ -1,26 +1,42 @@
 import * as React from 'react';
-import { SafeAreaView, TouchableOpacity, Image } from 'react-native';
+import {SafeAreaView, TouchableOpacity, Image, Button} from 'react-native';
 import styles from './styles';
 import { CText } from '../../elements/custom';
 import { BUTTON_DEFAULT } from '../../elements/buttons';
 import { getCurrentLang, translate } from '../../../i18n';
 import {withTranslation} from "react-i18next";
+// @ts-ignore
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-export interface Props {
+import { StackScreenProps } from '@react-navigation/stack';
+
+export type RootTabParamList = {
+    Home: undefined;
+    Settings: undefined;
+    DetailsScreen: undefined;
+};
+type Props = StackScreenProps<RootTabParamList, 'Home'>;
+
+type HomeScreenNavigationProp = Props['navigation'];
+type HomeScreenRouteProp = Props['route'];
+
+export interface HomeProps {
   name: string;
   componentId: string;
+    navigation: HomeScreenNavigationProp;
+    route: HomeScreenRouteProp;
 }
 
-interface State {
+interface HomeState {
   name: string;
   title: string;
 }
 
-class Home extends React.PureComponent<Props, State> {
-  constructor(props: Props) {
+class Home extends React.PureComponent<HomeProps, HomeState> {
+  constructor(props: HomeProps) {
     super(props);
     this.state = {
-      name: props.name || 'Redux + TypeScript + React Native Navigation + 2',
+      name: 'Redux + TypeScript + React Native Navigation + 2',
       title: '',
     };
   }
@@ -44,12 +60,8 @@ class Home extends React.PureComponent<Props, State> {
 
     return (
       <SafeAreaView style={styles.container}>
-        <TouchableOpacity onPress={this.showBurgerMenu}>
-          <Image
-            style={styles.image}
-            resizeMode="contain"
-            source={require('../../../assets/images/burger-menu.png')}
-          />
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('Settings')}>
+            <Ionicons name={'person-circle-outline'} size={40} />
         </TouchableOpacity>
         <CText>Home</CText>
         <CText>{name}</CText>

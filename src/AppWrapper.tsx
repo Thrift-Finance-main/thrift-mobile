@@ -9,6 +9,7 @@ import Settings, {RootTabParamList} from "./view/screens/settings/Component";
 import Movements from "./view/screens/movements/Component";
 import Analytics from "./view/screens/analytics/Component";
 import {TabBar} from "./navigation/TabBar";
+import {MainStackNavigator} from "./navigation/StackNavigator";
 
 const Tab = createBottomTabNavigator();
 
@@ -24,7 +25,7 @@ function AppWrapper() {
     return (
         <NavigationContainer>
             <Tab.Navigator tabBar={props => <TabBar {...props} />}>
-                <Tab.Screen key={homeName} name={homeName} component={Home} />
+                <Tab.Screen key={homeName} name={homeName} component={MainStackNavigator} />
                 <Tab.Screen key={movementsName} name={movementsName} component={Movements} />
                 <Tab.Screen key={analyticsName} name={analyticsName} component={Analytics} />
                 <Tab.Screen key={servicesName} name={servicesName} component={Analytics} />
