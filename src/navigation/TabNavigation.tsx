@@ -5,7 +5,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useTranslation} from "react-i18next";
 
 // @ts-ignore
-export function TabBar({ state, descriptors, navigation }) {
+export function TabNavigation({ state, descriptors, navigation }) {
     const { t, i18n, ready } = useTranslation();
     const homeName = t('navBottomTabs.home');
     const settingsName = t('navBottomTabs.settings');
