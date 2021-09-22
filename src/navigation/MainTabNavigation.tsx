@@ -9,6 +9,7 @@ import Movements from "../view/screens/movements/Component";
 import Analytics from "../view/screens/analytics/Component";
 import Settings from "../view/screens/settings/Component";
 import Home from "../view/screens/home/Component";
+import {HomeStackNavigator} from "./HomeStackNavigator";
 
 const Tab = createBottomTabNavigator();
 
@@ -16,18 +17,16 @@ function MainTabNavigation() {
     // const { t, i18n } = useTranslation();
     const { t, i18n, ready } = useTranslation();
     const homeName = t('navBottomTabs.home');
-    const settingsName = t('navBottomTabs.settings');
     const movementsName = t('navBottomTabs.movements');
     const analyticsName = t('navBottomTabs.analytics');
     const servicesName = t('navBottomTabs.services');
 
     return (
             <Tab.Navigator tabBar={props => <TabNavigation {...props} />}>
-                <Tab.Screen key={homeName} name={homeName} component={Home} />
+                <Tab.Screen key={homeName} name={homeName} component={HomeStackNavigator} />
                 <Tab.Screen key={movementsName} name={movementsName} component={Movements} />
                 <Tab.Screen key={analyticsName} name={analyticsName} component={Analytics} />
                 <Tab.Screen key={servicesName} name={servicesName} component={Analytics} />
-                <Tab.Screen key={settingsName} name={settingsName} component={Settings} />
             </Tab.Navigator>
     );
 }
