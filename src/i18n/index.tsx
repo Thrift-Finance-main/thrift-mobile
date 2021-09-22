@@ -5,6 +5,13 @@ import { initReactI18next } from 'react-i18next';
 
 export const STORAGE_KEY = '@APP:languageCode';
 
+export const getRoute = (route:string) => {
+    const defaultJson:Json = enJson;
+
+    // @ts-ignore
+    return defaultJson.routes[route];
+}
+
 export function translate(cell:string) {
   return (i18next.t(cell));
 }

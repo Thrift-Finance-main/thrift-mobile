@@ -7,11 +7,12 @@ import {useTranslation} from "react-i18next";
 // @ts-ignore
 export function TabNavigation({ state, descriptors, navigation }) {
     const { t, i18n, ready } = useTranslation();
-    const homeName = t('navBottomTabs.home');
-    const settingsName = t('navBottomTabs.settings');
-    const movementsName = t('navBottomTabs.movements');
-    const analyticsName = t('navBottomTabs.analytics');
-    const servicesName = t('navBottomTabs.services');
+
+    const mainHomeName = t('routes.mainHome');
+    const settingsName = t('routes.settings');
+    const movementsName = t('routes.movements');
+    const analyticsName = t('routes.analytics');
+    const servicesName = t('routes.services');
 
     return (
         <View style={{ flexDirection: 'row',height:50, marginBottom: 10,justifyContent:"center",alignItems:"center" }}>
@@ -47,7 +48,7 @@ export function TabNavigation({ state, descriptors, navigation }) {
                 let iconName;
                 const focused = options.focused;
 
-                if (route.name === homeName) {
+                if (route.name === mainHomeName) {
                     iconName = focused
                         ? 'ios-home'
                         : 'ios-home';

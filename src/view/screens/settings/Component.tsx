@@ -4,9 +4,9 @@ import { AsyncStorage, SafeAreaView, Button } from 'react-native';
 import styles from './styles';
 import { CText } from '../../elements/custom';
 import i18next from 'i18next';
-import { STORAGE_KEY, translate } from '../../../i18n';
+import {getRoute, STORAGE_KEY, translate} from '../../../i18n';
 import { BUTTON_DEFAULT } from '../../elements/buttons';
-import { withTranslation } from 'react-i18next';
+import {useTranslation, withTranslation} from 'react-i18next';
 
 import { BottomTabNavigationProp, BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
@@ -40,8 +40,8 @@ class Settings extends React.PureComponent<SettingsProps, SettingsState> {
 
   onChangeLang = async (lang: string) => {
     await i18next.changeLanguage(lang);
-    // @ts-ignore
-    this.props.navigation.navigate(translate('navBottomTabs.settings'));
+
+    //this.props.navigation.navigate(translate(settingsName));
     /*
     try {
       await AsyncStorage.setItem(STORAGE_KEY, lang);
@@ -50,7 +50,7 @@ class Settings extends React.PureComponent<SettingsProps, SettingsState> {
       console.log(`onChangeLang() Error : ${error}`);
     }
     */
-    console.log(i18next.dir());
+    //rconsole.log(i18next.dir());
   }
   goHome = (h:string) => {
       // @ts-ignore
@@ -64,7 +64,6 @@ class Settings extends React.PureComponent<SettingsProps, SettingsState> {
         <BUTTON_DEFAULT onClick={() => this.onChangeLang('es')} title={'Español'} />
         <BUTTON_DEFAULT onClick={() => this.onChangeLang('en')} title={'Ingles'} />
         <Button title={'Español'} onPress={() => this.onChangeLang('es')}/>
-        <Button title={'Go Home'} onPress={() => this.goHome(translate('navBottomTabs.home'))}/>
         <CText>Result: {translate('title')}</CText>
       </SafeAreaView>
     );

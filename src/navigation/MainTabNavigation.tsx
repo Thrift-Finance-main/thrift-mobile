@@ -16,14 +16,14 @@ const Tab = createBottomTabNavigator();
 function MainTabNavigation() {
     // const { t, i18n } = useTranslation();
     const { t, i18n, ready } = useTranslation();
-    const homeName = t('navBottomTabs.home');
-    const movementsName = t('navBottomTabs.movements');
-    const analyticsName = t('navBottomTabs.analytics');
-    const servicesName = t('navBottomTabs.services');
+    const mainHomeName = t('routes.mainHome');
+    const movementsName = t('routes.movements');
+    const analyticsName = t('routes.analytics');
+    const servicesName = t('routes.services');
 
     return (
             <Tab.Navigator tabBar={props => <TabNavigation {...props} />}>
-                <Tab.Screen key={homeName} name={homeName} component={HomeStackNavigator} />
+                <Tab.Screen key={mainHomeName} name={mainHomeName} component={HomeStackNavigator} />
                 <Tab.Screen key={movementsName} name={movementsName} component={Movements} />
                 <Tab.Screen key={analyticsName} name={analyticsName} component={Analytics} />
                 <Tab.Screen key={servicesName} name={servicesName} component={Analytics} />

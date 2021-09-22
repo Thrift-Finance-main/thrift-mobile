@@ -1,6 +1,6 @@
 {
   "title": "Hola mundo",
-  "navBottomTabs": {
+  "routes": {
     "home": "Inicio",
     "settings": "Ajustes",
     "movements": "Movimientos",
