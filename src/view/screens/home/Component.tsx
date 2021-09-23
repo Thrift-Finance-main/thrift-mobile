@@ -9,6 +9,11 @@ import {withTranslation} from "react-i18next";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { StackScreenProps } from '@react-navigation/stack';
+import {IConfig} from "../../../db/model/appConfig";
+import Realm from "realm";
+import realmDb from "../../../db/RealmConfig";
+
+const { UUID } = Realm.BSON;
 
 export type RootTabParamList = {
     Home: undefined;
@@ -41,7 +46,22 @@ class Home extends React.PureComponent<HomeProps, HomeState> {
     };
   }
 
-  componentDidMount() {}
+  async componentDidMount() {
+
+      const config: IConfig = {
+          _id: "882dd631-bc6e-4e0e-a9e8-f07b685fec8c",
+          name: "Tim Doer.",
+          currentAccount: "Jaime",
+          language: "es",
+          currentEndpoint: "http://192.168.1.141:3101/graphql",
+          version: "0.1.0"
+      }
+      realmDb.setConfig(config).then(r => {
+      });
+      let currLang = await realmDb.getLanguage();
+      console.log('currLang');
+      console.log(currLang);
+  }
 
   showPushScreen = () => {
     const { componentId } = this.props;

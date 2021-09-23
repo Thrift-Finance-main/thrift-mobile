@@ -4,11 +4,12 @@ import { AsyncStorage, SafeAreaView, Button } from 'react-native';
 import styles from './styles';
 import { CText } from '../../elements/custom';
 import i18next from 'i18next';
-import {getRoute, STORAGE_KEY, translate} from '../../../i18n';
+import {getRoute, LANGUAGES_KEYS, STORAGE_KEY, translate} from '../../../i18n';
 import { BUTTON_DEFAULT } from '../../elements/buttons';
 import {useTranslation, withTranslation} from 'react-i18next';
 
 import { BottomTabNavigationProp, BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import realmDb from "../../../db/RealmConfig";
 
 export type RootTabParamList = {
     Home: {name:string} | undefined;
@@ -40,6 +41,7 @@ class Settings extends React.PureComponent<SettingsProps, SettingsState> {
 
   onChangeLang = async (lang: string) => {
     await i18next.changeLanguage(lang);
+    await realmDb.setLanguage(lang);
 
     //this.props.navigation.navigate(translate(settingsName));
     /*
@@ -61,8 +63,8 @@ class Settings extends React.PureComponent<SettingsProps, SettingsState> {
     return (
       <SafeAreaView style={styles.container}>
         <CText>Settings</CText>
-        <BUTTON_DEFAULT onClick={() => this.onChangeLang('es')} title={'Español'} />
-        <BUTTON_DEFAULT onClick={() => this.onChangeLang('en')} title={'Ingles'} />
+        <BUTTON_DEFAULT onClick={() => this.onChangeLang(LANGUAGES_KEYS.ES)} title={'Español'} />
+        <BUTTON_DEFAULT onClick={() => this.onChangeLang(LANGUAGES_KEYS.EN)} title={'Ingles'} />
         <Button title={'Español'} onPress={() => this.onChangeLang('es')}/>
         <CText>Result: {translate('title')}</CText>
       </SafeAreaView>
