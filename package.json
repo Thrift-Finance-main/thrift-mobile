@@ -7,18 +7,26 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "postinstall": "node_modules/.bin/rn-nodeify --install crypto --hack"
   },
   "dependencies": {
+    "@emurgo/cardano-serialization-lib-nodejs": "^9.1.0",
     "@react-navigation/bottom-tabs": "5.11.13",
     "@react-navigation/native": "^5.8.10",
     "@react-navigation/stack": "^5.8.10",
+    "@types/bip39": "^3.0.0",
+    "@types/node": "^16.11.1",
+    "bip39": "^3.0.4",
+    "crypto-random-string": "^3.3.0",
     "i18next": "20.0.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-i18next": "11.8.x",
     "react-native": "0.65.1",
+    "react-native-crypto": "2.2.0",
     "react-native-gesture-handler": "^1.10.3",
+    "react-native-randombytes": "^2.3.0",
     "react-native-safe-area-context": "3.1.9",
     "react-native-screens": "2.15.2",
     "react-native-vector-icons": "^8.1.0",
@@ -51,6 +59,7 @@
     "metro-react-native-babel-preset": "^0.66.0",
     "react-native-codegen": "^0.0.7",
     "react-test-renderer": "17.0.2",
+    "rn-nodeify": "^6.0.1",
     "typescript": "4.4.2"
   },
   "resolutions": {
@@ -66,5 +75,11 @@
       "json",
       "node"
     ]
+  },
+  "react-native": {
+    "crypto": "react-native-crypto"
+  },
+  "browser": {
+    "crypto": "react-native-crypto"
   }
 }

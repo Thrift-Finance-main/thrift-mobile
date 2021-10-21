@@ -9,6 +9,7 @@ import {withTranslation} from "react-i18next";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { StackScreenProps } from '@react-navigation/stack';
+import {generateAdaMnemonic} from "../../../lib/account";
 
 export type RootTabParamList = {
     Home: undefined;
@@ -31,6 +32,7 @@ export interface WelcomeProps {
 interface WelcomeState {
   name: string;
   title: string;
+  seed: string;
 }
 
 class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
@@ -39,6 +41,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     this.state = {
       name: 'This is the the view first time running the app',
       title: '',
+      seed: '',
     };
   }
 
@@ -52,14 +55,18 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     const { componentId } = this.props;
 
   }
-  updateTitle = () => {
+  createAccount = () => {
     // this.setState({ title: translate('title') });
     // @ts-ignore
-      this.props.navigation.navigate('Main', { screen: 'Settings' });
+      //this.props.navigation.navigate('Main', { screen: 'Settings' });
+      const seed = generateAdaMnemonic();
+      this.setState({
+          seed: seed
+      })
   }
 
   render() {
-    const { name } = this.state;
+    const { name, seed } = this.state;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -67,7 +74,8 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
         <CText>{name}</CText>
         <CText>Result: {translate('title')}</CText>
         <CText>Lang: {getCurrentLang()}</CText>
-        <BUTTON_DEFAULT onClick={this.updateTitle} title={'Create Account'}/>
+        <BUTTON_DEFAULT onClick={this.createAccount} title={'Create Account'}/>
+        <CText>{seed}</CText>
         <BUTTON_DEFAULT onClick={this.showPushScreen} title={'Restore Account'} style={styles.button} />
       </SafeAreaView>
     );

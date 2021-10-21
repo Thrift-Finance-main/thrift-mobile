@@ -13,6 +13,8 @@ target 'thriftMobile' do
   )
 
 
+  pod 'react-native-randombytes', :path => '../node_modules/react-native-randombytes'
+
   target 'thriftMobileTests' do
     inherit! :complete
     # Pods for testing
@@ -29,4 +31,3 @@ target 'thriftMobile' do
   end
 end
 
-pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
