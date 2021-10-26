@@ -14,4 +14,16 @@ module.exports = {
       },
     }),
   },
+  resolver: {
+    sourceExts: ['js', 'jsx', 'ts', 'tsx'],
+    assetExts: ['png', 'md', 'json'],
+    extraNodeModules: {
+      buffer: require.resolve('safe-buffer'),
+      crypto: require.resolve('react-native-crypto'),
+      stream: require.resolve('stream-browserify'),
+      url: require.resolve('url'),
+      util: require.resolve('util'),
+      vm: require.resolve('vm-browserify'),
+    },
+  },
 };

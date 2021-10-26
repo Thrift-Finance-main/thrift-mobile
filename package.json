@@ -10,15 +10,20 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
+    "@emurgo/cardano-serialization-lib-nodejs": "^9.1.0",
     "@react-navigation/bottom-tabs": "5.11.13",
     "@react-navigation/native": "^5.8.10",
     "@react-navigation/stack": "^5.8.10",
+    "bip39": "2.5.0",
+    "events": "^3.3.0",
     "i18next": "20.0.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-i18next": "11.8.x",
     "react-native": "0.65.1",
+    "react-native-crypto": "2.2.0",
     "react-native-gesture-handler": "^1.10.3",
+    "react-native-randombytes": "3.6.0",
     "react-native-safe-area-context": "3.1.9",
     "react-native-screens": "2.15.2",
     "react-native-vector-icons": "^8.1.0",
@@ -26,7 +31,12 @@
     "realm": "^10.8.0",
     "redux": "4.1.0",
     "redux-devtools-extension": "^2.13.8",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "safe-buffer": "^5.2.1",
+    "stream-browserify": "3.0.0",
+    "url": "^0.11.0",
+    "util": "0.12.4",
+    "vm-browserify": "1.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
