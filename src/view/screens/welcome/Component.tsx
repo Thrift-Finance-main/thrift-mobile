@@ -13,7 +13,7 @@ import {getCurrentLang, translate} from '../../../i18n';
 // @ts-ignore
 
 // eslint-disable-next-line import/extensions,import/no-unresolved
-import {generateAdaMnemonic} from '../../../../lib/account';
+import {generateAdaMnemonic} from '../../../lib/account';
 
 export type RootTabParamList = {
   Home: undefined;
@@ -83,13 +83,12 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
         <CText>Result: {translate('title')}</CText>
         <CText>Lang: {getCurrentLang()}</CText>
         <BUTTON_DEFAULT onClick={this.goHome} title="Go to Home" />
-        <BUTTON_DEFAULT onClick={this.getSeed} title="Create Account" />
-        <CText>{seed}</CText>
         <BUTTON_DEFAULT
-          onClick={this.showPushScreen}
-          title="Restore Account"
+          onClick={this.getSeed}
+          title="Create Account"
           style={styles.button}
         />
+        <CText>{seed}</CText>
       </SafeAreaView>
     );
   }

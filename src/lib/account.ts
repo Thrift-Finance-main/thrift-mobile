@@ -12,5 +12,6 @@ export const CONFIG = {
  * wallet key generation
  */
 
-export const generateAdaMnemonic = () =>
-  generateMnemonic(CONFIG.MNEMONIC_STRENGTH, randomBytes);
+export const generateAdaMnemonic = () => {
+  return generateMnemonic(CONFIG.MNEMONIC_STRENGTH, randomBytes);
+};
