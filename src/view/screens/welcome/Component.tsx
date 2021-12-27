@@ -13,7 +13,7 @@ import {getCurrentLang, translate} from '../../../i18n';
 // @ts-ignore
 
 // eslint-disable-next-line import/extensions,import/no-unresolved
-import {generateAdaMnemonic} from '../../../lib/account';
+import {createAccount, generateAdaMnemonic} from '../../../lib/account';
 
 export type RootTabParamList = {
   Home: undefined;
@@ -35,7 +35,7 @@ export interface WelcomeProps {
 
 interface WelcomeState {
   name: string;
-  title: string;
+  acc: any;
   seed: string;
 }
 
@@ -45,7 +45,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     this.state = {
       name: 'This is the the view first time running the app',
       // eslint-disable-next-line react/no-unused-state
-      title: '',
+      acc: {},
       seed: '',
     };
   }
@@ -67,6 +67,18 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     });
   };
 
+  createAccount = () => {
+    console.log('createAccount');
+    const seed: string = generateAdaMnemonic();
+    const acc = createAccount(seed, 'Name2', 'password');
+    console.log('acc');
+    console.log(acc);
+    this.setState({
+      // eslint-disable-next-line react/no-unused-state
+      acc,
+    });
+  };
+
   goHome = () => {
     // @ts-ignore
     // eslint-disable-next-line react/destructuring-assignment
@@ -74,7 +86,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   };
 
   render() {
-    const {name, seed} = this.state;
+    const {name, acc} = this.state;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -84,11 +96,11 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
         <CText>Lang: {getCurrentLang()}</CText>
         <BUTTON_DEFAULT onClick={this.goHome} title="Go to Home" />
         <BUTTON_DEFAULT
-          onClick={this.getSeed}
+          onClick={this.createAccount}
           title="Create Account"
           style={styles.button}
         />
-        <CText>{seed}</CText>
+        <CText>{acc.mnemonic}</CText>
       </SafeAreaView>
     );
   }
