@@ -3,15 +3,35 @@ import {randomBytes} from 'react-native-randombytes';
 // @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {generateMnemonic, mnemonicToEntropy} from 'bip39';
-import {Bip32PrivateKey} from '@emurgo/react-native-haskell-shelley';
+import {
+  BaseAddress,
+  Bip32PrivateKey,
+  StakeCredential,
+} from '@emurgo/react-native-haskell-shelley';
+
+import {
+  BASE_ADDRESS_INDEX,
+  DERIVE_COIN_TYPE,
+  DERIVE_PUROPOSE,
+  numbers,
+  // eslint-disable-next-line import/extensions,import/no-unresolved
+} from './config';
+// eslint-disable-next-line import/extensions,import/no-unresolved
+import {ERROR_ACCOUNT} from '../constants/error';
+import { MAINNET_NETWORK_INDEX } from "./network";
 
 export const CONFIG = {
   MNEMONIC_STRENGTH: 160,
 };
 
+export type AddressType = 'Internal' | 'External';
+
 /**
  * wallet key generation
  */
+export const harden = (num: number) => {
+  return 0x80000000 + num;
+};
 
 export const generateAdaMnemonic = () => {
   return generateMnemonic(CONFIG.MNEMONIC_STRENGTH, randomBytes);
@@ -28,15 +48,120 @@ export const generateWalletRootKey: (
   );
   return rootKey;
 };
-export const createAccount = (
+
+export const getMasterKeyFromMnemonic = async (mnemonic: string) => {
+  const masterKeyPtr = await generateWalletRootKey(mnemonic);
+  return Buffer.from(await masterKeyPtr.as_bytes()).toString('hex');
+};
+
+export const getAccountFromMasterKey = async (masterKey: string) => {
+  const masterKeyPtr = await Bip32PrivateKey.from_bytes(
+    Buffer.from(masterKey, 'hex'),
+  );
+  const accountKey = await (
+    await (await masterKeyPtr.derive(DERIVE_PUROPOSE)).derive(DERIVE_COIN_TYPE)
+  ).derive(BASE_ADDRESS_INDEX);
+  const accountPubKey = await accountKey.to_public();
+  // match old byron CryptoAccount type
+
+  const accountPubKeyHex = Buffer.from(await accountPubKey.as_bytes()).toString(
+    'hex',
+  );
+  return {
+    accountKey,
+    accountPubKeyHex,
+  };
+};
+
+export const generatePayAddress = async (
+  // @ts-ignore
+  accountKey: Bip32PrivateKey,
+  chain: number,
+  index: number,
+  networkId: string,
+) => {
+  let stakeKey;
+  let stakeKeyPub;
+  try {
+    stakeKey = (
+      await (
+        await accountKey.derive(numbers.ChainDerivations.ChimericAccount)
+      ).derive(numbers.StakingKeyIndex)
+    ).to_raw_key();
+    stakeKeyPub = await (await stakeKey).to_public();
+  } catch (e) {
+    console.log(e);
+    return {
+      error: e,
+    };
+  }
+
+  let paymentKeyPub;
+  try {
+    const paymentKey = (
+      await (await accountKey.derive(chain)).derive(index)
+    ).to_raw_key();
+    paymentKeyPub = await (await paymentKey).to_public();
+  } catch (e) {
+    console.log(e);
+    return {
+      error: e,
+    };
+  }
+  try {
+    const addr = await BaseAddress.new(
+      parseInt(networkId, 10),
+      await StakeCredential.from_keyhash(await paymentKeyPub.hash()),
+      await StakeCredential.from_keyhash(await stakeKeyPub.hash()),
+    );
+    const addrBench32 = (await addr.to_address()).to_bech32();
+    console.log('\naddrBench32');
+    console.log(addrBench32);
+
+    return addrBench32;
+  } catch (e) {
+    console.log(e);
+    return {
+      error: e,
+    };
+  }
+};
+
+export const createAccount = async (
   mnemonic: string,
   accountName: string,
   pass: string,
 ) => {
-  const rootKey = generateWalletRootKey(mnemonic);
+  console.log('createAccount');
+
+  const masterKey = await getMasterKeyFromMnemonic(mnemonic);
+  console.log('masterKey');
+  console.log(masterKey);
+  const account = await getAccountFromMasterKey(masterKey);
+  console.log('account');
+  console.log(account);
+
+  const masterKeyPtr = await Bip32PrivateKey.from_bytes(
+    Buffer.from(masterKey, 'hex'),
+  );
+  const internalPubAddressM = await generatePayAddress(
+    masterKeyPtr,
+    1,
+    BASE_ADDRESS_INDEX,
+    MAINNET_NETWORK_INDEX,
+  );
+  const externalPubAddressM = await generatePayAddress(
+    masterKeyPtr,
+    0,
+    BASE_ADDRESS_INDEX,
+    MAINNET_NETWORK_INDEX,
+  );
 
   return {
+    account,
+    masterKey,
     mnemonic,
-    rootKey
-  }
+    internalPubAddressM,
+    externalPubAddressM,
+  };
 };

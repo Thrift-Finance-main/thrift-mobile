@@ -1,9 +1,10 @@
 import * as React from 'react';
-import {SafeAreaView, TouchableOpacity, Image, Button} from 'react-native';
+import {SafeAreaView, TouchableOpacity} from 'react-native';
 import {withTranslation} from 'react-i18next';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {StackScreenProps} from '@react-navigation/stack';
 import Realm from 'realm';
+// eslint-disable-next-line import/extensions
 import styles from './styles';
 import {CText} from '../../elements/custom';
 import {BUTTON_DEFAULT} from '../../elements/buttons';

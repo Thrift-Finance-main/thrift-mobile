@@ -14,6 +14,7 @@ import {getCurrentLang, translate} from '../../../i18n';
 
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {createAccount, generateAdaMnemonic} from '../../../lib/account';
+import { addressSlice } from "../../../utils";
 
 export type RootTabParamList = {
   Home: undefined;
@@ -67,10 +68,10 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     });
   };
 
-  createAccount = () => {
-    console.log('createAccount');
+  createAccount = async () => {
+
     const seed: string = generateAdaMnemonic();
-    const acc = createAccount(seed, 'Name2', 'password');
+    const acc = await createAccount(seed, 'Name2', 'password');
     console.log('acc');
     console.log(acc);
     this.setState({
@@ -101,6 +102,10 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
           style={styles.button}
         />
         <CText>{acc.mnemonic}</CText>
+        <CText> </CText>
+        <CText>{acc.externalPubAddressM}</CText>
+        <CText> </CText>
+        <CText>{addressSlice(acc.externalPubAddressM, 20)}</CText>
       </SafeAreaView>
     );
   }

@@ -776,15 +776,10 @@
   dependencies:
     "@types/hammerjs" "^2.0.36"
 
-"@emurgo/cardano-serialization-lib-nodejs@^9.1.0":
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/@emurgo/cardano-serialization-lib-nodejs/-/cardano-serialization-lib-nodejs-9.1.0.tgz#8813b8a040c0425aab454f8ee1ba4f4709031324"
-  integrity sha512-4gW+KqejTSm/rkNwWxK/WUJvlifWqFx5ShgCtWmPuTZ/YJAZSpROI8DP+pqTakG0gGWdxPB3BnVJIPrczNwmtA==
-
-"@emurgo/react-native-haskell-shelley@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@emurgo/react-native-haskell-shelley/-/react-native-haskell-shelley-3.1.0.tgz#dcac019593036936188cff95aba1cb0733905dc5"
-  integrity sha512-cujtOckcTpu+DtbOdJfqxt0y/UqOgHqVFNYlldB/Sn2f2fk9IWDgtIdqT1BcVUJh1BNU3CEKAo6uq/UwpIs5OQ==
+"@emurgo/react-native-haskell-shelley@3.1.2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@emurgo/react-native-haskell-shelley/-/react-native-haskell-shelley-3.1.2.tgz#87226614ab4e9af2ef6979a5acac36cff1058ef5"
+  integrity sha512-yydgPzKKw8dNjqQVrDbjjyZXT1PU0ix50gl+wx7rkvOm1y24bBngr0yj8CQUFvW68DUOHUg8nnmc9upriTg5eg==
   dependencies:
     base-64 "0.1.0"
 
