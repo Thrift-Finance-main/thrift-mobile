@@ -4,9 +4,9 @@
 #### TODO
 
 - [x] Configuring React+Typescript.
-- [ ] Adding common libraries, including cardano-serializacion-lib.
+- [x] Adding common libraries, including cardano-serializacion-lib.
 - [x] Add Redux for state management.
-- [ ] Add Realm and models for data persistence.
+- [x] Add Realm and models for data persistence.
 - [x] Add i18n for easy translations.
 - [ ] Add the styles Framework, template.
 - [x] Testing Running on Android & iOS envs.
@@ -61,9 +61,21 @@ Presentation layer for the app - screens, styles, images, icons etc.
 
 ### Getting Started
 
+###### Requirements
+
+```
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env
+
+rustup target add aarch64-apple-ios armv7-apple-ios armv7s-apple-ios x86_64-apple-ios i386-apple-ios
+
+cargo install cargo-lipo
+```
+
 Make sure node version installed is `>=10.x.x` and Java `JDK 12`. 
 Then install using yarn (or npm):
 ```
+nvm use 16.5.0 
 yarn install
 ```
 
