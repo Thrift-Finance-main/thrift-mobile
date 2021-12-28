@@ -13,12 +13,11 @@ import {
   BASE_ADDRESS_INDEX,
   DERIVE_COIN_TYPE,
   DERIVE_PUROPOSE,
-  numbers,
+  numbers, TOTAL_ADDRESS_INDEX
   // eslint-disable-next-line import/extensions,import/no-unresolved
-} from './config';
+} from "./config";
 // eslint-disable-next-line import/extensions,import/no-unresolved
-import {ERROR_ACCOUNT} from '../constants/error';
-import { MAINNET_NETWORK_INDEX } from "./network";
+import {MAINNET_NETWORK_INDEX} from './network';
 
 export const CONFIG = {
   MNEMONIC_STRENGTH: 160,
@@ -115,9 +114,6 @@ export const generatePayAddress = async (
       await StakeCredential.from_keyhash(await stakeKeyPub.hash()),
     );
     const addrBench32 = (await addr.to_address()).to_bech32();
-    console.log('\naddrBench32');
-    console.log(addrBench32);
-
     return addrBench32;
   } catch (e) {
     console.log(e);
@@ -135,33 +131,39 @@ export const createAccount = async (
   console.log('createAccount');
 
   const masterKey = await getMasterKeyFromMnemonic(mnemonic);
-  console.log('masterKey');
-  console.log(masterKey);
   const account = await getAccountFromMasterKey(masterKey);
-  console.log('account');
-  console.log(account);
 
   const masterKeyPtr = await Bip32PrivateKey.from_bytes(
     Buffer.from(masterKey, 'hex'),
   );
-  const internalPubAddressM = await generatePayAddress(
-    masterKeyPtr,
-    1,
-    BASE_ADDRESS_INDEX,
-    MAINNET_NETWORK_INDEX,
-  );
-  const externalPubAddressM = await generatePayAddress(
-    masterKeyPtr,
-    0,
-    BASE_ADDRESS_INDEX,
-    MAINNET_NETWORK_INDEX,
-  );
+  const externalAdresses = [];
+  for (let i = 0; i < TOTAL_ADDRESS_INDEX; i++) {
+    // eslint-disable-next-line no-await-in-loop
+    const externalPubAddressM = await generatePayAddress(
+      masterKeyPtr,
+      0,
+      BASE_ADDRESS_INDEX,
+      MAINNET_NETWORK_INDEX,
+    );
+    externalAdresses.push(externalPubAddressM);
+  }
+  const internalAdresses = [];
+  for (let i = 0; i < TOTAL_ADDRESS_INDEX; i++) {
+    // eslint-disable-next-line no-await-in-loop
+    const internalPubAddressM = await generatePayAddress(
+      masterKeyPtr,
+      1,
+      BASE_ADDRESS_INDEX,
+      MAINNET_NETWORK_INDEX,
+    );
+    internalAdresses.push(internalPubAddressM);
+  }
 
   return {
     account,
     masterKey,
     mnemonic,
-    internalPubAddressM,
-    externalPubAddressM,
+    externalAdresses,
+    internalAdresses,
   };
 };
