@@ -1,14 +1,10 @@
 import {encrypt_with_password} from '@emurgo/react-native-haskell-shelley';
+import cryptoRandomString from 'crypto-random-string';
 // @ts-ignore
-import {randomBytes} from 'react-native-randombytes';
 import crypto from 'crypto';
 
 export const getRandomBytes = async (n: number) => {
-  return await randomBytes(n, (err, bytes) => {
-    // bytes is a Buffer object
-    // console.log(bytes.toString('hex'));
-    return bytes.toString('hex');
-  });
+  return crypto.randomBytes(n).toString('hex');
 };
 // eslint-disable-next-line import/prefer-default-export
 export const encryptData = async (
@@ -18,12 +14,13 @@ export const encryptData = async (
   console.log('encryptData');
   const secretKeyHex = Buffer.from(secretKey, 'utf8').toString('hex');
 
-  const saltHex = crypto.randomBytes(32).toString('base64');
-  const nonceHex = crypto.randomBytes(32).toString('base64');
+  const saltHex2 = cryptoRandomString({length: 2 * 32});
+  const nonceHex2 = cryptoRandomString({length: 2 * 12});
 
-  console.log(secretKeyHex);
-  console.log(saltHex);
-  console.log(nonceHex);
+  console.log('saltHex2');
+  console.log(saltHex2);
+  console.log('nonceHex2');
+  console.log(nonceHex2);
 
-  return encrypt_with_password(secretKey, saltHex, nonceHex, plaintextHex);
+  return encrypt_with_password(secretKeyHex, saltHex2, nonceHex2, plaintextHex);
 };
