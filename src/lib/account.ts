@@ -45,6 +45,7 @@ export const generateWalletRootKey: (
 ) => Promise<Bip32PrivateKey> = async (mnemonic: string) => {
   const bip39entropy = mnemonicToEntropy(mnemonic);
   const EMPTY_PASSWORD = Buffer.from('');
+  console.log('hey');
   const rootKey = await Bip32PrivateKey.from_bip39_entropy(
     Buffer.from(bip39entropy, 'hex'),
     EMPTY_PASSWORD,
@@ -58,6 +59,7 @@ export const getMasterKeyFromMnemonic = async (mnemonic: string) => {
 };
 
 export const getAccountFromMasterKey = async (masterKey: string) => {
+  console.log('getAccountFromMasterKey');
   const masterKeyPtr = await Bip32PrivateKey.from_bytes(
     Buffer.from(masterKey, 'hex'),
   );

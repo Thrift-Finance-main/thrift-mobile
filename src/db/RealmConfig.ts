@@ -37,7 +37,7 @@ export class RealmDb {
         NativeTokenSchema,
         AccountSchema,
       ],
-      schemaVersion: 3,
+      schemaVersion: 4,
     });
   };
 
