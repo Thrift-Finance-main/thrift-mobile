@@ -71,8 +71,8 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   createAccount = async () => {
     const seed: string = generateAdaMnemonic();
     const acc = await createAccount(seed, 'Name2', 'password');
-    //console.log('acc');
-    //console.log(acc);
+    console.log('acc');
+    console.log(acc);
     this.setState({
       // eslint-disable-next-line react/no-unused-state
       acc,

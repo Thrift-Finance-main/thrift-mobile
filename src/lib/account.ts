@@ -161,7 +161,7 @@ export const createAccount = async (
     );
     internalAdresses.push(internalPubAddressM);
   }
-  const c = await encryptData(masterKey, 'password1331');
+  const c = await encryptData(masterKey, pass);
   console.log('\n\nc');
   console.log(c);
   return {
