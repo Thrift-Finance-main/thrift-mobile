@@ -71,8 +71,8 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   createAccount = async () => {
     const seed: string = generateAdaMnemonic();
     const acc = await createAccount(seed, 'Name2', 'password');
-    console.log('acc');
-    console.log(acc);
+    //console.log('acc');
+    //console.log(acc);
     this.setState({
       // eslint-disable-next-line react/no-unused-state
       acc,
@@ -88,8 +88,6 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   render() {
     const {name, acc} = this.state;
 
-    console.log('acc2');
-    console.log(acc);
     let externalAdd = '';
     if (acc.externalAdresses && acc.externalAdresses.length) {
       externalAdd = acc.externalAdresses[0];

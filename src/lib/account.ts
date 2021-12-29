@@ -13,11 +13,14 @@ import {
   BASE_ADDRESS_INDEX,
   DERIVE_COIN_TYPE,
   DERIVE_PUROPOSE,
-  numbers, TOTAL_ADDRESS_INDEX
+  numbers,
+  TOTAL_ADDRESS_INDEX,
   // eslint-disable-next-line import/extensions,import/no-unresolved
-} from "./config";
+} from './config';
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {MAINNET_NETWORK_INDEX} from './network';
+import crypto from "crypto";
+import {encryptData} from "./crypto";
 
 export const CONFIG = {
   MNEMONIC_STRENGTH: 160,
@@ -158,8 +161,14 @@ export const createAccount = async (
     );
     internalAdresses.push(internalPubAddressM);
   }
-
+  const c = await encryptData(
+    Buffer.from(masterKey, 'hex').toString('hex'),
+    'password1331',
+  );
+  console.log('\n\nc');
+  console.log(c);
   return {
+    encrypt: c,
     account,
     masterKey,
     mnemonic,

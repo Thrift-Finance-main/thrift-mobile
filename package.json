@@ -7,7 +7,9 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "nodeify": "rn-nodeify --hack --install process,crypto,events,constant,console,stream,url,util",
+    "postinstall": "yarn nodeify"
   },
   "dependencies": {
     "@emurgo/react-native-haskell-shelley": "3.1.2",
@@ -16,8 +18,10 @@
     "@react-navigation/stack": "^5.8.10",
     "axios": "^0.24.0",
     "bip39": "2.5.0",
+    "console-browserify": "^1.2.0",
     "events": "^3.3.0",
     "i18next": "20.0.0",
+    "process": "^0.11.10",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-i18next": "11.8.x",
@@ -29,6 +33,7 @@
     "react-native-screens": "2.15.2",
     "react-native-vector-icons": "^8.1.0",
     "react-redux": "^7.2.4",
+    "readable-stream": "^1.0.33",
     "realm": "^10.8.0",
     "redux": "4.1.0",
     "redux-devtools-extension": "^2.13.8",
@@ -62,7 +67,8 @@
     "metro-react-native-babel-preset": "^0.66.0",
     "react-native-codegen": "^0.0.7",
     "react-test-renderer": "17.0.2",
-    "typescript": "4.4.2"
+    "typescript": "4.4.2",
+    "rn-nodeify": "^10.2.0"
   },
   "resolutions": {
     "@types/react": "^17"
@@ -77,5 +83,25 @@
       "json",
       "node"
     ]
+  },
+  "react-native": {
+    "console": "console-browserify",
+    "crypto": "react-native-crypto",
+    "_stream_transform": "readable-stream/transform",
+    "_stream_readable": "readable-stream/readable",
+    "_stream_writable": "readable-stream/writable",
+    "_stream_duplex": "readable-stream/duplex",
+    "_stream_passthrough": "readable-stream/passthrough",
+    "stream": "stream-browserify"
+  },
+  "browser": {
+    "console": "console-browserify",
+    "crypto": "react-native-crypto",
+    "_stream_transform": "readable-stream/transform",
+    "_stream_readable": "readable-stream/readable",
+    "_stream_writable": "readable-stream/writable",
+    "_stream_duplex": "readable-stream/duplex",
+    "_stream_passthrough": "readable-stream/passthrough",
+    "stream": "stream-browserify"
   }
 }
