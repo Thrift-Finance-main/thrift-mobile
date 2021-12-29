@@ -19,8 +19,9 @@ import {
 } from './config';
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {MAINNET_NETWORK_INDEX} from './network';
-import crypto from "crypto";
-import {encryptData} from "./crypto";
+
+// eslint-disable-next-line import/extensions,import/no-unresolved
+import {encryptData} from './cryptoLib';
 
 export const CONFIG = {
   MNEMONIC_STRENGTH: 160,

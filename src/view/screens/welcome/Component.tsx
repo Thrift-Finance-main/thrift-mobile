@@ -110,6 +110,9 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
         <CText>{externalAdd}</CText>
         <CText> </CText>
         <CText>{addressSlice(externalAdd, 20)}</CText>
+        <CText> </CText>
+        <CText>Encrypted root key:</CText>
+        <CText>{acc.encrypt}</CText>
       </SafeAreaView>
     );
   }
