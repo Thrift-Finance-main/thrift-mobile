@@ -63,13 +63,26 @@ Presentation layer for the app - screens, styles, images, icons etc.
 
 ###### Requirements
 
+####### Android
 ```
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+rustup install 1.41.0
+rustup toolchain install 1.41.0
+rustup target add wasm32-unknown-unknown --toolchain 1.41.0
+rustup default 1.41.0
+rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
+
+export JAVA_HOME=`/usr/libexec/java_home -v 1.8`  
+
 source $HOME/.cargo/env
 
-rustup target add aarch64-apple-ios armv7-apple-ios armv7s-apple-ios x86_64-apple-ios i386-apple-ios
-
 cargo install cargo-lipo
+```
+
+- Install `wasm-prkg`:
+
+```shell
+curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 ```
 
 Make sure node version installed is `>=10.x.x` and Java `JDK 12`. 

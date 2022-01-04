@@ -1,13 +1,16 @@
-// @ts-ignore
-import {randomBytes} from 'react-native-randombytes';
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import {generateMnemonic, mnemonicToEntropy} from 'bip39';
+import '../../shim';
+
 import {
   BaseAddress,
   Bip32PrivateKey,
   StakeCredential,
 } from '@emurgo/react-native-haskell-shelley';
+
+import {randomBytes} from 'react-native-randombytes';
+
+// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import {generateMnemonic, mnemonicToEntropy} from 'bip39';
 
 import {
   BASE_ADDRESS_INDEX,
@@ -19,9 +22,7 @@ import {
 } from './config';
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {MAINNET_NETWORK_INDEX} from './network';
-
-// eslint-disable-next-line import/extensions,import/no-unresolved
-import {encryptData} from './cryptoLib';
+import CardanoModule from './CardanoModule';
 
 export const CONFIG = {
   MNEMONIC_STRENGTH: 160,
@@ -40,21 +41,66 @@ export const generateAdaMnemonic = () => {
   return generateMnemonic(CONFIG.MNEMONIC_STRENGTH, randomBytes);
 };
 
+export const generateWalletRootKey2: (
+  mnemonic: string,
+) => Promise<Bip32PrivateKey> = async (mnemonic: string) => {
+
+  await CardanoModule.load();
+
+  console.log('CardanoModule.wasmV4.Bip32PrivateKey 2');
+  console.log(CardanoModule.wasmV4.Bip32PrivateKey);
+  console.log(Bip32PrivateKey);
+  console.log(await Bip32PrivateKey);
+  console.log(typeof CardanoModule.wasmV4.Bip32PrivateKey);
+
+  const bip39entropy = mnemonicToEntropy(mnemonic);
+  const EMPTY_PASSWORD = Buffer.from('');
+  const rootKey = await CardanoModule.wasmV4.Bip32PrivateKey.from_bip39_entropy(
+    Buffer.from(bip39entropy, 'hex'),
+    EMPTY_PASSWORD,
+  );
+  console.log('rootKey');
+  console.log(rootKey);
+  return rootKey;
+};
 export const generateWalletRootKey: (
   mnemonic: string,
 ) => Promise<Bip32PrivateKey> = async (mnemonic: string) => {
   const bip39entropy = mnemonicToEntropy(mnemonic);
   const EMPTY_PASSWORD = Buffer.from('');
   console.log('hey');
+
+  if (await Bip32PrivateKey) {
+    console.log('es siiii');
+
+    try {
+      const f = Bip32PrivateKey.from_bip39_entropy(
+        Buffer.from(bip39entropy, 'hex'),
+        EMPTY_PASSWORD,
+      );
+      console.log(f);
+
+      console.log('es noooo');
+      return f;
+    } finally {
+    }
+  }
+
+  /*
   const rootKey = await Bip32PrivateKey.from_bip39_entropy(
     Buffer.from(bip39entropy, 'hex'),
     EMPTY_PASSWORD,
   );
+  console.log('rootKey');
+  console.log(rootKey);
   return rootKey;
+  */
 };
 
 export const getMasterKeyFromMnemonic = async (mnemonic: string) => {
-  const masterKeyPtr = await generateWalletRootKey(mnemonic);
+  const masterKeyPtr = await generateWalletRootKey2(mnemonic);
+  console.log('masterKeyPtr');
+  console.log(masterKeyPtr);
   return Buffer.from(await masterKeyPtr.as_bytes()).toString('hex');
 };
 
@@ -164,11 +210,7 @@ export const createAccount = async (
     );
     internalAdresses.push(internalPubAddressM);
   }
-  const c = await encryptData(masterKey, pass);
-  console.log('\n\nc');
-  console.log(c);
   return {
-    encrypt: c,
     account,
     masterKey,
     mnemonic,

@@ -60,15 +60,18 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
 
   getSeed = () => {
     // this.setState({ title: translate('title') });
+      /*
     const seed: string = generateAdaMnemonic();
     console.log('seed');
     console.log(seed);
     this.setState({
       seed,
     });
+    */
   };
 
   createAccount = async () => {
+      /*
     const seed: string = generateAdaMnemonic();
     const acc = await createAccount(seed, 'Name2', 'password');
     console.log('acc');
@@ -77,6 +80,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
       // eslint-disable-next-line react/no-unused-state
       acc,
     });
+    */
   };
 
   goHome = () => {
@@ -86,12 +90,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   };
 
   render() {
-    const {name, acc} = this.state;
-
-    let externalAdd = '';
-    if (acc.externalAdresses && acc.externalAdresses.length) {
-      externalAdd = acc.externalAdresses[0];
-    }
+    const {name} = this.state;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -100,19 +99,6 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
         <CText>Result: {translate('title')}</CText>
         <CText>Lang: {getCurrentLang()}</CText>
         <BUTTON_DEFAULT onClick={this.goHome} title="Go to Home" />
-        <BUTTON_DEFAULT
-          onClick={this.createAccount}
-          title="Create Account"
-          style={styles.button}
-        />
-        <CText>{acc.mnemonic}</CText>
-        <CText> </CText>
-        <CText>{externalAdd}</CText>
-        <CText> </CText>
-        <CText>{addressSlice(externalAdd, 20)}</CText>
-        <CText> </CText>
-        <CText>Encrypted root key:</CText>
-        <CText>{acc.encrypt}</CText>
       </SafeAreaView>
     );
   }

@@ -1,3 +1,5 @@
+/*
+import '../../shim';
 import {encrypt_with_password} from '@emurgo/react-native-haskell-shelley';
 import cryptoRandomString from 'crypto-random-string';
 // @ts-ignore
@@ -24,3 +26,4 @@ export const encryptData = async (
 
   return encrypt_with_password(secretKeyHex, saltHex2, nonceHex2, plaintextHex);
 };
+*/
