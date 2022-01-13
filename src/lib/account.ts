@@ -1,5 +1,7 @@
 import '../../shim';
 import {Wallet} from 'react-native-cardano';
+// @ts-ignore
+import {randomBytes} from 'react-native-randombytes';
 
 // @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -18,13 +20,17 @@ export const harden = (num: number) => {
   return 0x80000000 + num;
 };
 
-
 export const generateAdaMnemonic = () => {
   console.log('generateAdaMnemonic');
   Wallet.checkAddress(
     'DdzFFzCqrhtCUjHyzgvgigwA5soBgDxpc8WfnG1RGhrsRrWMV8uKdpgVfCXGgNuXhdN4qxPMvRUtbUnWhPzxSdxJrWzPqACZeh6scCH5',
   ).then(isValid => console.log(isValid)); // Should print "true"
   //return generateMnemonic(CONFIG.MNEMONIC_STRENGTH, randomBytes);
+
+  const mne = generateMnemonic(CONFIG.MNEMONIC_STRENGTH, randomBytes);
+  console.log('mne');
+  console.log(mne);
+  return mne;
 };
 
 export const generateWalletRootKey2: (

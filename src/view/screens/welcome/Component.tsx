@@ -92,11 +92,15 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   callCardanoLib = async () => {
     // @ts-ignore
     // eslint-disable-next-line react/destructuring-assignment
-    await generateAdaMnemonic();
+    let mne = await generateAdaMnemonic();
+
+    this.setState({
+      seed: mne,
+    });
   };
 
   render() {
-    const {name} = this.state;
+    const {name, seed} = this.state;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -106,6 +110,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
         <CText>Lang: {getCurrentLang()}</CText>
         <BUTTON_DEFAULT onClick={this.goHome} title="Go to Home" />
         <BUTTON_DEFAULT onClick={this.callCardanoLib} title="Call Cardano Lib" />
+        <CText>{seed}</CText>
       </SafeAreaView>
     );
   }
