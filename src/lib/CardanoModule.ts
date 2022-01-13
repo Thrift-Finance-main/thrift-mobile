@@ -20,7 +20,6 @@
 */
 
 class CardanoModule {
-
   wasmV4: any;
 
   async load(): Promise<void> {
@@ -31,7 +30,8 @@ class CardanoModule {
       // console.log('library seems to be already loaded');
       return;
     }
-    this.wasmV4 = await import('@emurgo/react-native-haskell-shelley/index');
+    this.wasmV4 = null;
+    // this.wasmV4 = await import('@emurgo/react-native-haskell-shelley/index');
     /* eslint-disable-next-line no-console */
     // console.log(this.wasmV4);
   }
