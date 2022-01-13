@@ -13,7 +13,7 @@ import {getCurrentLang, translate} from '../../../i18n';
 // @ts-ignore
 
 // eslint-disable-next-line import/extensions,import/no-unresolved
-import {createAccount, generateAdaMnemonic} from '../../../lib/account';
+import {createAccount, generateAdaMnemonic, generateWalletRootKey2} from '../../../lib/account';
 import { addressSlice } from "../../../utils";
 
 export type RootTabParamList = {
@@ -89,6 +89,12 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     this.props.navigation.navigate('Main', {screen: 'Settings'});
   };
 
+  callCardanoLib = async () => {
+    // @ts-ignore
+    // eslint-disable-next-line react/destructuring-assignment
+    await generateAdaMnemonic();
+  };
+
   render() {
     const {name} = this.state;
 
@@ -99,6 +105,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
         <CText>Result: {translate('title')}</CText>
         <CText>Lang: {getCurrentLang()}</CText>
         <BUTTON_DEFAULT onClick={this.goHome} title="Go to Home" />
+        <BUTTON_DEFAULT onClick={this.callCardanoLib} title="Call Cardano Lib" />
       </SafeAreaView>
     );
   }
