@@ -44,7 +44,6 @@ export const generateAdaMnemonic = () => {
 export const generateWalletRootKey2: (
   mnemonic: string,
 ) => Promise<Bip32PrivateKey> = async (mnemonic: string) => {
-
   await CardanoModule.load();
 
   console.log('CardanoModule.wasmV4.Bip32PrivateKey 2');
@@ -55,10 +54,17 @@ export const generateWalletRootKey2: (
 
   const bip39entropy = mnemonicToEntropy(mnemonic);
   const EMPTY_PASSWORD = Buffer.from('');
-  const rootKey = await CardanoModule.wasmV4.Bip32PrivateKey.from_bip39_entropy(
-    Buffer.from(bip39entropy, 'hex'),
-    EMPTY_PASSWORD,
-  );
+  let rootKey;
+  try {
+    rootKey = await Bip32PrivateKey.from_bip39_entropy(
+      Buffer.from(bip39entropy, 'hex'),
+      EMPTY_PASSWORD,
+    );
+  } catch (e) {
+    console.log('error');
+    console.log(e);
+  }
+
   console.log('rootKey');
   console.log(rootKey);
   return rootKey;
