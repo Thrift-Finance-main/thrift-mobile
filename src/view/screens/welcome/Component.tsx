@@ -13,7 +13,7 @@ import {getCurrentLang, translate} from '../../../i18n';
 // @ts-ignore
 
 // eslint-disable-next-line import/extensions,import/no-unresolved
-import {createAccount, generateAdaMnemonic, generateWalletRootKey2} from '../../../lib/account';
+import {createAccount, generateAdaMnemonic} from '../../../lib/account';
 import { addressSlice } from "../../../utils";
 
 export type RootTabParamList = {
@@ -71,7 +71,6 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   };
 
   createAccount = async () => {
-      /*
     const seed: string = generateAdaMnemonic();
     const acc = await createAccount(seed, 'Name2', 'password');
     console.log('acc');
@@ -80,7 +79,6 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
       // eslint-disable-next-line react/no-unused-state
       acc,
     });
-    */
   };
 
   goHome = () => {
@@ -89,18 +87,8 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     this.props.navigation.navigate('Main', {screen: 'Settings'});
   };
 
-  callCardanoLib = async () => {
-    // @ts-ignore
-    // eslint-disable-next-line react/destructuring-assignment
-    let mne = await generateAdaMnemonic();
-
-    this.setState({
-      seed: mne,
-    });
-  };
-
   render() {
-    const {name, seed} = this.state;
+    const {name, acc} = this.state;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -109,8 +97,9 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
         <CText>Result: {translate('title')}</CText>
         <CText>Lang: {getCurrentLang()}</CText>
         <BUTTON_DEFAULT onClick={this.goHome} title="Go to Home" />
-        <BUTTON_DEFAULT onClick={this.callCardanoLib} title="Call Cardano Lib" />
-        <CText>{seed}</CText>
+        <BUTTON_DEFAULT onClick={this.createAccount} title="Create account" />
+        <CText>acc</CText>
+        <CText>{JSON.stringify(acc)}</CText>
       </SafeAreaView>
     );
   }

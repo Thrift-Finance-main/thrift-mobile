@@ -1,11 +1,28 @@
 import '../../shim';
-import {Wallet} from 'react-native-cardano';
+
+import {
+  BaseAddress,
+  Bip32PrivateKey,
+  StakeCredential,
+} from '@emurgo/react-native-haskell-shelley';
+
 // @ts-ignore
 import {randomBytes} from 'react-native-randombytes';
 
 // @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {generateMnemonic, mnemonicToEntropy} from 'bip39';
+
+import {
+  BASE_ADDRESS_INDEX,
+  DERIVE_COIN_TYPE,
+  DERIVE_PUROPOSE,
+  numbers,
+  TOTAL_ADDRESS_INDEX,
+  // eslint-disable-next-line import/extensions,import/no-unresolved
+} from './config';
+// eslint-disable-next-line import/extensions,import/no-unresolved
+import {MAINNET_NETWORK_INDEX} from './network';
 
 export const CONFIG = {
   MNEMONIC_STRENGTH: 160,
@@ -21,45 +38,30 @@ export const harden = (num: number) => {
 };
 
 export const generateAdaMnemonic = () => {
-  console.log('generateAdaMnemonic');
-  Wallet.checkAddress(
-    'DdzFFzCqrhtCUjHyzgvgigwA5soBgDxpc8WfnG1RGhrsRrWMV8uKdpgVfCXGgNuXhdN4qxPMvRUtbUnWhPzxSdxJrWzPqACZeh6scCH5',
-  ).then(isValid => console.log(isValid)); // Should print "true"
-  //return generateMnemonic(CONFIG.MNEMONIC_STRENGTH, randomBytes);
-
-  const mne = generateMnemonic(CONFIG.MNEMONIC_STRENGTH, randomBytes);
-  console.log('mne');
-  console.log(mne);
-  return mne;
+  return generateMnemonic(CONFIG.MNEMONIC_STRENGTH, randomBytes);
 };
 
 export const generateWalletRootKey2: (
   mnemonic: string,
-) => Promise<any> = async (mnemonic: string) => {
-  /*
-  await CardanoModule.load();
-
-  console.log('CardanoModule.wasmV4.Bip32PrivateKey 2');
-  console.log(CardanoModule.wasmV4.Bip32PrivateKey);
-  console.log(Bip32PrivateKey);
-  console.log(await Bip32PrivateKey);
-  console.log(typeof CardanoModule.wasmV4.Bip32PrivateKey);
-
+) => Promise<Bip32PrivateKey> = async (mnemonic: string) => {
   const bip39entropy = mnemonicToEntropy(mnemonic);
   const EMPTY_PASSWORD = Buffer.from('');
-  const rootKey = await CardanoModule.wasmV4.Bip32PrivateKey.from_bip39_entropy(
-    Buffer.from(bip39entropy, 'hex'),
-    EMPTY_PASSWORD,
-  );
-  console.log('rootKey');
-  console.log(rootKey);
+  let rootKey;
+  try {
+    rootKey = await Bip32PrivateKey.from_bip39_entropy(
+      Buffer.from(bip39entropy, 'hex'),
+      EMPTY_PASSWORD,
+    );
+  } catch (e) {
+    console.log('error');
+    console.log(e);
+  }
+
   return rootKey;
-  */
 };
-export const generateWalletRootKey: (mnemonic: string) => Promise<any> = async (
+export const generateWalletRootKey: (
   mnemonic: string,
-) => {
-  /*
+) => Promise<Bip32PrivateKey> = async (mnemonic: string) => {
   const bip39entropy = mnemonicToEntropy(mnemonic);
   const EMPTY_PASSWORD = Buffer.from('');
   console.log('hey');
@@ -79,7 +81,7 @@ export const generateWalletRootKey: (mnemonic: string) => Promise<any> = async (
     } finally {
     }
   }
-   */
+
   /*
   const rootKey = await Bip32PrivateKey.from_bip39_entropy(
     Buffer.from(bip39entropy, 'hex'),
@@ -91,17 +93,16 @@ export const generateWalletRootKey: (mnemonic: string) => Promise<any> = async (
   */
 };
 
-export const getMasterKeyFromMnemonic = async (mnemonic: string) => {
-  /*
+export const getMasterKeyFromMnemonic = async (
+  mnemonic: string,
+): Promise<string> => {
   const masterKeyPtr = await generateWalletRootKey2(mnemonic);
   console.log('masterKeyPtr');
   console.log(masterKeyPtr);
   return Buffer.from(await masterKeyPtr.as_bytes()).toString('hex');
-  */
 };
 
 export const getAccountFromMasterKey = async (masterKey: string) => {
-  /*
   console.log('getAccountFromMasterKey');
   const masterKeyPtr = await Bip32PrivateKey.from_bytes(
     Buffer.from(masterKey, 'hex'),
@@ -170,8 +171,6 @@ export const generatePayAddress = async (
       error: e,
     };
   }
-
-   */
 };
 
 export const createAccount = async (
@@ -179,7 +178,6 @@ export const createAccount = async (
   accountName: string,
   pass: string,
 ) => {
-  /*
   console.log('createAccount');
 
   const masterKey = await getMasterKeyFromMnemonic(mnemonic);
@@ -217,6 +215,4 @@ export const createAccount = async (
     externalAdresses,
     internalAdresses,
   };
-
-   */
 };

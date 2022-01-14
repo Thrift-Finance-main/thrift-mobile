@@ -15,7 +15,7 @@ target 'thriftMobile' do
 
   pod 'react-native-randombytes', :path => '../node_modules/react-native-randombytes'
 
-  pod 'RNCardano', :path => '../node_modules/react-native-cardano'
+  pod 'react-native-haskell-shelley', :path => '../node_modules/@emurgo/react-native-haskell-shelley'
 
   target 'thriftMobileTests' do
     inherit! :complete

@@ -12,55 +12,23 @@
 - [x] Testing Running on Android & iOS envs.
 - [ ] Compilation and getting executables for both platforms.
 
-### Project Structure
-
-```
-/
-├── android					Android Native code
-├── ios						iOS Native Code
-├── shared
-│   ├── redux					Applications Logic
-│   │   ├── constants
-│   │   ├── actions
-│   │   ├── api
-│   │   ├── reducers
-│   │   ├── store
-│   │   └── thunk
-│   └── utilities
-├── src
-│   ├── config					Global Configuration
-│   ├── constants				Screens, Localization
-│   ├── navigators				Router, Navigation
-│   ├── view					UI compoments
-│   │   ├── elements			  Custom elements
-│   │   ├── assets
-│   │   ├── screens
-│   │   ├── styles				  Typography
-│   │   └── widgets				  Custom components
-│   └── utilities
-├── __tests__					Unit Tests
-│   ├── presentation
-│   └── redux
-├── .babelrc
-├── .gitignore
-├── .travis.yml					Travis CI
-├── tsconfig.json				TypeScript Configuration
-├── tslint.js					TSLint configuration - extending AirBnb
-├── tsconfig.json
-├── app.json
-├── index.js					Application Entry point
-├── package.json
-└── README.md
-```
-
-`shared`
-Everything related to application business logic. The redux store.
-
-`src`
-Presentation layer for the app - screens, styles, images, icons etc.
-
 ### Getting Started
+Install using yarn:
+```
+nvm use 16.5.0 
+yarn install
+```
 
+Start the Metro Bundler:
+```
+yarn start
+```
+
+Build and start the app:
+```
+yarn ios
+yarn android
+```
 ###### Requirements
 
 ####### Android
@@ -71,6 +39,7 @@ rustup toolchain install 1.41.0
 rustup target add wasm32-unknown-unknown --toolchain 1.41.0
 rustup default 1.41.0
 rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
+rustup target add x86_64-apple-ios
 
 export JAVA_HOME=`/usr/libexec/java_home -v 1.8`  
 
@@ -83,18 +52,6 @@ cargo install cargo-lipo
 
 ```shell
 curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-```
-
-Make sure node version installed is `>=10.x.x` and Java `JDK 12`. 
-Then install using yarn (or npm):
-```
-nvm use 16.5.0 
-yarn install
-```
-
-Start the Metro Bundler:
-```
-yarn start
 ```
 
 ###### iOS
