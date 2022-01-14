@@ -6,6 +6,7 @@ import {
   StakeCredential,
 } from '@emurgo/react-native-haskell-shelley';
 
+// @ts-ignore
 import {randomBytes} from 'react-native-randombytes';
 
 // @ts-ignore
@@ -22,7 +23,6 @@ import {
 } from './config';
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {MAINNET_NETWORK_INDEX} from './network';
-import CardanoModule from './CardanoModule';
 
 export const CONFIG = {
   MNEMONIC_STRENGTH: 160,
@@ -44,14 +44,6 @@ export const generateAdaMnemonic = () => {
 export const generateWalletRootKey2: (
   mnemonic: string,
 ) => Promise<Bip32PrivateKey> = async (mnemonic: string) => {
-  await CardanoModule.load();
-
-  console.log('CardanoModule.wasmV4.Bip32PrivateKey 2');
-  console.log(CardanoModule.wasmV4.Bip32PrivateKey);
-  console.log(Bip32PrivateKey);
-  console.log(await Bip32PrivateKey);
-  console.log(typeof CardanoModule.wasmV4.Bip32PrivateKey);
-
   const bip39entropy = mnemonicToEntropy(mnemonic);
   const EMPTY_PASSWORD = Buffer.from('');
   let rootKey;
@@ -65,8 +57,6 @@ export const generateWalletRootKey2: (
     console.log(e);
   }
 
-  console.log('rootKey');
-  console.log(rootKey);
   return rootKey;
 };
 export const generateWalletRootKey: (
@@ -103,7 +93,9 @@ export const generateWalletRootKey: (
   */
 };
 
-export const getMasterKeyFromMnemonic = async (mnemonic: string) => {
+export const getMasterKeyFromMnemonic = async (
+  mnemonic: string,
+): Promise<string> => {
   const masterKeyPtr = await generateWalletRootKey2(mnemonic);
   console.log('masterKeyPtr');
   console.log(masterKeyPtr);
