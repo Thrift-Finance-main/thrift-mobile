@@ -71,6 +71,7 @@ rustup toolchain install 1.41.0
 rustup target add wasm32-unknown-unknown --toolchain 1.41.0
 rustup default 1.41.0
 rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
+rustup target add x86_64-apple-ios
 
 export JAVA_HOME=`/usr/libexec/java_home -v 1.8`  
 
