@@ -71,7 +71,6 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   };
 
   createAccount = async () => {
-      /*
     const seed: string = generateAdaMnemonic();
     const acc = await createAccount(seed, 'Name2', 'password');
     console.log('acc');
@@ -80,7 +79,6 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
       // eslint-disable-next-line react/no-unused-state
       acc,
     });
-    */
   };
 
   goHome = () => {
@@ -90,7 +88,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   };
 
   render() {
-    const {name} = this.state;
+    const {name, acc} = this.state;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -99,6 +97,9 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
         <CText>Result: {translate('title')}</CText>
         <CText>Lang: {getCurrentLang()}</CText>
         <BUTTON_DEFAULT onClick={this.goHome} title="Go to Home" />
+        <BUTTON_DEFAULT onClick={this.createAccount} title="Create account" />
+        <CText>acc</CText>
+        <CText>{JSON.stringify(acc)}</CText>
       </SafeAreaView>
     );
   }
