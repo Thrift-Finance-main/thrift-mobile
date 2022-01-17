@@ -17,6 +17,7 @@ Install using yarn:
 ```
 nvm use 16.5.0 
 yarn install
+react-native link @emurgo/react-native-haskell-shelley
 ```
 
 Start the Metro Bundler:
@@ -40,8 +41,6 @@ rustup target add wasm32-unknown-unknown --toolchain 1.41.0
 rustup default 1.41.0
 rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
 rustup target add x86_64-apple-ios
-
-export JAVA_HOME=`/usr/libexec/java_home -v 1.8`  
 
 source $HOME/.cargo/env
 
@@ -77,8 +76,9 @@ Start an Android Simulator from:
 Android Studio > Tools > AVD Manager > Run any device
 ```
 
-Similarly, run from Android Studio itself Or from Terminal:
+Run a device from Android Studio, then:
 ```
+export JAVA_HOME=`/usr/libexec/java_home -v 1.8`  
 yarn android
 # runs the following command
 # react-native run-android --variant=Debug
