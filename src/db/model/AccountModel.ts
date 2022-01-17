@@ -2,27 +2,27 @@
 import {INativeToken} from './NativeTokenModel';
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {IAddress} from './AddressModel';
-// eslint-disable-next-line import/extensions,import/no-unresolved
-import {IStakeAddress} from './StakeAddressModel';
 
+export const ACCOUNT_TABLE = 'Account';
 
 export interface IAccount {
   _id: string;
   accountName: string;
-  balance: string;
-  tokens: INativeToken[];
+  balance: string; // #
+  tokens: INativeToken[]; // #
   encryptedMasterKey: string;
   publicKey: string;
+  publicKeyHex: string;
   paymentKeyHash: string;
   stakeKeyHash: string;
+  rewardAddress: string;
   internalPubAddress: IAddress[];
   externalPubAddress: IAddress[];
-  rewardAddress: IStakeAddress;
   mode: string; // watch account
 }
 
 export const AccountSchema = {
-  name: 'Account',
+  name: ACCOUNT_TABLE,
   primaryKey: '_id',
   properties: {
     _id: 'uuid',
@@ -32,6 +32,7 @@ export const AccountSchema = {
     tokens: 'NativeToken[]',
     encryptedMasterKey: 'string',
     publicKey: 'string',
+    publicKeyHex: 'string',
     paymentKeyHash: 'string',
     stakeKeyHash: 'string',
     internalPubAddress: 'AddressSchema[]',

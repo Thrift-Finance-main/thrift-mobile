@@ -22,7 +22,7 @@ import {
   // eslint-disable-next-line import/extensions,import/no-unresolved
 } from './config';
 // eslint-disable-next-line import/extensions,import/no-unresolved
-import {MAINNET_NETWORK_INDEX} from './network';
+import {MAINNET_NETWORK_INDEX, TESTNET_NETWORK_INDEX} from './network';
 
 export const CONFIG = {
   MNEMONIC_STRENGTH: 160,
@@ -193,7 +193,7 @@ export const createAccount = async (
       masterKeyPtr,
       0,
       BASE_ADDRESS_INDEX,
-      MAINNET_NETWORK_INDEX,
+      TESTNET_NETWORK_INDEX,
     );
     externalAdresses.push(externalPubAddressM);
   }
@@ -204,7 +204,7 @@ export const createAccount = async (
       masterKeyPtr,
       1,
       BASE_ADDRESS_INDEX,
-      MAINNET_NETWORK_INDEX,
+      TESTNET_NETWORK_INDEX,
     );
     internalAdresses.push(internalPubAddressM);
   }

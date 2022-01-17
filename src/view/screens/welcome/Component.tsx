@@ -14,7 +14,6 @@ import {getCurrentLang, translate} from '../../../i18n';
 
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {createAccount, generateAdaMnemonic} from '../../../lib/account';
-import { addressSlice } from "../../../utils";
 
 export type RootTabParamList = {
   Home: undefined;
@@ -60,25 +59,26 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
 
   getSeed = () => {
     // this.setState({ title: translate('title') });
-      /*
-    const seed: string = generateAdaMnemonic();
-    console.log('seed');
-    console.log(seed);
-    this.setState({
-      seed,
-    });
-    */
+    /*
+  const seed: string = generateAdaMnemonic();
+  console.log('seed');
+  console.log(seed);
+  this.setState({
+    seed,
+  });
+  */
   };
 
   createAccount = async () => {
     const seed: string = generateAdaMnemonic();
     const acc = await createAccount(seed, 'Name2', 'password');
     console.log('acc');
-    console.log(acc);
+    console.log(JSON.stringify(acc, null, 2));
     this.setState({
       // eslint-disable-next-line react/no-unused-state
       acc,
     });
+    // lets update the db
   };
 
   goHome = () => {
@@ -99,7 +99,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
         <BUTTON_DEFAULT onClick={this.goHome} title="Go to Home" />
         <BUTTON_DEFAULT onClick={this.createAccount} title="Create account" />
         <CText>acc</CText>
-        <CText>{JSON.stringify(acc)}</CText>
+        <CText>{JSON.stringify(acc, null, 2)}</CText>
       </SafeAreaView>
     );
   }

@@ -1,29 +1,40 @@
-/*
-import '../../shim';
-import {encrypt_with_password} from '@emurgo/react-native-haskell-shelley';
-import cryptoRandomString from 'crypto-random-string';
-// @ts-ignore
-import crypto from 'crypto';
+/**
+ * encryption/decryption
+ */
 
-export const getRandomBytes = async (n: number) => {
-  return crypto.randomBytes(n).toString('hex');
-};
-// eslint-disable-next-line import/prefer-default-export
+import cryptoRandomString from 'crypto-random-string';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import {
+  decrypt_with_password,
+  encrypt_with_password,
+} from '@emurgo/react-native-haskell-shelley';
+
 export const encryptData = async (
   plaintextHex: string,
   secretKey: string,
 ): Promise<string> => {
-  console.log('encryptData');
   const secretKeyHex = Buffer.from(secretKey, 'utf8').toString('hex');
-
-  const saltHex2 = cryptoRandomString({length: 2 * 32});
-  const nonceHex2 = cryptoRandomString({length: 2 * 12});
-
-  console.log('saltHex2');
-  console.log(saltHex2);
-  console.log('nonceHex2');
-  console.log(nonceHex2);
-
-  return encrypt_with_password(secretKeyHex, saltHex2, nonceHex2, plaintextHex);
+  const saltHex = cryptoRandomString({length: 2 * 32});
+  const nonceHex = cryptoRandomString({length: 2 * 12});
+  // eslint-disable-next-line no-return-await
+  return await encrypt_with_password(
+    secretKeyHex,
+    saltHex,
+    nonceHex,
+    plaintextHex,
+  );
 };
-*/
+
+export const decryptData = async (
+  ciphertext: string,
+  secretKey: string,
+): Promise<string> => {
+  const secretKeyHex = Buffer.from(secretKey, 'utf8').toString('hex');
+  try {
+    return await decrypt_with_password(secretKeyHex, ciphertext);
+  } catch (error) {
+    console.log('error');
+    console.log(error);
+    return 'Decrypt error'; // TODO
+  }
+};
