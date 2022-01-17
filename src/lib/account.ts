@@ -3,6 +3,7 @@ import '../../shim';
 import {
   BaseAddress,
   Bip32PrivateKey,
+  RewardAddress,
   StakeCredential,
 } from '@emurgo/react-native-haskell-shelley';
 
@@ -22,7 +23,8 @@ import {
   // eslint-disable-next-line import/extensions,import/no-unresolved
 } from './config';
 // eslint-disable-next-line import/extensions,import/no-unresolved
-import {MAINNET_NETWORK_INDEX, TESTNET_NETWORK_INDEX} from './network';
+import {TESTNET_NETWORK_INDEX} from './network';
+import {encryptData} from './cryptoLib';
 
 export const CONFIG = {
   MNEMONIC_STRENGTH: 160,
@@ -102,26 +104,6 @@ export const getMasterKeyFromMnemonic = async (
   return Buffer.from(await masterKeyPtr.as_bytes()).toString('hex');
 };
 
-export const getAccountFromMasterKey = async (masterKey: string) => {
-  console.log('getAccountFromMasterKey');
-  const masterKeyPtr = await Bip32PrivateKey.from_bytes(
-    Buffer.from(masterKey, 'hex'),
-  );
-  const accountKey = await (
-    await (await masterKeyPtr.derive(DERIVE_PUROPOSE)).derive(DERIVE_COIN_TYPE)
-  ).derive(BASE_ADDRESS_INDEX);
-  const accountPubKey = await accountKey.to_public();
-  // match old byron CryptoAccount type
-
-  const accountPubKeyHex = Buffer.from(await accountPubKey.as_bytes()).toString(
-    'hex',
-  );
-  return {
-    accountKey,
-    accountPubKeyHex,
-  };
-};
-
 export const generatePayAddress = async (
   // @ts-ignore
   accountKey: Bip32PrivateKey,
@@ -181,12 +163,56 @@ export const createAccount = async (
   console.log('createAccount');
 
   const masterKey = await getMasterKeyFromMnemonic(mnemonic);
-  const account = await getAccountFromMasterKey(masterKey);
 
   const masterKeyPtr = await Bip32PrivateKey.from_bytes(
     Buffer.from(masterKey, 'hex'),
   );
-  const externalAdresses = [];
+
+  const accountKey = await (
+    await (await masterKeyPtr.derive(DERIVE_PUROPOSE)).derive(DERIVE_COIN_TYPE)
+  ).derive(BASE_ADDRESS_INDEX);
+  const publicKey = await accountKey.to_public();
+  const publicKeyHex = Buffer.from(await publicKey.as_bytes()).toString('hex');
+
+  const encryptedMasterKey = await encryptData(masterKey, pass);
+
+  const paymentKey = await (
+    await (await accountKey.derive(1)).derive(0)
+  ).to_raw_key();
+
+  const paymentKeyPub = await paymentKey.to_public();
+  const paymentKeyPubHash = await paymentKeyPub.hash();
+  const paymentKeyPubBytes = await paymentKeyPubHash.to_bytes();
+
+  const paymentKeyHash = Buffer.from(
+    paymentKeyPubBytes.toString(),
+    'hex',
+  ).toString('hex');
+
+  // Stake key
+  const stakeKey = await accountKey.derive(
+    numbers.ChainDerivations.ChimericAccount,
+  );
+  const stakeKey2 = await stakeKey.derive(numbers.StakingKeyIndex);
+  const stakeKey3 = await stakeKey2.to_raw_key();
+
+  const stakeKeyPub = await stakeKey3.to_public();
+  const stakeKeyPubHash = await stakeKeyPub.hash();
+  const stakeKeyPubBytes = await stakeKeyPubHash.to_bytes();
+  const stakeKeyHash = Buffer.from(stakeKeyPubBytes.toString(), 'hex').toString(
+    'hex',
+  );
+
+  const rewardAddress = await (
+    await (
+      await RewardAddress.new(
+        parseInt(TESTNET_NETWORK_INDEX),
+        await StakeCredential.from_keyhash(await stakeKeyPub.hash()),
+      )
+    ).to_address()
+  ).to_bech32();
+
+  const externalAddresses = [];
   for (let i = 0; i < TOTAL_ADDRESS_INDEX; i++) {
     // eslint-disable-next-line no-await-in-loop
     const externalPubAddressM = await generatePayAddress(
@@ -195,9 +221,9 @@ export const createAccount = async (
       BASE_ADDRESS_INDEX,
       TESTNET_NETWORK_INDEX,
     );
-    externalAdresses.push(externalPubAddressM);
+    externalAddresses.push(externalPubAddressM);
   }
-  const internalAdresses = [];
+  const internalAddresses = [];
   for (let i = 0; i < TOTAL_ADDRESS_INDEX; i++) {
     // eslint-disable-next-line no-await-in-loop
     const internalPubAddressM = await generatePayAddress(
@@ -206,13 +232,17 @@ export const createAccount = async (
       BASE_ADDRESS_INDEX,
       TESTNET_NETWORK_INDEX,
     );
-    internalAdresses.push(internalPubAddressM);
+    internalAddresses.push(internalPubAddressM);
   }
   return {
-    account,
-    masterKey,
-    mnemonic,
-    externalAdresses,
-    internalAdresses,
+    accountName,
+    balance: {},
+    tokens: [],
+    encryptedMasterKey,
+    publicKeyHex,
+    rewardAddress,
+    internalAddresses,
+    externalAddresses,
+    mode: 'Full',
   };
 };

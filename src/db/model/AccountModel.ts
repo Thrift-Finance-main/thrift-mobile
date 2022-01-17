@@ -11,10 +11,7 @@ export interface IAccount {
   balance: string; // #
   tokens: INativeToken[]; // #
   encryptedMasterKey: string;
-  publicKey: string;
   publicKeyHex: string;
-  paymentKeyHash: string;
-  stakeKeyHash: string;
   rewardAddress: string;
   internalPubAddress: IAddress[];
   externalPubAddress: IAddress[];
@@ -31,10 +28,7 @@ export const AccountSchema = {
     balance: 'string',
     tokens: 'NativeToken[]',
     encryptedMasterKey: 'string',
-    publicKey: 'string',
     publicKeyHex: 'string',
-    paymentKeyHash: 'string',
-    stakeKeyHash: 'string',
     internalPubAddress: 'AddressSchema[]',
     externalPubAddress: 'AddressSchema[]',
     rewardAddress: 'StakeAddress',
