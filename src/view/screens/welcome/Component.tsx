@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {SafeAreaView} from 'react-native';
+import {SafeAreaView, View} from 'react-native';
 import {withTranslation} from 'react-i18next';
 import {StackScreenProps} from '@react-navigation/stack';
 // eslint-disable-next-line import/extensions,import/no-unresolved
@@ -77,6 +77,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     this.setState({
       // eslint-disable-next-line react/no-unused-state
       acc,
+      seed,
     });
     // lets update the db
   };
@@ -88,7 +89,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   };
 
   render() {
-    const {name, acc} = this.state;
+    const {name, acc, seed} = this.state;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -98,8 +99,20 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
         <CText>Lang: {getCurrentLang()}</CText>
         <BUTTON_DEFAULT onClick={this.goHome} title="Go to Home" />
         <BUTTON_DEFAULT onClick={this.createAccount} title="Create account" />
-        <CText>acc</CText>
-        <CText>{JSON.stringify(acc, null, 2)}</CText>
+
+        {seed.length ? (
+          <View>
+            <CText>seed</CText>
+            <CText>{seed}</CText>
+          </View>
+        ) : null}
+
+        {acc && acc.publicKeyHex && acc.publicKeyHex.length ? (
+          <View>
+            <CText>acc</CText>
+            <CText>{JSON.stringify(acc, null, 2)}</CText>
+          </View>
+        ) : null}
       </SafeAreaView>
     );
   }

@@ -8,9 +8,10 @@
 - [x] Add Redux for state management.
 - [x] Add Realm and models for data persistence.
 - [x] Add i18n for easy translations.
-- [ ] Add the styles Framework, template.
+- [ ] Add the front side.
 - [x] Testing Running on Android & iOS envs.
-- [ ] Compilation and getting executables for both platforms.
+- [x] Compilation and getting executables for Android.
+- [ ] Compilation and getting executables for iOS.
 
 ### Getting Started
 Install using yarn:
