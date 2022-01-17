@@ -5,6 +5,7 @@ import {IAddress} from './AddressModel';
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {IStakeAddress} from './StakeAddressModel';
 
+
 export interface IAccount {
   _id: string;
   accountName: string;
