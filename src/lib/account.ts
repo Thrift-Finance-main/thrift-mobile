@@ -152,6 +152,7 @@ export const createAccount = async (
   mnemonic: string,
   accountName: string,
   pass: string,
+  pinHash: string,
 ) => {
   console.log('createAccount');
 
@@ -248,6 +249,7 @@ export const createAccount = async (
   const newAccount: IAccount = {
     _id: '',
     accountName,
+    pinHash,
     balance: '0',
     tokens: [],
     encryptedMasterKey,

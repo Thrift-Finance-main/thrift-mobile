@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {SafeAreaView, View} from 'react-native';
+import {SafeAreaView, ScrollView, View} from 'react-native';
 import {withTranslation} from 'react-i18next';
 import {StackScreenProps} from '@react-navigation/stack';
 // eslint-disable-next-line import/extensions,import/no-unresolved
@@ -76,7 +76,12 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     const accInState = await realmDb.getAllAccounts();
     console.log(accInState);
     const seed: string = generateAdaMnemonic();
-    const acc: IAccount = await createAccount(seed, 'Name2', 'password');
+    const acc: IAccount = await createAccount(
+      seed,
+      'Alice',
+      'password',
+      '123456',
+    );
     console.log('acc');
     console.log(JSON.stringify(acc, null, 2));
 
@@ -89,7 +94,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     await realmDb.removeAccount('Name2');
 
     const acc1 = await realmDb.getAccount('Name2');
-    const acc2 = await realmDb.getAccount('Bob');
+    const acc2 = await realmDb.getAccount('Alice');
 
     console.log('acc1');
     console.log(acc1);
@@ -114,7 +119,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     const {name, acc, seed} = this.state;
 
     return (
-      <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.container}>
         <CText>Welcome</CText>
         <CText>{name}</CText>
         <CText>Result: {translate('title')}</CText>
@@ -135,7 +140,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
             <CText>{JSON.stringify(acc, null, 2)}</CText>
           </View>
         ) : null}
-      </SafeAreaView>
+      </ScrollView>
     );
   }
 }

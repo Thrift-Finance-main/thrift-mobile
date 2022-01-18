@@ -25,7 +25,7 @@ export class RealmDb {
 
   initDb = async () => {
     this.realm = await Realm.open({
-      path: 'version10',
+      path: 'version11',
       schema: [
         AppConfigurationSchema,
         AddressSchema,
@@ -33,7 +33,7 @@ export class RealmDb {
         NativeTokenSchema,
         AccountSchema,
       ],
-      schemaVersion: 10,
+      schemaVersion: 11,
       migration: (oldRealm, newRealm) => {
         console.log('migrate');
         /*
@@ -173,6 +173,7 @@ export class RealmDb {
         // @ts-ignore
         _id: new UUID(), // create a _id with a randomly generated UUID
         accountName: account.accountName,
+        pinHash: account.pinHash,
         balance: account.balance,
         tokens,
         encryptedMasterKey: account.encryptedMasterKey,
@@ -203,6 +204,16 @@ export class RealmDb {
     return this.realm.write(() => {
       // search for a realm object with a primary key that is an int.
       return this.realm.objectForPrimaryKey(ACCOUNT_TABLE, accountName);
+    });
+  };
+  updatePINAccount = async (accountName: string, pinHash: string) => {
+    return this.realm.write(() => {
+      // search for a realm object with a primary key that is an int.
+      const acc: Realm.Object = this.realm.objectForPrimaryKey(
+        ACCOUNT_TABLE,
+        accountName,
+      );
+      acc.pinHash = pinHash;
     });
   };
 
