@@ -126,35 +126,42 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     // eslint-disable-next-line react/destructuring-assignment
 
     const {name} = this.state;
-    console.log('accInState');
-    const accInState = await realmDb.getAllAccounts();
-    console.log(accInState);
-    const seed: string = generateAdaMnemonic();
-    const acc: IAccount = await createAccount(seed, name, 'password', '123456');
-    console.log('acc');
-    console.log(JSON.stringify(acc, null, 2));
+    if (name.length) {
+      console.log('accInState');
+      const accInState = await realmDb.getAllAccounts();
+      console.log(accInState);
+      const seed: string = generateAdaMnemonic();
+      const acc: IAccount = await createAccount(
+        seed,
+        name,
+        'password',
+        '123456',
+      );
+      console.log('acc');
+      console.log(JSON.stringify(acc, null, 2));
 
-    realmDb.addAccount(acc).then(() => {
-      console.log('Set current account on redux');
-      const {setCurrentAccount} = this.props;
-      console.log(setCurrentAccount);
-      setCurrentAccount(acc.accountName);
+      realmDb.addAccount(acc).then(() => {
+        console.log('Set current account on redux');
+        const {setCurrentAccount} = this.props;
+        console.log(setCurrentAccount);
+        setCurrentAccount(acc.accountName);
 
-      console.log('\n\nthis.props.currentAccountName after addAccount');
-      const {currentAccountName} = this.props;
-      console.log(currentAccountName);
-    });
+        console.log('\n\nthis.props.currentAccountName after addAccount');
+        const {currentAccountName} = this.props;
+        console.log(currentAccountName);
+      });
 
-    // await realmDb.removeAccount('Alice');
+      // await realmDb.removeAccount('Alice');
 
-    // const acc1 = await realmDb.getAccount('Name2');
+      // const acc1 = await realmDb.getAccount('Name2');
 
-    this.setState({
-      // eslint-disable-next-line react/no-unused-state
-      acc,
-      seed,
-    });
-    // lets update the db
+      this.setState({
+        // eslint-disable-next-line react/no-unused-state
+        acc,
+        seed,
+      });
+      // lets update the db
+    }
   };
 
   goHome = () => {
