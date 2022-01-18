@@ -138,8 +138,8 @@ export const generatePayAddress = async (
   try {
     const addr = await BaseAddress.new(
       parseInt(networkId, 10),
-      await StakeCredential.from_keyhash(await paymentKeyPub.hash()),
-      await StakeCredential.from_keyhash(await stakeKeyPub.hash()),
+      await StakeCredential.from_keyhash(await paymentKeyPub.hash()), // TODO: Persist in acc, so you can create more addrs without privkey
+      await StakeCredential.from_keyhash(await stakeKeyPub.hash()), // TODO: Persist in acc
     );
     const addrBench32 = (await addr.to_address()).to_bech32();
     return addrBench32;

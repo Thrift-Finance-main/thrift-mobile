@@ -1,5 +1,5 @@
 const INITIAL_STATE = {
-  currentAccountName: 0,
+  currentAccountName: '',
 };
 
 export const ACCOUNT_REDUCER = {

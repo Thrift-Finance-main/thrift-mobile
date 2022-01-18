@@ -16,7 +16,6 @@ import {getCurrentLang, translate} from '../../../i18n';
 import {createAccount, generateAdaMnemonic} from '../../../lib/account';
 import realmDb from '../../../db/RealmConfig';
 import {IAccount} from '../../../db/model/AccountModel';
-import {setCurrentAccount} from '../../../redux/actions/AccountActions';
 import {IConfig} from '../../../db/model/appConfigModel';
 
 export type RootTabParamList = {
@@ -44,8 +43,9 @@ interface WelcomeState {
 }
 
 class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
-  constructor(props: WelcomeProps) {
+  constructor(props) {
     super(props);
+    console.log(props);
     this.state = {
       name: 'This is the the view first time running the app',
       // eslint-disable-next-line react/no-unused-state
@@ -107,7 +107,9 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
 
   createAccount = async () => {
     console.log('\nthis.props');
-    console.log(this.props);
+    // eslint-disable-next-line react/destructuring-assignment
+
+    console.log(this.props.currentAccountName);
     console.log('accInState');
     const accInState = await realmDb.getAllAccounts();
     console.log(accInState);
@@ -149,6 +151,12 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     // @ts-ignore
     // eslint-disable-next-line react/destructuring-assignment
     this.props.navigation.navigate('Main', {screen: 'Settings'});
+  };
+
+  resetCurrentAccount = async () => {
+    // @ts-ignore
+    // eslint-disable-next-line react/destructuring-assignment
+    await realmDb.setCurrentAccount('');
   };
 
   render() {
