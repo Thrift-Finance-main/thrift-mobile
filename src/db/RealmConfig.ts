@@ -129,7 +129,7 @@ export class RealmDb {
   };
 
   setCurrentAccount = async (currentAccount: string) => {
-    console.log('setCurrentAccount');
+    console.log('setCurrentAccount in Realm');
     console.log(currentAccount);
 
     // get current config

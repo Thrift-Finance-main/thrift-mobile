@@ -52,7 +52,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     super(props);
     console.log(props);
     this.state = {
-      name: 'AccountX',
+      name: '',
       // eslint-disable-next-line react/no-unused-state
       acc: {},
       seed: '',
@@ -95,11 +95,13 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     console.log('accountName');
     console.log(accountName);
     const account = await realmDb.getAccount(accountName);
+    console.log('account');
+    console.log(account);
 
     this.setState({
       // eslint-disable-next-line react/no-unused-state
       acc: account,
-      name: accountName,
+      name: account.accountName,
     });
   }
 
@@ -176,7 +178,10 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   setSelectedValue = (value: string) => {
     const {allAccounts} = this.state;
 
+    console.log('setSelectedValue in Welcome');
     const acc = allAccounts.filter(acc => acc.accountName === value)[0];
+    console.log(acc);
+    realmDb.setCurrentAccount(acc.accountName).then(r => {});
     this.setState({
       name: value,
       acc,
@@ -203,12 +208,11 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   };
 
   render() {
-    const {name, acc, seed} = this.state;
+    const {acc, seed} = this.state;
 
     return (
       <ScrollView style={styles.container}>
         <CText>Welcome</CText>
-        <CText>{acc.accountName}</CText>
         {this.renderAccountSelect()}
         <CText>Result: {translate('title')}</CText>
         <CText>Lang: {getCurrentLang()}</CText>
@@ -216,7 +220,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
         <TextInput
           style={{}}
           onChangeText={text => this.onChangeName(text)}
-          value={name}
+          placeholder="Create new account"
         />
         <BUTTON_DEFAULT onClick={this.createAccount} title="Create account" />
 
