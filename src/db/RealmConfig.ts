@@ -145,8 +145,6 @@ export class RealmDb {
     console.log('getCurrentAccount');
     // get current config
     const appConfiguration = this.realm.objects(APP_CONFIGURATION);
-    console.log('appConfiguration');
-    console.log(appConfiguration);
     if (appConfiguration && appConfiguration.length) {
       return appConfiguration[0].currentAccount;
     }

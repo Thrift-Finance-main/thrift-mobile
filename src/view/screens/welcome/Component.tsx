@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {SafeAreaView, ScrollView, TextInput, View} from 'react-native';
+import {Picker, SafeAreaView, ScrollView, TextInput, View} from 'react-native';
 import {withTranslation} from 'react-i18next';
 import {StackScreenProps} from '@react-navigation/stack';
 // eslint-disable-next-line import/extensions,import/no-unresolved
@@ -43,6 +43,7 @@ export interface WelcomeProps {
 interface WelcomeState {
   name: string;
   acc: any;
+  allAccounts: any[];
   seed: string;
 }
 
@@ -55,29 +56,34 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
       // eslint-disable-next-line react/no-unused-state
       acc: {},
       seed: '',
+      allAccounts: [],
     };
   }
 
   async componentDidMount() {
-    console.log('\n\nthis.props.currentAccount');
-    const {currentAccount} = this.props;
+    console.log('All acounts');
+    const allAccounts = await realmDb.getAllAccounts();
+    console.log(allAccounts);
+    this.setState({
+      // eslint-disable-next-line react/no-unused-state
+      allAccounts,
+    });
 
-    console.log(currentAccount);
+    console.log('\n\nthis.props.currentAccountName');
+    const {currentAccountName} = this.props;
+
+    console.log(currentAccountName);
     const config = await realmDb.getConfig();
     console.log('config');
     console.log(config);
     const accountName = await realmDb.getCurrentAccount();
-
-    console.log('acc In State');
-    const accInState2 = await realmDb.getAllAccounts();
-    console.log(accInState2);
 
     if (!accountName) {
       console.log('no current name in db');
       const config: IConfig = {
         _id: '882dd631-bc6e-4e0e-a9e8-f07b685fec8c',
         name: 'Tim Doer.',
-        currentAccount: 'Jaime',
+        currentAccount: accountName,
         language: 'es',
         currentEndpoint: 'http://192.168.1.141:3101/graphql',
         version: '0.1.0',
@@ -93,6 +99,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     this.setState({
       // eslint-disable-next-line react/no-unused-state
       acc: account,
+      name: accountName,
     });
   }
 
@@ -136,19 +143,9 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
       console.log(currentAccountName);
     });
 
-    console.log('accInState2');
-    const accInState2 = await realmDb.getAllAccounts();
-    console.log(accInState2);
-
     // await realmDb.removeAccount('Alice');
 
-    const acc1 = await realmDb.getAccount('Name2');
-    const acc2 = await realmDb.getAccount('Alice');
-
-    console.log('acc1');
-    console.log(acc1);
-    console.log('acc2');
-    console.log(acc2);
+    // const acc1 = await realmDb.getAccount('Name2');
 
     this.setState({
       // eslint-disable-next-line react/no-unused-state
@@ -176,13 +173,43 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     await realmDb.setCurrentAccount('');
   };
 
+  setSelectedValue = (value: string) => {
+    const {allAccounts} = this.state;
+
+    const acc = allAccounts.filter(acc => acc.accountName === value)[0];
+    this.setState({
+      name: value,
+      acc,
+    });
+  };
+
+  renderAccountSelect = () => {
+    const {name, allAccounts} = this.state;
+
+    return (
+      <Picker
+        selectedValue={name}
+        style={{height: 50, width: 150}}
+        onValueChange={(itemValue, itemIndex) =>
+          this.setSelectedValue(itemValue)
+        }>
+        {allAccounts.map(acc => {
+          return (
+            <Picker.Item label={acc.accountName} value={acc.accountName} />
+          );
+        })}
+      </Picker>
+    );
+  };
+
   render() {
     const {name, acc, seed} = this.state;
 
     return (
       <ScrollView style={styles.container}>
         <CText>Welcome</CText>
-        <CText>{name}</CText>
+        <CText>{acc.accountName}</CText>
+        {this.renderAccountSelect()}
         <CText>Result: {translate('title')}</CText>
         <CText>Lang: {getCurrentLang()}</CText>
         <BUTTON_DEFAULT onClick={this.goHome} title="Go to Home" />
