@@ -14,6 +14,8 @@ import {getCurrentLang, translate} from '../../../i18n';
 
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {createAccount, generateAdaMnemonic} from '../../../lib/account';
+import realmDb from '../../../db/RealmConfig';
+import {IAccount} from '../../../db/model/AccountModel';
 
 export type RootTabParamList = {
   Home: undefined;
@@ -70,10 +72,30 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   };
 
   createAccount = async () => {
+    console.log('accInState');
+    const accInState = await realmDb.getAllAccounts();
+    console.log(accInState);
     const seed: string = generateAdaMnemonic();
-    const acc = await createAccount(seed, 'Name2', 'password');
+    const acc: IAccount = await createAccount(seed, 'Name2', 'password');
     console.log('acc');
     console.log(JSON.stringify(acc, null, 2));
+
+    await realmDb.addAccount(acc);
+
+    console.log('accInState2');
+    const accInState2 = await realmDb.getAllAccounts();
+    console.log(accInState2);
+
+    await realmDb.removeAccount('Name2');
+
+    const acc1 = await realmDb.getAccount('Name2');
+    const acc2 = await realmDb.getAccount('Bob');
+
+    console.log('acc1');
+    console.log(acc1);
+    console.log('acc2');
+    console.log(acc2);
+
     this.setState({
       // eslint-disable-next-line react/no-unused-state
       acc,

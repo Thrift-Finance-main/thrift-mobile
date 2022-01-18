@@ -25,6 +25,8 @@ import {
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {TESTNET_NETWORK_INDEX} from './network';
 import {encryptData} from './cryptoLib';
+import {IAddress} from '../db/model/AddressModel';
+import {IAccount} from '../db/model/AccountModel';
 
 export const CONFIG = {
   MNEMONIC_STRENGTH: 160,
@@ -122,9 +124,6 @@ export const generatePayAddress = async (
     stakeKeyPub = await (await stakeKey).to_public();
   } catch (e) {
     console.log(e);
-    return {
-      error: e,
-    };
   }
 
   let paymentKeyPub;
@@ -135,9 +134,6 @@ export const generatePayAddress = async (
     paymentKeyPub = await (await paymentKey).to_public();
   } catch (e) {
     console.log(e);
-    return {
-      error: e,
-    };
   }
   try {
     const addr = await BaseAddress.new(
@@ -149,9 +145,6 @@ export const generatePayAddress = async (
     return addrBench32;
   } catch (e) {
     console.log(e);
-    return {
-      error: e,
-    };
   }
 };
 
@@ -212,7 +205,7 @@ export const createAccount = async (
     ).to_address()
   ).to_bech32();
 
-  const externalAddresses = [];
+  const externalPubAddress: IAddress[] = [];
   for (let i = 0; i < TOTAL_ADDRESS_INDEX; i++) {
     // eslint-disable-next-line no-await-in-loop
     const externalPubAddressM = await generatePayAddress(
@@ -221,28 +214,48 @@ export const createAccount = async (
       BASE_ADDRESS_INDEX,
       TESTNET_NETWORK_INDEX,
     );
-    externalAddresses.push(externalPubAddressM);
+
+    if (externalPubAddressM && externalPubAddressM.length) {
+      externalPubAddress.push({
+        _id: '',
+        index: BASE_ADDRESS_INDEX,
+        network: TESTNET_NETWORK_INDEX,
+        reference: '',
+        address: externalPubAddressM,
+      });
+    }
   }
-  const internalAddresses = [];
+  const internalPubAddress: IAddress[] = [];
   for (let i = 0; i < TOTAL_ADDRESS_INDEX; i++) {
     // eslint-disable-next-line no-await-in-loop
     const internalPubAddressM = await generatePayAddress(
       masterKeyPtr,
       1,
-      BASE_ADDRESS_INDEX,
+      BASE_ADDRESS_INDEX, // TODO, set exact index, or is the position
       TESTNET_NETWORK_INDEX,
     );
-    internalAddresses.push(internalPubAddressM);
+
+    if (internalPubAddressM && internalPubAddressM.length) {
+      internalPubAddress.push({
+        _id: '',
+        index: BASE_ADDRESS_INDEX,
+        network: TESTNET_NETWORK_INDEX,
+        reference: '',
+        address: internalPubAddressM,
+      });
+    }
   }
-  return {
+  const newAccount: IAccount = {
+    _id: '',
     accountName,
-    balance: {},
+    balance: '0',
     tokens: [],
     encryptedMasterKey,
     publicKeyHex,
     rewardAddress,
-    internalAddresses,
-    externalAddresses,
+    internalPubAddress,
+    externalPubAddress,
     mode: 'Full',
   };
+  return newAccount;
 };

@@ -1,7 +1,10 @@
+import Realm from 'realm';
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {INativeToken} from './NativeTokenModel';
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {IAddress} from './AddressModel';
+// eslint-disable-next-line import/extensions,import/no-unresolved
+import {IStakeAddress} from './StakeAddressModel';
 
 export const ACCOUNT_TABLE = 'Account';
 
@@ -20,18 +23,17 @@ export interface IAccount {
 
 export const AccountSchema = {
   name: ACCOUNT_TABLE,
-  primaryKey: '_id',
+  primaryKey: 'accountName',
   properties: {
     _id: 'uuid',
-    name: 'string',
     accountName: 'string',
     balance: 'string',
     tokens: 'NativeToken[]',
     encryptedMasterKey: 'string',
     publicKeyHex: 'string',
+    rewardAddress: 'string',
     internalPubAddress: 'AddressSchema[]',
     externalPubAddress: 'AddressSchema[]',
-    rewardAddress: 'StakeAddress',
     mode: 'string',
   },
 };

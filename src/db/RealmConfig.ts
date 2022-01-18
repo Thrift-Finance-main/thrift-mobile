@@ -1,11 +1,5 @@
 import Realm from 'realm';
-import {
-  AppConfigurationSchema,
-  APP_CONFIGURATION,
-  IConfig,
-  // eslint-disable-next-line import/extensions,import/no-unresolved
-} from './model/appConfigModel';
-import AppConfiguration = Realm.AppConfiguration;
+import {APP_CONFIGURATION, AppConfigurationSchema, IConfig,} from './model/appConfigModel';
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {AddressSchema} from './model/AddressModel';
 // eslint-disable-next-line import/extensions,import/no-unresolved
@@ -13,7 +7,8 @@ import {StakeAddressSchema} from './model/StakeAddressModel';
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {NativeTokenSchema} from './model/NativeTokenModel';
 // eslint-disable-next-line import/extensions,import/no-unresolved
-import {AccountSchema} from './model/AccountModel';
+import {ACCOUNT_TABLE, AccountSchema, IAccount} from './model/AccountModel';
+import AppConfiguration = Realm.AppConfiguration;
 
 const {UUID} = Realm.BSON;
 
@@ -23,13 +18,14 @@ export class RealmDb {
   realm: Realm;
 
   constructor() {
-    this.config = {id: 'REALM-APP-ID-1'};
+    this.config = {id: 'REALM-APP-ID-2'};
     this.realm = new Realm();
     this.initDb().then(() => {});
   }
 
   initDb = async () => {
     this.realm = await Realm.open({
+      path: 'version10',
       schema: [
         AppConfigurationSchema,
         AddressSchema,
@@ -37,7 +33,30 @@ export class RealmDb {
         NativeTokenSchema,
         AccountSchema,
       ],
-      schemaVersion: 4,
+      schemaVersion: 10,
+      migration: (oldRealm, newRealm) => {
+        console.log('migrate');
+        /*
+        // only apply this change if upgrading to schemaVersion 2
+        if (oldRealm.schemaVersion < 5) {
+          const oldObjects = oldRealm.objects(ACCOUNT_TABLE);
+          const newObjects = newRealm.objects(ACCOUNT_TABLE);
+          // loop through all objects and set the fullName property in the new schema
+          for (const objectIndex in oldObjects) {
+            const oldObject = oldObjects[objectIndex];
+            const newObject = newObjects[objectIndex];
+            newObject.accountName = oldObject.accountName;
+            newObject.balance = oldObject.balance;
+            newObject.tokens = oldObject.tokens;
+            newObject.encryptedMasterKey = oldObject.encryptedMasterKey;
+            newObject.publicKeyHex = oldObject.publicKeyHex;
+            newObject.rewardAddress = oldObject.rewardAddress;
+            newObject.internalPubAddress = oldObject.internalPubAddress;
+            newObject.externalPubAddress = oldObject.externalPubAddress;
+            newObject.mode = oldObject.mode;
+          }
+          */
+      },
     });
   };
 
@@ -102,6 +121,93 @@ export class RealmDb {
     console.log(appConf.language);
     // @ts-ignore
     return appConf.language;
+  };
+
+  removeAccount = async (accountName: string) => {
+    console.log('removeAccount');
+    this.realm.write(() => {
+      let acc = this.realm.objectForPrimaryKey(ACCOUNT_TABLE, accountName); // search for a realm object with a primary key that is an int.
+      console.log('acc');
+      console.log(acc);
+      if (acc) {
+        this.realm.delete(acc);
+        console.log('deleted');
+        console.log(acc);
+        // @ts-ignore
+        acc = null;
+      }
+    });
+  };
+
+  addAccount = async (account: IAccount) => {
+    console.log('addAccount');
+
+    let alreadyExists = false;
+    const acc = this.realm.objectForPrimaryKey(
+      ACCOUNT_TABLE,
+      account.accountName,
+    ); // search for a realm object with a primary key that is an int.
+
+    if (acc) {
+      alreadyExists = true;
+    }
+
+    if (!alreadyExists) {
+      console.log('new Account');
+      console.log(JSON.stringify(account, null, 2));
+
+      // TODO: refactor as Account Class, use contructor
+      const tokens = account.tokens.map(token => {
+        token._id = new UUID();
+        return token;
+      });
+      const internalPubAddress = account.internalPubAddress.map(addr => {
+        addr._id = new UUID();
+        return addr;
+      });
+      const externalPubAddress = account.externalPubAddress.map(addr => {
+        addr._id = new UUID();
+        return addr;
+      });
+      const newAccount: IAccount = {
+        // @ts-ignore
+        _id: new UUID(), // create a _id with a randomly generated UUID
+        accountName: account.accountName,
+        balance: account.balance,
+        tokens,
+        encryptedMasterKey: account.encryptedMasterKey,
+        publicKeyHex: account.publicKeyHex,
+        internalPubAddress,
+        externalPubAddress,
+        rewardAddress: account.rewardAddress,
+        mode: account.mode,
+      };
+      console.log('\nnew Account final');
+      console.log(JSON.stringify(newAccount, null, 2));
+      try {
+        this.realm.write(() => {
+          this.realm.create(ACCOUNT_TABLE, newAccount);
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      console.log('Account Name already exists');
+      return {
+        error: 'Account already exists',
+      };
+    }
+  };
+
+  getAccount = async (accountName: string) => {
+    return this.realm.write(() => {
+      // search for a realm object with a primary key that is an int.
+      return this.realm.objectForPrimaryKey(ACCOUNT_TABLE, accountName);
+    });
+  };
+
+  getAllAccounts = async () => {
+    return this.realm.objects(ACCOUNT_TABLE);
   };
 
   closeDb = () => {

@@ -1,5 +1,5 @@
 export interface IAddress {
-  _id: string;
+  _id?: string;
   reference: string;
   index: number;
   address: string;
