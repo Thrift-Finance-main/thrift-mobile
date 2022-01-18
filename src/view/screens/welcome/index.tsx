@@ -1,13 +1,14 @@
 import {connect} from 'react-redux';
 
 import Component from './Component';
+import {setCurrentAccount} from '../../../redux/actions/AccountActions';
 
 interface MapStateToPropsTypes {
-    // Your properties here
+  // Your properties here
 }
 
 interface MapDispatchToPropsTypes {
-    // Your properties here
+  // Your properties here
 }
 
 const mapStateToProps = (state: any) => {
@@ -16,9 +17,14 @@ const mapStateToProps = (state: any) => {
   };
 };
 
-const mapDispatchToProps = () => ({});
+const mapDispatchToProps = (dispatch: any) => {
+  return {
+    setCurrentAccount: (currentAccount: string) =>
+      dispatch(setCurrentAccount(currentAccount)),
+  };
+};
 
-const welcomeContainer = connect<MapStateToPropsTypes, MapDispatchToPropsTypes>(
+const welcomeContainer = connect(
   mapStateToProps,
   mapDispatchToProps,
 )(Component);

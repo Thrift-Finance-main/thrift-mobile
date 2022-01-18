@@ -1,8 +1,9 @@
 import * as React from 'react';
-import {SafeAreaView, ScrollView, View} from 'react-native';
+import {SafeAreaView, ScrollView, TextInput, View} from 'react-native';
 import {withTranslation} from 'react-i18next';
 import {StackScreenProps} from '@react-navigation/stack';
 // eslint-disable-next-line import/extensions,import/no-unresolved
+import {connect} from 'react-redux';
 import styles from './styles';
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {CText} from '../../elements/custom';
@@ -17,6 +18,7 @@ import {createAccount, generateAdaMnemonic} from '../../../lib/account';
 import realmDb from '../../../db/RealmConfig';
 import {IAccount} from '../../../db/model/AccountModel';
 import {IConfig} from '../../../db/model/appConfigModel';
+import {setCurrentAccount} from '../../../redux/actions/AccountActions';
 
 export type RootTabParamList = {
   Home: undefined;
@@ -32,8 +34,10 @@ type WelcomeScreenRouteProp = Props['route'];
 export interface WelcomeProps {
   name: string;
   componentId: string;
+  currentAccountName: string;
   navigation: WelcomeScreenNavigationProp;
   route: WelcomeScreenRouteProp;
+  setCurrentAccount: (currentAccount: string) => void;
 }
 
 interface WelcomeState {
@@ -43,11 +47,11 @@ interface WelcomeState {
 }
 
 class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
-  constructor(props) {
+  constructor(props: WelcomeProps) {
     super(props);
     console.log(props);
     this.state = {
-      name: 'This is the the view first time running the app',
+      name: 'AccountX',
       // eslint-disable-next-line react/no-unused-state
       acc: {},
       seed: '',
@@ -55,6 +59,10 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   }
 
   async componentDidMount() {
+    console.log('\n\nthis.props.currentAccount');
+    const {currentAccount} = this.props;
+
+    console.log(currentAccount);
     const config = await realmDb.getConfig();
     console.log('config');
     console.log(config);
@@ -106,24 +114,27 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   };
 
   createAccount = async () => {
-    console.log('\nthis.props');
     // eslint-disable-next-line react/destructuring-assignment
 
-    console.log(this.props.currentAccountName);
+    const {name} = this.state;
     console.log('accInState');
     const accInState = await realmDb.getAllAccounts();
     console.log(accInState);
     const seed: string = generateAdaMnemonic();
-    const acc: IAccount = await createAccount(
-      seed,
-      'Bob',
-      'password',
-      '123456',
-    );
+    const acc: IAccount = await createAccount(seed, name, 'password', '123456');
     console.log('acc');
     console.log(JSON.stringify(acc, null, 2));
 
-    await realmDb.addAccount(acc);
+    realmDb.addAccount(acc).then(() => {
+      console.log('Set current account on redux');
+      const {setCurrentAccount} = this.props;
+      console.log(setCurrentAccount);
+      setCurrentAccount(acc.accountName);
+
+      console.log('\n\nthis.props.currentAccountName after addAccount');
+      const {currentAccountName} = this.props;
+      console.log(currentAccountName);
+    });
 
     console.log('accInState2');
     const accInState2 = await realmDb.getAllAccounts();
@@ -153,6 +164,12 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     this.props.navigation.navigate('Main', {screen: 'Settings'});
   };
 
+  onChangeName = (name: string) => {
+    this.setState({
+      name,
+    });
+  };
+
   resetCurrentAccount = async () => {
     // @ts-ignore
     // eslint-disable-next-line react/destructuring-assignment
@@ -169,6 +186,11 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
         <CText>Result: {translate('title')}</CText>
         <CText>Lang: {getCurrentLang()}</CText>
         <BUTTON_DEFAULT onClick={this.goHome} title="Go to Home" />
+        <TextInput
+          style={{}}
+          onChangeText={text => this.onChangeName(text)}
+          value={name}
+        />
         <BUTTON_DEFAULT onClick={this.createAccount} title="Create account" />
 
         {seed.length ? (
@@ -189,4 +211,21 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   }
 }
 
-export default withTranslation()(Welcome);
+const mapStateToProps = (state: any) => {
+  console.log('\n\nstate');
+  console.log(state);
+  return {
+    currentAccountName: state.AccountReducer.currentAccountName,
+  };
+};
+
+const mapDispatchToProps = (dispatch: any) => {
+  return {
+    setCurrentAccount: (currentAccount: string) =>
+      dispatch(setCurrentAccount(currentAccount)),
+  };
+};
+
+export default withTranslation()(
+  connect(mapStateToProps, mapDispatchToProps)(Welcome),
+);
