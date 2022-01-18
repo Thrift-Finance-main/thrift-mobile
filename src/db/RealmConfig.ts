@@ -1,5 +1,9 @@
 import Realm from 'realm';
-import {APP_CONFIGURATION, AppConfigurationSchema, IConfig,} from './model/appConfigModel';
+import {
+  APP_CONFIGURATION,
+  AppConfigurationSchema,
+  IConfig,
+} from './model/appConfigModel';
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {AddressSchema} from './model/AddressModel';
 // eslint-disable-next-line import/extensions,import/no-unresolved
@@ -60,6 +64,10 @@ export class RealmDb {
     });
   };
 
+  getConfig = async () => {
+    return this.realm.objects(APP_CONFIGURATION);
+  };
+
   setConfig = async (config: IConfig) => {
     console.log('set config');
 
@@ -88,7 +96,9 @@ export class RealmDb {
       this.realm.write(() => {
         // @ts-ignore
         appConf.name = 'Patri';
+        appConf.currentAccount = '';
       });
+      console.log('appConf');
       console.log(appConf);
     }
   };
@@ -96,15 +106,10 @@ export class RealmDb {
   setLanguage = async (lang: string) => {
     console.log('set language');
     console.log(lang);
-
-    const realm = await Realm.open({
-      schema: [AppConfigurationSchema],
-      schemaVersion: 2,
-    });
     // get current config
-    const appConfiguration = realm.objects(APP_CONFIGURATION);
+    const appConfiguration = this.realm.objects(APP_CONFIGURATION);
     const appConf: Realm.Object = appConfiguration[0];
-    realm.write(() => {
+    this.realm.write(() => {
       // @ts-ignore
       appConf.language = lang;
     });
@@ -121,6 +126,30 @@ export class RealmDb {
     console.log(appConf.language);
     // @ts-ignore
     return appConf.language;
+  };
+
+  setCurrentAccount = async (currentAccount: string) => {
+    console.log('setCurrentAccount');
+    console.log(currentAccount);
+
+    // get current config
+    const appConfiguration = this.realm.objects(APP_CONFIGURATION);
+    const appConf: Realm.Object = appConfiguration[0];
+    this.realm.write(() => {
+      // @ts-ignore
+      appConf.currentAccount = currentAccount;
+    });
+  };
+
+  getCurrentAccount = async () => {
+    console.log('getCurrentAccount');
+    // get current config
+    const appConfiguration = this.realm.objects(APP_CONFIGURATION);
+    console.log('appConfiguration');
+    console.log(appConfiguration);
+    if (appConfiguration && appConfiguration.length) {
+      return appConfiguration[0].currentAccount;
+    }
   };
 
   removeAccount = async (accountName: string) => {
@@ -189,6 +218,7 @@ export class RealmDb {
         this.realm.write(() => {
           this.realm.create(ACCOUNT_TABLE, newAccount);
         });
+        await this.setCurrentAccount(account.accountName);
       } catch (e) {
         console.log(e);
       }
@@ -206,6 +236,7 @@ export class RealmDb {
       return this.realm.objectForPrimaryKey(ACCOUNT_TABLE, accountName);
     });
   };
+
   updatePINAccount = async (accountName: string, pinHash: string) => {
     return this.realm.write(() => {
       // search for a realm object with a primary key that is an int.

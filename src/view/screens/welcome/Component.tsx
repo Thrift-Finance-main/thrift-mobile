@@ -16,6 +16,8 @@ import {getCurrentLang, translate} from '../../../i18n';
 import {createAccount, generateAdaMnemonic} from '../../../lib/account';
 import realmDb from '../../../db/RealmConfig';
 import {IAccount} from '../../../db/model/AccountModel';
+import {setCurrentAccount} from '../../../redux/actions/AccountActions';
+import {IConfig} from '../../../db/model/appConfigModel';
 
 export type RootTabParamList = {
   Home: undefined;
@@ -52,7 +54,39 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     };
   }
 
-  componentDidMount() {}
+  async componentDidMount() {
+    const config = await realmDb.getConfig();
+    console.log('config');
+    console.log(config);
+    const accountName = await realmDb.getCurrentAccount();
+
+    console.log('acc In State');
+    const accInState2 = await realmDb.getAllAccounts();
+    console.log(accInState2);
+
+    if (!accountName) {
+      console.log('no current name in db');
+      const config: IConfig = {
+        _id: '882dd631-bc6e-4e0e-a9e8-f07b685fec8c',
+        name: 'Tim Doer.',
+        currentAccount: 'Jaime',
+        language: 'es',
+        currentEndpoint: 'http://192.168.1.141:3101/graphql',
+        version: '0.1.0',
+      };
+      realmDb.setConfig(config).then(r => {});
+    }
+
+    console.log('componentDidMount');
+    console.log('accountName');
+    console.log(accountName);
+    const account = await realmDb.getAccount(accountName);
+
+    this.setState({
+      // eslint-disable-next-line react/no-unused-state
+      acc: account,
+    });
+  }
 
   showPushScreen = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -72,13 +106,15 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   };
 
   createAccount = async () => {
+    console.log('\nthis.props');
+    console.log(this.props);
     console.log('accInState');
     const accInState = await realmDb.getAllAccounts();
     console.log(accInState);
     const seed: string = generateAdaMnemonic();
     const acc: IAccount = await createAccount(
       seed,
-      'Alice',
+      'Bob',
       'password',
       '123456',
     );
@@ -91,7 +127,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     const accInState2 = await realmDb.getAllAccounts();
     console.log(accInState2);
 
-    await realmDb.removeAccount('Name2');
+    // await realmDb.removeAccount('Alice');
 
     const acc1 = await realmDb.getAccount('Name2');
     const acc2 = await realmDb.getAccount('Alice');
