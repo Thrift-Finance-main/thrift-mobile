@@ -4,7 +4,6 @@ import {INativeToken} from './NativeTokenModel';
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {IAddress} from './AddressModel';
 // eslint-disable-next-line import/extensions,import/no-unresolved
-import {IStakeAddress} from './StakeAddressModel';
 
 export const ACCOUNT_TABLE = 'Account';
 
