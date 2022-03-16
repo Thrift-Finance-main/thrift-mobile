@@ -32,7 +32,7 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-i18next": "11.8.x",
-    "react-native": "0.66.4",
+    "react-native": "0.65.1",
     "react-native-camera": "^4.2.1",
     "react-native-crypto": "2.2.0",
     "react-native-extra-dimensions-android": "^1.2.5",
