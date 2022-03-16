@@ -15,6 +15,8 @@ interface CreateAccountProps {
     isBlackTheme: any
 }
 const CreateAccount: FC<CreateAccountProps> = (props) => {
+    console.log('CreateAccount props');
+    console.log(props);
     return (
         <SafeAreaView style={{
             ...styles.mainContainer, backgroundColor:
@@ -52,7 +54,7 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                     >Name</Text>
                     <InputField
                         backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
-                    />
+                     placeHolder={'Name'} placeholderTextColor={''} secureText={false}/>
                     <Text
                         style={{
                             ...styles.filedHeader, color:
@@ -64,6 +66,8 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
 
                     <InputField
                         secureText={true}
+                        placeholderTextColor={''}
+                        placeHolder={'Password'}
                         backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
 
                     />
@@ -80,6 +84,8 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                     >Confirm Password</Text>
                     <InputField
                         secureText={true}
+                        placeholderTextColor={''}
+                        placeHolder={'Confirm password'}
                         backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
 
                     />
