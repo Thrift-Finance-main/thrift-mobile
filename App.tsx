@@ -1,16 +1,20 @@
 import React from 'react';
+import {createStore, combineReducers, applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';
-import AppWrapper from './src/AppWrapper';
-import configureStore from './src/redux/reducers/configureStore';
+import thunk from 'redux-thunk';
+import Reducers from './src/store/Reducers';
+import Routes from './src/navigation/Routes';
 
-import './src/i18n';
+const rootReducer = combineReducers({
+  Reducers,
+});
+const store = createStore(rootReducer, applyMiddleware(thunk));
 
-const store = configureStore();
-
-export default function App() {
+const App = () => {
   return (
     <Provider store={store}>
-      <AppWrapper />
+      <Routes />
     </Provider>
   );
-}
+};
+export default App;

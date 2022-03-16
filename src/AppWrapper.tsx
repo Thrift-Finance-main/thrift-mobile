@@ -4,7 +4,7 @@ import {NavigationContainer} from '@react-navigation/native';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Ionicons from 'react-native-vector-icons/Ionicons';
 // eslint-disable-next-line import/extensions,import/no-unresolved
-import {MainStackNavigator} from './navigation/MainStackNavigator';
+import {MainStackNavigator} from './navigation2/MainStackNavigator';
 
 // TODO: replace here with the frontend
 function AppWrapper() {

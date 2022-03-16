@@ -7,6 +7,7 @@
 
 module.exports = {
   transformer: {
+    babelTransformerPath: require.resolve("react-native-svg-transformer"),
     getTransformOptions: async () => ({
       transform: {
         experimentalImportSupport: false,
@@ -15,8 +16,8 @@ module.exports = {
     }),
   },
   resolver: {
-    sourceExts: ['js', 'jsx', 'ts', 'tsx'],
-    assetExts: ['png', 'md', 'json'],
+    sourceExts: ['js', 'jsx', 'ts', 'tsx', 'svg'],
+    assetExts: ['png', 'md', 'json', 'svg', 'gif'],
     extraNodeModules: {
       buffer: require.resolve('safe-buffer'),
       crypto: require.resolve('react-native-crypto'),
