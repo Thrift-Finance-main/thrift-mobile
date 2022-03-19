@@ -9,6 +9,8 @@ import DarkBack from '../assets//DarkBack.svg'
 import InputField from './Common/InputField'
 import {Colors, TextField } from 'react-native-ui-lib'
 import {Button} from "react-native-ui-lib/core";
+import {useSelector} from "react-redux";
+import CustomButton from "./Common/CustomButton";
 interface CreateAccountProps {
     onContinuePress: (data:any) => void
     onBackIconPress: () => void
@@ -17,6 +19,7 @@ interface CreateAccountProps {
     isBlackTheme: any
 }
 const CreateAccount: FC<CreateAccountProps> = (props) => {
+    const isBlackTheme = useSelector(state => state.Reducers.isBlackTheme);
     console.log('CreateAccount props');
     console.log(props);
     const [name, setName] = useState('');
@@ -131,13 +134,19 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                         borderRadius={5}
                         size={Button.sizes.large}
                         text60
-                        labelStyle={{fontWeight: '800', letterSpacing: 4}}
-                        style={{marginBottom: 1, marginTop: 25}}
+                        labelStyle={{fontSize: 16, fontWeight: '800', letterSpacing: 4}}
+                        style={styles.buttonStyle}
                         backgroundColor={CustomColors.primaryButton}
                         disabled={false}
                         enableShadow
                         animateLayout
                         onPress={() => props.onContinuePress({name, paswd})}
+                    />
+                    <CustomButton
+                    backgroundColor={Colors.primaryButton}
+                    buttonTitle="I Understand"
+                    onPress={() => props.onContinuePress({name, paswd})}
+                    titleTextColor={isBlackTheme ? Colors.black : Colors.white}
                     />
                 </View>
             </ScrollView>
@@ -186,6 +195,19 @@ const styles = StyleSheet.create({
     inputFieldContainer: {
         paddingLeft: 5,
         paddingRight: 5,
+    },
+    buttonStyle: {
+        width: widthPercentageToDP(80),
+        height: heightPercentageToDP(8),
+        borderRadius: 9,
+        justifyContent: "center",
+        alignSelf: "center",
+        marginTop: 20
+    },
+    buttonTitleStyle: {
+        textAlign: "center",
+        fontWeight: "bold",
+        fontSize: 12
     }
 
 })
