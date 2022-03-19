@@ -8,6 +8,7 @@ import Back from '../assets/back.svg'
 import DarkBack from '../assets//DarkBack.svg'
 
 import InputField from './Common/InputField'
+import { TextField } from 'react-native-ui-lib'
 interface CreateAccountProps {
     onContinuePress: () => void
     onBackIconPress: () => void
@@ -63,6 +64,18 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                                     Colors.black,
                         }}
                     >Create Password</Text>
+                    <TextField
+                        placeholder={'Placeholder'}
+                        floatingPlaceholder
+                        onChangeText={() => console.log('changed')}
+                        enableErrors
+                        validate={['required', 'email', (value) => value.length > 6]}
+                        validationMessage={['Field is required', 'Email is invalid', 'Password is too short']}
+                        showCharCounter
+                        maxLength={20}
+                        color={props.isBlackTheme ? Colors.white :
+                            Colors.black}
+                    />
 
                     <InputField
                         secureText={true}

@@ -17,6 +17,8 @@ target 'thriftMobile' do
 
   pod 'react-native-haskell-shelley', :path => '../node_modules/@emurgo/react-native-haskell-shelley'
 
+  pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
+
   target 'thriftMobileTests' do
     inherit! :complete
     # Pods for testing
