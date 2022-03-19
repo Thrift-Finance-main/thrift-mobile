@@ -65,6 +65,7 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                         floatingPlaceholder
                         onChangeText={(n:string) => setName(n)}
                         maxLength={20}
+                        fontSize={20}
                         fieldStyle={styles.inputField}
                         color={props.isBlackTheme ? Colors.white :
                             Colors.black}
@@ -84,7 +85,9 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                         }}
                     >Create Password</Text>
                     <TextField
+                        secureTextEntry={true}
                         placeholder={'Password'}
+                        fontSize={20}
                         floatingPlaceholder
                         onChangeText={(p:string) => setPasswd(p)}
                         maxLength={20}
@@ -112,6 +115,8 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                     >Confirm Password</Text>
                     <TextField
                         placeholder={'Enter password again'}
+                        secureTextEntry={true}
+                        fontSize={20}
                         floatingPlaceholder
                         onChangeText={(p:string) => setConfirmPassd(p)}
                         maxLength={20}
@@ -185,6 +190,7 @@ const styles = StyleSheet.create({
         borderColor: 'black',
         borderBottomWidth: 1,
         paddingBottom: 4,
+        fontSize: 20,
     },
     inputFieldContainer: {
         paddingLeft: 5,
