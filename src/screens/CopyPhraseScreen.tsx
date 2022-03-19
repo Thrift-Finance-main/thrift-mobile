@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import CopyPhrase from '../components/CopyPhrase'
 import Clipboard from '@react-native-community/clipboard';
 import { useSelector } from 'react-redux';
-const CopyPhraseScreen = ({ navigation }) => {
+const CopyPhraseScreen = ({ navigation, route }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
 
     const [phraseTags, setPhraseTags] = useState<any>([{
@@ -73,6 +73,8 @@ const CopyPhraseScreen = ({ navigation }) => {
         }, 2000);
 
     }
+    console.log('navigation');
+    console.log(route.params);
     return (
         <CopyPhrase
             phraseTags={phraseTags}

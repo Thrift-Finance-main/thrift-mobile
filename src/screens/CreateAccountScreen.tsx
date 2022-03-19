@@ -5,9 +5,11 @@ import CreateAccount from '../components/CreateAccount'
 const CreateAccountScreen = ({ navigation, route }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
 
-    const { fromScreen } = route.params
-    const onContinuePress = () => {
-        navigation.navigate(fromScreen == "CreateAccount" ? "Terms" : "RestoreWallet")
+    const { fromScreen, data} = route.params
+    const onContinuePress = (payload: any) => {
+        console.log('payload');
+        console.log(payload);
+        navigation.navigate(fromScreen == "CreateAccount" ? "Terms" : "RestoreWallet", payload)
     }
     const onBackIconPress = () => {
         navigation.goBack()
@@ -15,10 +17,11 @@ const CreateAccountScreen = ({ navigation, route }) => {
 
     return (
         <CreateAccount
-            onContinuePress={onContinuePress}
+            onContinuePress={(payload) => onContinuePress(payload)}
             onBackIconPress={onBackIconPress}
             fromScreen={fromScreen}
             isBlackTheme={isBlackTheme}
+            data={data}
         />
     )
 }

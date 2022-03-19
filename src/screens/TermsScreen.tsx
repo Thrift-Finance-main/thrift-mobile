@@ -11,14 +11,16 @@ import Bulb from '../assets/Bulb.svg';
 import Key from '../assets/Key.svg';
 import Caution from '../assets/Caution.svg';
 
-const TermsScreen = ({navigation}) => {
+const TermsScreen = ({navigation, route}) => {
   const isBlackTheme = useSelector(state => state.Reducers.isBlackTheme);
+
+
 
   const onBackIconPress = () => {
     navigation.goBack();
   };
   const onUnderstandPress = () => {
-    navigation.navigate('CopyPhrase');
+    navigation.navigate('CopyPhrase', route.params);
   };
   return (
     <SafeAreaView

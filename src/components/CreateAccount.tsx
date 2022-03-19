@@ -10,9 +10,10 @@ import InputField from './Common/InputField'
 import {Colors, TextField } from 'react-native-ui-lib'
 import {Button} from "react-native-ui-lib/core";
 interface CreateAccountProps {
-    onContinuePress: () => void
+    onContinuePress: (data:any) => void
     onBackIconPress: () => void
     fromScreen: any
+    data: any
     isBlackTheme: any
 }
 const CreateAccount: FC<CreateAccountProps> = (props) => {
@@ -69,7 +70,6 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                             default: 'grey'
                         }}
                         containerStyle={styles.inputFieldContainer}
-                        labelColor={{default: 'green',focus: 'black'}}
                         migrate
                     />
                     <Text
@@ -137,7 +137,7 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                         disabled={false}
                         enableShadow
                         animateLayout
-                        onPress={props.onContinuePress}
+                        onPress={() => props.onContinuePress({name, paswd})}
                     />
                 </View>
             </ScrollView>
