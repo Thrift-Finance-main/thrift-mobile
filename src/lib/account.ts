@@ -151,8 +151,7 @@ export const generatePayAddress = async (
 export const createAccount = async (
   mnemonic: string,
   accountName: string,
-  pass: string,
-  pinHash: string,
+  pass: string
 ) => {
   console.log('createAccount');
 
@@ -222,6 +221,7 @@ export const createAccount = async (
         index: BASE_ADDRESS_INDEX,
         network: TESTNET_NETWORK_INDEX,
         reference: '',
+        tags: [],
         address: externalPubAddressM,
       });
     }
@@ -242,6 +242,7 @@ export const createAccount = async (
         index: BASE_ADDRESS_INDEX,
         network: TESTNET_NETWORK_INDEX,
         reference: '',
+        tags: [],
         address: internalPubAddressM,
       });
     }
@@ -249,7 +250,7 @@ export const createAccount = async (
   const newAccount: IAccount = {
     _id: '',
     accountName,
-    pinHash,
+    pinHash: '',
     balance: '0',
     tokens: [],
     encryptedMasterKey,

@@ -13,9 +13,9 @@ import Modal from 'react-native-modal'
 import DarkBack from '../assets//DarkBack.svg'
 import CopyDark from '../assets/CopyDark.svg'
 import QrDark from '../assets/QRdark.svg'
-
-
-
+import realmDb from "../db/RealmConfig";
+import {createAccount, generateAdaMnemonic} from "../lib/account";
+import {IAccount} from "../db/model/AccountModel";
 
 interface CopyPhraseProps {
     onContinuePress: () => void
@@ -24,7 +24,8 @@ interface CopyPhraseProps {
     onShowQRPress: () => void
     onCopyPress: () => void
     showCopyNotification: boolean
-    isBlackTheme: any
+    isBlackTheme: any,
+    account: any,
 }
 const CopyPhrase: FC<CopyPhraseProps> = (props) => {
     return (
