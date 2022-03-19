@@ -22,14 +22,13 @@ export class RealmDb {
   realm: Realm;
 
   constructor() {
-    this.config = {id: 'REALM-APP-ID-2'};
+    this.config = {id: 'REALM-APP-ID-3'};
     this.realm = new Realm();
     this.initDb().then(() => {});
   }
 
   initDb = async () => {
     this.realm = await Realm.open({
-      path: 'version11',
       schema: [
         AppConfigurationSchema,
         AddressSchema,
@@ -37,7 +36,7 @@ export class RealmDb {
         NativeTokenSchema,
         AccountSchema,
       ],
-      schemaVersion: 11,
+      schemaVersion: 14,
       migration: (oldRealm, newRealm) => {
         console.log('migrate');
         /*
@@ -65,7 +64,12 @@ export class RealmDb {
   };
 
   getConfig = async () => {
-    return this.realm.objects(APP_CONFIGURATION);
+    try {
+      return this.realm.objects(APP_CONFIGURATION);
+    } catch (e){
+      console.log('Error when getting config: '+e)
+    }
+
   };
 
   setConfig = async (config: IConfig) => {
@@ -79,7 +83,6 @@ export class RealmDb {
       this.realm.write(() => {
         this.realm.create(APP_CONFIGURATION, {
           _id: new UUID(), // create a _id with a randomly generated UUID
-          name: config.name,
           currentAccount: config.currentAccount,
           language: config.language,
           currentEndpoint: config.currentEndpoint,
@@ -92,11 +95,12 @@ export class RealmDb {
       const appConf: Realm.Object = appConfiguration[0];
       console.log(appConf);
       // @ts-ignore
-      console.log(appConf.name);
       this.realm.write(() => {
         // @ts-ignore
-        appConf.name = 'Patri';
-        appConf.currentAccount = '';
+        appConf.currentAccount = config.currentAccount;
+        appConf.language = config.language;
+        appConf.currentEndpoint = config.currentEndpoint;
+        appConf.version = config.version;
       });
       console.log('appConf');
       console.log(appConf);

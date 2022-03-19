@@ -1,8 +1,7 @@
-export const APP_CONFIGURATION = 'AppConfiguration';
+export const APP_CONFIGURATION = 'APP_CONFIGURATION';
 
 export interface IConfig {
   _id: string;
-  name: string;
   currentAccount: string;
   language: string;
   currentEndpoint: string;
@@ -13,7 +12,6 @@ export const AppConfigurationSchema = {
   primaryKey: '_id',
   properties: {
     _id: 'uuid',
-    name: 'string',
     currentAccount: 'string',
     language: 'string',
     currentEndpoint: 'string',

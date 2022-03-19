@@ -10,6 +10,7 @@ import {setCurrentAccount} from './redux/actions/AccountActions';
 import realmDb from './db/RealmConfig';
 
 const initApp = () => {
+  initConfig();
   console.log('\n\n\ninitApp');
   const store = configureStore();
   realmDb.getCurrentAccount().then(accountName => {
@@ -24,7 +25,6 @@ const initApp = () => {
 };
 
 const store = initApp();
-
 export default function App() {
   return (
     <Provider store={store}>
