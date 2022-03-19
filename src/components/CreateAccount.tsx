@@ -134,19 +134,13 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                         borderRadius={5}
                         size={Button.sizes.large}
                         text60
-                        labelStyle={{fontSize: 16, fontWeight: '800', letterSpacing: 4}}
+                        labelStyle={{fontSize: 14, fontWeight: 'bold', letterSpacing: 2, textAlign: "center"}}
                         style={styles.buttonStyle}
                         backgroundColor={CustomColors.primaryButton}
                         disabled={false}
                         enableShadow
                         animateLayout
                         onPress={() => props.onContinuePress({name, paswd})}
-                    />
-                    <CustomButton
-                    backgroundColor={Colors.primaryButton}
-                    buttonTitle="I Understand"
-                    onPress={() => props.onContinuePress({name, paswd})}
-                    titleTextColor={isBlackTheme ? Colors.black : Colors.white}
                     />
                 </View>
             </ScrollView>

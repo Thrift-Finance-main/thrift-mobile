@@ -4,22 +4,21 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {useSelector} from 'react-redux';
 import Colors from '../constants/CustomColors';
 import {heightPercentageToDP, widthPercentageToDP} from '../utils/dimensions';
-import Button from '../components/Common/Button';
 import Back from '../assets/back.svg';
 import DarkBack from '../assets/DarkBack.svg';
 import Bulb from '../assets/Bulb.svg';
 import Key from '../assets/Key.svg';
 import Caution from '../assets/Caution.svg';
+import CustomColors from "../constants/CustomColors";
+import { Button } from 'react-native-ui-lib';
 
 const TermsScreen = ({navigation, route}) => {
   const isBlackTheme = useSelector(state => state.Reducers.isBlackTheme);
 
-
-
   const onBackIconPress = () => {
     navigation.goBack();
   };
-  const onUnderstandPress = () => {
+  const onContinuePress = () => {
     navigation.navigate('CopyPhrase', route.params);
   };
   return (
@@ -85,10 +84,17 @@ const TermsScreen = ({navigation, route}) => {
           </View>
           <View style={{height: heightPercentageToDP(12)}} />
           <Button
-            backgroundColor={Colors.primaryButton}
-            buttonTitle="I Understand"
-            onPress={onUnderstandPress}
-            titleTextColor={isBlackTheme ? Colors.black : Colors.white}
+              label="I understand"
+              borderRadius={5}
+              size={Button.sizes.large}
+              text60
+              labelStyle={{fontSize: 14, fontWeight: 'bold', letterSpacing: 2, textAlign: "center"}}
+              style={styles.buttonStyle}
+              backgroundColor={CustomColors.primaryButton}
+              disabled={false}
+              enableShadow
+              animateLayout
+              onPress={() => onContinuePress()}
           />
         </View>
       </ScrollView>
@@ -119,5 +125,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentageToDP(8),
     lineHeight: 20,
   },
+  buttonStyle: {
+    width: widthPercentageToDP(80),
+    height: heightPercentageToDP(8),
+    borderRadius: 9,
+    justifyContent: "center",
+    alignSelf: "center",
+    marginTop: 20
+  },
+  buttonTitleStyle: {
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 12
+  }
 });
 export default TermsScreen;
