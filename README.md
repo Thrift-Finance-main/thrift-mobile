@@ -74,6 +74,7 @@ yarn ios
 
 Start an Android Simulator from:
 ```
+/Applications/Android\ Studio.app/Contents/MacOS/studio&
 Android Studio > Tools > AVD Manager > Run any device
 ```
 
