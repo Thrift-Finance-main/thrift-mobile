@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { View, TouchableOpacity, StyleSheet, Text, Alert } from 'react-native';
-import Colors from '../constants/Colors';
+import Colors from '../constants/CustomColors';
 import WalletFocus from '../assets/WalletFocus.svg'
 import WalletUnFocus from '../assets/WalletUnFocus.svg'
 import SmartFiFocus from '../assets/SmartFiFocus.svg'

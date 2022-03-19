@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { View, Text, StyleSheet, Image, FlatList, Linking, TouchableOpacity } from 'react-native';
-import Colors from '../../constants/Colors';
+import Colors from '../../constants/CustomColors';
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimensions';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RNCamera } from 'react-native-camera'; import Modal from 'react-native-modal'
@@ -57,7 +57,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                             />
                         }
                         </View>
-                      {!props.QRScanner ? 
+                      {!props.QRScanner ?
                       <View style={{marginTop : heightPercentageToDP(3)}} >
                       <QRImage/>
                       </View>

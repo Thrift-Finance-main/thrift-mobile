@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import { StyleSheet, TextInput } from 'react-native'
-import Colors from '../../constants/Colors'
+import Colors from '../../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimensions'
 interface InputFieldProps {
     // onChange: () => void,

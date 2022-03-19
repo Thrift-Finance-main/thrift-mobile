@@ -1,6 +1,6 @@
 // import React from 'react';
 // import { View } from 'react-native';
-// import Colors from '../constants/Colors';
+// import Colors from '../constants/CustomColors';
 // import { NavigationContainer } from '@react-navigation/native';
 // import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -102,7 +102,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {useSelector} from 'react-redux';
-import Colors from '../constants/Colors';
+import Colors from '../constants/CustomColors';
 import LanguageScreen from '../screens/LanguageScreen';
 import AuthenticationScreen from '../screens/AuthenticationScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';

@@ -8,6 +8,7 @@ import configureStore from './redux/reducers/configureStore';
 import {setCurrentAccount} from './redux/actions/AccountActions';
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import realmDb from './db/RealmConfig';
+import {initConfig} from "./db/initConfig";
 
 const initApp = () => {
   initConfig();

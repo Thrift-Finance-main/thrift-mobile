@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import OTPTextView from 'react-native-otp-textinput'
-import Colors from '../constants/Colors'
+import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
 import Button from './Common/Button'
 import Back from '../assets/back.svg'
@@ -85,7 +85,7 @@ const CreatePin: FC<CreatePinProps> = (props) => {
                     >
                         <OTPTextView
                             autoFocusOnLoad={true}
-                            
+
                             handleTextChange={(e) => {
                                 console.log(e)
                             }}

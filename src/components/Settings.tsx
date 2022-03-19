@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react'
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Colors from '../constants/Colors'
+import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
 import Forward from '../assets/Forward.svg'
 import DarkForward from '../assets/DarkForward.svg'
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: widthPercentageToDP(4),
     },
     renderTopContainer: {
-        marginTop: heightPercentageToDP(4), 
+        marginTop: heightPercentageToDP(4),
         flexDirection: "row",
         justifyContent: "space-between", alignItems: "center",
     },

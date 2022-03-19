@@ -15,9 +15,9 @@ export const initConfig = () => {
     realmDb.getConfig().then(r =>{
         if (r.length){
             currentConfig = r[0]
+        } else {
+            realmDb.setConfig(currentConfig).then(r => {});
         }
     });
-    realmDb.setConfig(currentConfig).then(r => {});
-
     return currentConfig;
 };

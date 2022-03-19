@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { TouchableOpacity, Text, StyleSheet, View, ScrollView } from 'react-native'
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
-import Colors from '../../constants/Colors'
+import Colors from '../../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimensions';
 interface DropDownMenuProps {
     dropDownVisible: boolean,

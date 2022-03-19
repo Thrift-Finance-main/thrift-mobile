@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import { StyleSheet, Text, TouchableOpacity } from 'react-native'
-import Colors from '../../constants/Colors'
+import Colors from '../../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimensions'
 interface ButtonProps {
     backgroundColor: any,

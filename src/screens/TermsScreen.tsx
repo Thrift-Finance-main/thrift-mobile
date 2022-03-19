@@ -2,7 +2,7 @@ import React, {FC} from 'react';
 import {View, Text, StyleSheet, Image, ScrollView} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useSelector} from 'react-redux';
-import Colors from '../constants/Colors';
+import Colors from '../constants/CustomColors';
 import {heightPercentageToDP, widthPercentageToDP} from '../utils/dimensions';
 import Button from '../components/Common/Button';
 import Back from '../assets/back.svg';

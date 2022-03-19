@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native';
-import Colors from '../../constants/Colors';
+import Colors from '../../constants/CustomColors';
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimensions';
 import Button from '../Common/Button';
 import Modal from 'react-native-modal'

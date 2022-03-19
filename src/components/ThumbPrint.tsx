@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react'
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import OTPTextView from 'react-native-otp-textinput'
-import Colors from '../constants/Colors'
+import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
 import Button from './Common/Button'
 import Back from '../assets/back.svg'
@@ -172,7 +172,7 @@ const ThumbPrint: FC<ThumbPrintProps> = (props : ThumbPrintProps) => {
                                 return <TouchableOpacity key={index} style={{
                                     ...styles.buttonStyle, backgroundColor: props.isBlackTheme ? Colors.darkInput :
                                         Colors.white,
-                                }}  onPress={() => 
+                                }}  onPress={() =>
                                 {
                                     if (index === 0) props.onConfirmPress()
                                     else console.log({})

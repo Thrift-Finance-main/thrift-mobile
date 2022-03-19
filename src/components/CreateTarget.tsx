@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react'
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Platform, ScrollView, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Colors from '../constants/Colors'
+import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
 import DarkBack from '../assets//DarkBack.svg'
 import Back from '../assets/back.svg'

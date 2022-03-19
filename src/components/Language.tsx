@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Colors from '../constants/Colors'
+import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
 import Button from './Common/Button'
 import DropDownMenu from './Common/DropDownMenu'

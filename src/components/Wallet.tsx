@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react'
 import { View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Colors from '../constants/Colors'
+import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
 import Moon from '../assets/Moon.svg'
 import Scanner from '../assets/Scanner.svg'

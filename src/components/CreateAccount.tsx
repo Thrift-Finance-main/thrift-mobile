@@ -1,14 +1,14 @@
-import React, { FC } from 'react'
+import React, {FC, useState} from 'react'
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Colors from '../constants/Colors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
-import Button from './Common/Button'
+import CustomColors from '../constants/CustomColors';
 import Back from '../assets/back.svg'
 import DarkBack from '../assets//DarkBack.svg'
 
 import InputField from './Common/InputField'
-import { TextField } from 'react-native-ui-lib'
+import {Colors, TextField } from 'react-native-ui-lib'
+import {Button} from "react-native-ui-lib/core";
 interface CreateAccountProps {
     onContinuePress: () => void
     onBackIconPress: () => void
@@ -18,6 +18,9 @@ interface CreateAccountProps {
 const CreateAccount: FC<CreateAccountProps> = (props) => {
     console.log('CreateAccount props');
     console.log(props);
+    const [name, setName] = useState('');
+    const [paswd, setPasswd] = useState('');
+    const [confirmPasswd, setConfirmPassd] = useState('');
     return (
         <SafeAreaView style={{
             ...styles.mainContainer, backgroundColor:
@@ -53,9 +56,22 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                                     Colors.black,
                         }}
                     >Name</Text>
-                    <InputField
-                        backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
-                     placeHolder={'Name'} placeholderTextColor={''} secureText={false}/>
+                    <TextField
+                        placeholder={'Name'}
+                        floatingPlaceholder
+                        onChangeText={(n:string) => setName(n)}
+                        maxLength={20}
+                        fieldStyle={styles.inputField}
+                        color={props.isBlackTheme ? Colors.white :
+                            Colors.black}
+                        floatingPlaceholderColor={{
+                            focus: '#3656EB',
+                            default: 'grey'
+                        }}
+                        containerStyle={styles.inputFieldContainer}
+                        labelColor={{default: 'green',focus: 'black'}}
+                        migrate
+                    />
                     <Text
                         style={{
                             ...styles.filedHeader, color:
@@ -65,24 +81,20 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                         }}
                     >Create Password</Text>
                     <TextField
-                        placeholder={'Placeholder'}
+                        placeholder={'Password'}
                         floatingPlaceholder
-                        onChangeText={() => console.log('changed')}
-                        enableErrors
-                        validate={['required', 'email', (value) => value.length > 6]}
-                        validationMessage={['Field is required', 'Email is invalid', 'Password is too short']}
-                        showCharCounter
+                        onChangeText={(p:string) => setPasswd(p)}
                         maxLength={20}
+                        fieldStyle={styles.inputField}
                         color={props.isBlackTheme ? Colors.white :
                             Colors.black}
-                    />
-
-                    <InputField
-                        secureText={true}
-                        placeholderTextColor={''}
-                        placeHolder={'Password'}
-                        backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
-
+                        floatingPlaceholderColor={{
+                            focus: '#3656EB',
+                            default: 'grey'
+                        }}
+                        containerStyle={styles.inputFieldContainer}
+                        labelColor={{default: 'green',focus: 'black'}}
+                        migrate
                     />
                     <Text
                         style={styles.hintStyle}
@@ -95,24 +107,37 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                                     Colors.black,
                         }}
                     >Confirm Password</Text>
-                    <InputField
-                        secureText={true}
-                        placeholderTextColor={''}
-                        placeHolder={'Confirm password'}
-                        backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
-
+                    <TextField
+                        placeholder={'Enter password again'}
+                        floatingPlaceholder
+                        onChangeText={(p:string) => setConfirmPassd(p)}
+                        maxLength={20}
+                        fieldStyle={styles.inputField}
+                        color={props.isBlackTheme ? Colors.white :
+                            Colors.black}
+                        floatingPlaceholderColor={{
+                            focus: '#3656EB',
+                            default: 'grey'
+                        }}
+                        containerStyle={styles.inputFieldContainer}
+                        labelColor={{default: 'green',focus: 'black'}}
+                        migrate
                     />
-                    <Text
-                        style={styles.hintStyle}
-                    >Password should containt a number and alphabet</Text>
                     <View
-                        style={{ height: heightPercentageToDP(5) }}
+                        style={{ height: heightPercentageToDP(2) }}
                     />
                     <Button
-                        backgroundColor={Colors.primaryButton}
-                        buttonTitle={props.fromScreen == "CreateAccount" ? "Continue" : "Now Set"}
+                        label="Continue"
+                        borderRadius={5}
+                        size={Button.sizes.large}
+                        text60
+                        labelStyle={{fontWeight: '800', letterSpacing: 4}}
+                        style={{marginBottom: 1, marginTop: 25}}
+                        backgroundColor={CustomColors.primaryButton}
+                        disabled={false}
+                        enableShadow
+                        animateLayout
                         onPress={props.onContinuePress}
-                        titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
                     />
                 </View>
             </ScrollView>
@@ -140,18 +165,27 @@ const styles = StyleSheet.create({
         paddingHorizontal: widthPercentageToDP(2.5)
     },
     filedHeader: {
-        fontSize: 14,
+        fontSize: 20,
         marginTop: heightPercentageToDP(2.5),
         letterSpacing: 1,
-        paddingHorizontal: widthPercentageToDP(2.5),
+        paddingHorizontal: widthPercentageToDP(1.25),
         paddingVertical: heightPercentageToDP(2.5),
         fontWeight: "bold"
     },
     hintStyle: {
-        color: Colors.hintsColor,
+        color: Colors.blue1,
         fontSize: 10,
         paddingHorizontal: widthPercentageToDP(2),
         marginTop: heightPercentageToDP(2)
+    },
+    inputField: {
+        borderColor: 'black',
+        borderBottomWidth: 1,
+        paddingBottom: 4,
+    },
+    inputFieldContainer: {
+        paddingLeft: 5,
+        paddingRight: 5,
     }
 
 })
