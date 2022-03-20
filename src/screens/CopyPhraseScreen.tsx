@@ -57,9 +57,9 @@ const CopyPhraseScreen = ({ navigation, route }) => {
     const [showCopyNotification, setCopyNotification] = useState<boolean>(false)
     const onContinuePress = () => {
         console.log('onContinuePress');
-        const name = route.params.name;
-        const passwd = route.params.passwd;
-        createAcc({name, passwd}).then(r => {});
+        console.log('route.params');
+        console.log(route.params);
+        createAcc(route.params).then(r => {});
     }
     const onBackIconPress = () => {
         navigation.goBack()

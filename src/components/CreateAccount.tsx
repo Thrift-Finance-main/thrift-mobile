@@ -23,7 +23,7 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
     console.log('CreateAccount props');
     console.log(props);
     const [name, setName] = useState('');
-    const [paswd, setPasswd] = useState('');
+    const [passwd, setPasswd] = useState('');
     const [confirmPasswd, setConfirmPassd] = useState('');
     return (
         <SafeAreaView style={{
@@ -145,7 +145,7 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                         disabled={false}
                         enableShadow
                         animateLayout
-                        onPress={() => props.onContinuePress({name, paswd})}
+                        onPress={() => props.onContinuePress({name, passwd})}
                     />
                 </View>
             </ScrollView>

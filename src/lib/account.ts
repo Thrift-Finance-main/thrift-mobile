@@ -101,8 +101,6 @@ export const getMasterKeyFromMnemonic = async (
   mnemonic: string,
 ): Promise<string> => {
   const masterKeyPtr = await generateWalletRootKey2(mnemonic);
-  console.log('masterKeyPtr');
-  console.log(masterKeyPtr);
   return Buffer.from(await masterKeyPtr.as_bytes()).toString('hex');
 };
 
@@ -156,6 +154,8 @@ export const createAccount = async (
   console.log('createAccount');
 
   const masterKey = await getMasterKeyFromMnemonic(mnemonic);
+  console.log('masterKey');
+  console.log(masterKey);
 
   const masterKeyPtr = await Bip32PrivateKey.from_bytes(
     Buffer.from(masterKey, 'hex'),
@@ -167,8 +167,10 @@ export const createAccount = async (
   const publicKey = await accountKey.to_public();
   const publicKeyHex = Buffer.from(await publicKey.as_bytes()).toString('hex');
 
+  console.log('hey1');
   const encryptedMasterKey = await encryptData(masterKey, pass);
 
+  console.log('hey2');
   const paymentKey = await (
     await (await accountKey.derive(1)).derive(0)
   ).to_raw_key();
@@ -218,7 +220,7 @@ export const createAccount = async (
     if (externalPubAddressM && externalPubAddressM.length) {
       externalPubAddress.push({
         _id: '',
-        index: BASE_ADDRESS_INDEX,
+        index: i,
         network: TESTNET_NETWORK_INDEX,
         reference: '',
         tags: [],
@@ -239,7 +241,7 @@ export const createAccount = async (
     if (internalPubAddressM && internalPubAddressM.length) {
       internalPubAddress.push({
         _id: '',
-        index: BASE_ADDRESS_INDEX,
+        index: i,
         network: TESTNET_NETWORK_INDEX,
         reference: '',
         tags: [],
