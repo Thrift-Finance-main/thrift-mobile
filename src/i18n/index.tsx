@@ -6,9 +6,15 @@ import realmDb from "../db/RealmConfig";
 
 export const STORAGE_KEY = '@APP:languageCode';
 
+export const LANGUAGES_LIST = ['English','Spanish', 'French']
+
 export const LANGUAGES_KEYS = {
     EN: 'en',
     ES: 'es'
+}
+export const LANGUAGES_NAMES = {
+    'en': 'English',
+    'es': 'Spanish'
 }
 
 export const getRoute = (route:string) => {

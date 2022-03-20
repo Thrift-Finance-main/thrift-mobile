@@ -4,6 +4,8 @@ import SplashScreen from 'react-native-splash-screen';
 import { useDispatch, useSelector } from 'react-redux';
 import Language from '../components/Language'
 import { setTheme } from '../store/Action';
+import {LANGUAGES_LIST} from "../i18n";
+import realmDb from "../db/RealmConfig";
 const LanguageScreen = ({ navigation }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
     const dispatch = useDispatch();
@@ -11,25 +13,8 @@ const LanguageScreen = ({ navigation }) => {
     const [dropDownVisible, setDropDownVisible] = useState<boolean>(false);
     const [languageModal, setLanguageModal] = useState<boolean>(false)
 
-    const [languageList, setLanguageList] = useState<any>([
-        {
-            id: 0,
-            title: "English"
-        },
-        {
-            id: 2,
-            title: "French"
-        },
-        {
-            id: 1,
-            title: "Spanish"
-        },
-        {
-            id: 0,
-            title: "Porteguess"
-        },
-    ]);
-    const [dropDownText, setDropDownText] = useState<string>(languageList[0].title)
+    const [languageList, setLanguageList] = useState<any>(LANGUAGES_LIST);
+    const [dropDownText, setDropDownText] = useState<string>(LANGUAGES_LIST[0])
 
     useEffect(() => {
         SplashScreen.hide();
@@ -42,8 +27,8 @@ const LanguageScreen = ({ navigation }) => {
     const showDropDownMenu = () => {
         setDropDownVisible(true)
     }
-    const updateDropDownText = (title: string, id?: number) => {
-        setDropDownText(title)
+    const updateDropDownText = (lan: string) => {
+        setDropDownText(lan)
         setDropDownVisible(false)
     }
     const onContinuePress = () => {
@@ -55,11 +40,12 @@ const LanguageScreen = ({ navigation }) => {
 
 
     }
-    const proceed = (title) => {
-        setDropDownText(title)
-
+    const proceed = (lan:string) => {
+        setDropDownText(lan)
+        console.log('proceed');
+        console.log(lan);
+        realmDb.setLanguage(lan).then(r => {})
         setLanguageModal(!languageModal)
-
     }
     const checkTheme = async () => {
         let isBlackTheme = await AsyncStorage.getItem('isBlackTheme');

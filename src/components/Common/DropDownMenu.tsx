@@ -1,5 +1,6 @@
 import React, { FC } from 'react'
 import { TouchableOpacity, Text, StyleSheet, View, ScrollView } from 'react-native'
+// @ts-ignore
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import Colors from '../../constants/CustomColors'
@@ -65,7 +66,7 @@ const DropDownMenu: FC<DropDownMenuProps> = (props) => {
                             <MenuItem
                                 textStyle={{ color: Colors.dropDownTextColor }}
                                 style={styles.menuItemStyle}
-                                onPress={() => props.updateDropDownText(item.title, item.id)}>{item.title}</MenuItem>
+                                onPress={() => props.updateDropDownText(item)}>{item}</MenuItem>
                             {props.languageList.length - 1 != index ?
                                 <MenuDivider
                                     color={Colors.dropDownBorderColor}
