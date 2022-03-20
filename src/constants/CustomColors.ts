@@ -22,4 +22,5 @@ export default {
   authTitle: '#909090',
   darkInput: '#171F23',
   lightWhite: '#B5B2B2',
+  error: 'red',
 };

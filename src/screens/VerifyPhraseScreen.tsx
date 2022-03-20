@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
 import VerifyPhrase from '../components/VerifyPhrase'
+import {shuffle} from "../utils";
 
-const VerifyPhraseScreen = ({ navigation }) => {
+const VerifyPhraseScreen = ({ navigation, route }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
 
     const [verifyPhrase, setVerifyPhrase] = useState<any>([{
@@ -65,7 +66,8 @@ const VerifyPhraseScreen = ({ navigation }) => {
         title: "Enumirate"
     }
     ])
-    const [verifiedPhrases, setVerifiedPhrases] = useState<any>([])
+    const [verifiedPhrases, setVerifiedPhrases] = useState<string[]>([]);
+    const [verifyPhrases, setVerifyPhrases] = useState<string[]>(route.params.split(' '));
     const onContinuePress = () => {
         navigation.navigate("CreatePin")
     }
@@ -73,7 +75,13 @@ const VerifyPhraseScreen = ({ navigation }) => {
         navigation.goBack()
     }
 
+    const validateSeed = () => {
+        return route.params !== verifiedPhrases.join(' ');
+    }
+
     const onTapPhrasePress = (item: any) => {
+        console.log('\nonTapPhrasePress');
+        console.log(item);
         let temp = [...verifiedPhrases];
         let val = temp.find((Item) => Item === item);
         if (val === undefined) {
@@ -81,17 +89,29 @@ const VerifyPhraseScreen = ({ navigation }) => {
             setVerifiedPhrases(temp)
         }
 
-        console.log(item);
+        console.log('\nverifiedPhrases');
+        console.log(verifiedPhrases);
+        let updatedVerifyPhrases;
 
+        console.log('verifyPhrases');
+        console.log(verifyPhrases);
+        updatedVerifyPhrases = verifyPhrases.filter(x => x !== item);
+        console.log('updatedVerifyPhrases');
+        console.log(updatedVerifyPhrases);
+        setVerifyPhrases(updatedVerifyPhrases);
     }
+    console.log('navigation');
+    console.log(route.params);
+
     return (
         <VerifyPhrase
-            verifyPhrase={verifyPhrase}
+            verifyPhrase={verifyPhrases}
+            verifiedPhrases={verifiedPhrases}
             onContinuePress={onContinuePress}
             onBackIconPress={onBackIconPress}
-            verifiedPhrases={verifiedPhrases}
             onTapPhrasePress={onTapPhrasePress}
             isBlackTheme={isBlackTheme}
+            validated={validateSeed()}
         />
     )
 }

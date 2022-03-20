@@ -3,10 +3,12 @@ import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
-import Button from './Common/Button'
 import Back from '../assets/back.svg'
 import Bulb from '../assets/Bulb.svg'
 import DarkBack from '../assets//DarkBack.svg'
+import {shuffle} from "../utils";
+import CustomColors from "../constants/CustomColors";
+import { Button } from 'react-native-ui-lib'
 
 interface VerifyPhraseProps {
     onContinuePress: () => void
@@ -14,9 +16,11 @@ interface VerifyPhraseProps {
     onTapPhrasePress: (item: any) => void
     verifyPhrase: any
     verifiedPhrases: any
-    isBlackTheme: any
+    isBlackTheme: any,
+    validated: boolean
 }
 const VerifyPhrase: FC<VerifyPhraseProps> = (props) => {
+
     return (
         <SafeAreaView style={{
             ...styles.mainContainer, backgroundColor:
@@ -76,7 +80,7 @@ const VerifyPhrase: FC<VerifyPhraseProps> = (props) => {
                                                 props.isBlackTheme ? Colors.white :
                                                     Colors.black,
                                         }}>
-                                            {index + 1}{". "}{item.title}
+                                            {index + 1}{". "}{item}
                                         </Text>
 
                                     </View>
@@ -85,7 +89,7 @@ const VerifyPhrase: FC<VerifyPhraseProps> = (props) => {
                         </View>
                     </View>
                     <View style={styles.tagsContainer}>
-                        {props.verifyPhrase.map((item: any, index: number) => {
+                        {shuffle(props.verifyPhrase).map((item: any, index: number) => {
                             return (
                                 <TouchableOpacity key={index} style={{
                                     ...styles.bottomButtons,
@@ -99,7 +103,7 @@ const VerifyPhrase: FC<VerifyPhraseProps> = (props) => {
                                             props.isBlackTheme ? Colors.white :
                                                 Colors.black,
                                     }}>
-                                        {item.title}
+                                        {item}
                                     </Text>
                                 </TouchableOpacity>
                             );
@@ -120,11 +124,18 @@ const VerifyPhrase: FC<VerifyPhraseProps> = (props) => {
                         style={{ height: heightPercentageToDP(4) }}
                     />
                     <Button
-                        backgroundColor={Colors.primaryButton}
-                        buttonTitle='Confirm'
+                        label="Confirm"
+                        borderRadius={5}
+                        size={Button.sizes.large}
+                        color={props.isBlackTheme ? Colors.black : Colors.white}
+                        text60
+                        labelStyle={{fontSize: 14, fontWeight: 'bold', letterSpacing: 2, textAlign: "center"}}
+                        style={styles.buttonStyle}
+                        backgroundColor={CustomColors.primaryButton}
+                        disabled={props.validated}
+                        enableShadow
+                        animateLayout
                         onPress={props.onContinuePress}
-                        titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
-
                     />
                     <View
                         style={{ height: heightPercentageToDP(4) }}
@@ -147,6 +158,13 @@ const styles = StyleSheet.create({
         letterSpacing: 0.7,
         lineHeight: 17,
         paddingVertical: heightPercentageToDP(2),
+    },
+    buttonStyle: {
+        width: widthPercentageToDP(80),
+        height: heightPercentageToDP(8),
+        borderRadius: 9,
+        justifyContent: "center",
+        alignSelf: "center"
     },
     bottomButtons: {
         borderRadius: 6,

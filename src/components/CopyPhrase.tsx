@@ -26,6 +26,7 @@ interface CopyPhraseProps {
     showCopyNotification: boolean
     isBlackTheme: any,
     account: any,
+    error: string,
 }
 const CopyPhrase: FC<CopyPhraseProps> = (props) => {
     return (
@@ -67,7 +68,7 @@ const CopyPhrase: FC<CopyPhraseProps> = (props) => {
                                         props.isBlackTheme ? Colors.white :
                                             Colors.black,
                                 }}>
-                                    {item.title}
+                                    {index+1}. {item}
                                 </Text>
                             </View>
                         );
@@ -75,6 +76,7 @@ const CopyPhrase: FC<CopyPhraseProps> = (props) => {
                 </View>
 
                 {
+                    /*
                     props.isBlackTheme ?
                         <View
                             style={styles.copyQRContainer}
@@ -102,6 +104,7 @@ const CopyPhrase: FC<CopyPhraseProps> = (props) => {
                             >
                                 <ShowQR /></TouchableOpacity>
                         </View>
+                     */
                 }
 
 
@@ -124,6 +127,11 @@ const CopyPhrase: FC<CopyPhraseProps> = (props) => {
                     onPress={props.onContinuePress}
                     titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
                 />
+                {props.error && props.error.length ? <Text
+                    style={styles.errorText}
+                >
+                    {props.error}
+                </Text> : null}
                 <Modal
                     isVisible={props.showCopyNotification}
                     style={{ margin: -1, justifyContent: 'flex-end', paddingBottom: heightPercentageToDP(5), alignItems: 'center' }}
@@ -186,6 +194,13 @@ const styles = StyleSheet.create({
         fontSize: 14,
         paddingHorizontal: widthPercentageToDP(8),
         lineHeight: 20
+    },
+    errorText: {
+        color: Colors.error,
+        fontSize: 9,
+        alignSelf: "center",
+        paddingHorizontal: widthPercentageToDP(8),
+        lineHeight: 20,
     },
     copyQRContainer: {
         flexDirection: "row",
