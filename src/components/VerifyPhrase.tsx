@@ -14,6 +14,7 @@ interface VerifyPhraseProps {
     onContinuePress: () => void
     onBackIconPress: () => void
     onTapPhrasePress: (item: any) => void
+    onTapVerifiedPhrasePress: (item: any) => void
     verifyPhrase: any
     verifiedPhrases: any
     isBlackTheme: any,
@@ -72,18 +73,24 @@ const VerifyPhrase: FC<VerifyPhraseProps> = (props) => {
                         <View style={styles.VerifiedtagsContainer}>
                             {props.verifiedPhrases?.map((item: any, index: number) => {
                                 return (
-                                    <View key={index} style={styles.VerifiedbottomButtons}
-
+                                    <TouchableOpacity key={index} style={{
+                                        borderColor: props.isBlackTheme ? Colors.white : Colors.black
+                                    }}
+                                                      onPress={() => props.onTapVerifiedPhrasePress(item)}
                                     >
-                                        <Text style={{
-                                            ...styles.tagText, color:
-                                                props.isBlackTheme ? Colors.white :
-                                                    Colors.black,
-                                        }}>
-                                            {index + 1}{". "}{item}
-                                        </Text>
+                                        <View key={index} style={styles.VerifiedbottomButtons}
 
-                                    </View>
+                                        >
+                                            <Text style={{
+                                                ...styles.tagText, color:
+                                                    props.isBlackTheme ? Colors.white :
+                                                        Colors.black,
+                                            }}>
+                                                {index + 1}{". "}{item}
+                                            </Text>
+
+                                        </View>
+                                    </TouchableOpacity>
                                 );
                             })}
                         </View>

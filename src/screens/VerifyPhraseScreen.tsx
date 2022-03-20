@@ -89,15 +89,18 @@ const VerifyPhraseScreen = ({ navigation, route }) => {
             setVerifiedPhrases(temp)
         }
 
-        console.log('\nverifiedPhrases');
-        console.log(verifiedPhrases);
         let updatedVerifyPhrases;
 
-        console.log('verifyPhrases');
-        console.log(verifyPhrases);
         updatedVerifyPhrases = verifyPhrases.filter(x => x !== item);
-        console.log('updatedVerifyPhrases');
-        console.log(updatedVerifyPhrases);
+        setVerifyPhrases(updatedVerifyPhrases);
+    }
+    const onTapVerifiedPhrasePress = (item: any) => {
+        console.log('\nonTapVerifiedPhrasePress');
+        console.log(item);
+        let temp = verifiedPhrases.filter(p => p !== item);
+        setVerifiedPhrases(temp)
+        let updatedVerifyPhrases = verifyPhrases;
+        updatedVerifyPhrases.push(item);
         setVerifyPhrases(updatedVerifyPhrases);
     }
     console.log('navigation');
@@ -110,6 +113,7 @@ const VerifyPhraseScreen = ({ navigation, route }) => {
             onContinuePress={onContinuePress}
             onBackIconPress={onBackIconPress}
             onTapPhrasePress={onTapPhrasePress}
+            onTapVerifiedPhrasePress={onTapVerifiedPhrasePress}
             isBlackTheme={isBlackTheme}
             validated={validateSeed()}
         />
