@@ -1,5 +1,7 @@
 import realmDb from "./RealmConfig";
 import {IConfig} from "./model/appConfigModel";
+import i18next from "i18next";
+import {LANGUAGES_NAMES} from "../i18n";
 
 export const DEFAULT_CONFIG: IConfig = {
     _id: '0',
@@ -20,6 +22,8 @@ export const initConfig = () => {
         } else {
             realmDb.setConfig(currentConfig).then(r => {});
         }
+        // @ts-ignore
+        i18next.changeLanguage(LANGUAGES_NAMES[currentConfig.language]).then(r => {});
     });
     return currentConfig;
 };

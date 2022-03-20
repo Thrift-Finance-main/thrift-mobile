@@ -13,8 +13,9 @@ export const LANGUAGES_KEYS = {
     ES: 'es'
 }
 export const LANGUAGES_NAMES = {
-    'en': 'English',
-    'es': 'Spanish'
+    'English': 'en',
+    'Spanish': 'es',
+    'French': 'fr',
 }
 
 export const getRoute = (route:string) => {
@@ -33,18 +34,11 @@ export function translate(cell:string) {
 }
 
 export function getCurrentLang() {
-  return i18next.language;
+    return i18next.language;
 }
 
 export async function changeLang(lang:string) {
   i18next.changeLanguage(lang);
-  /*
-  try {
-    await AsyncStorage.setItem(STORAGE_KEY, lang);
-  } catch (error) {
-    console.log(` changeLanguage() Error : ${error}`);
-  }
-  */
 }
 
 export const resources = {
@@ -56,14 +50,12 @@ export const resources = {
   },
 } as const;
 
-
-
 export function initi18n() {
-    getCurrentLanguage().then(lang => {
+    realmDb.getLanguage().then(lang => {
         i18next
             .use(initReactI18next)
             .init({
-                lng: lang,
+                lng: 'en',
                 // tslint:disable-next-line:object-shorthand-properties-first
                 resources,
                 debug: true,

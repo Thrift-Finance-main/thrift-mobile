@@ -129,8 +129,10 @@ export class RealmDb {
     // get current config
     const appConfiguration = this.realm.objects(APP_CONFIGURATION);
     const appConf: Realm.Object = appConfiguration[0];
+    console.log('appConf');
     console.log(appConf);
     // @ts-ignore
+    console.log('appConf.language');
     console.log(appConf.language);
     // @ts-ignore
     return appConf.language;

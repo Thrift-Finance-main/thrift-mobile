@@ -6,6 +6,8 @@ import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
 import Button from './Common/Button'
 import DropDownMenu from './Common/DropDownMenu'
 import LanguageModal from './PopUps/LanguageModal'
+import {withTranslation} from "react-i18next";
+import {translate} from "../i18n";
 interface LanguageProps {
     dropDownVisible: boolean,
     hideDropDownMenu: () => void,
@@ -33,7 +35,7 @@ const Language: FC<LanguageProps> = (props) => {
                             props.isBlackTheme ? Colors.white :
                                 Colors.black,
                     }}
-                >Select Language</Text>
+                >{translate('LanguageScreen.selectLanguage')}</Text>
                 <DropDownMenu
                     dropDownVisible={false}
                     hideDropDownMenu={props.hideDropDownMenu}
@@ -48,7 +50,7 @@ const Language: FC<LanguageProps> = (props) => {
                 />
                 <Button
                     backgroundColor={Colors.primaryButton}
-                    buttonTitle='Continue'
+                    buttonTitle={translate('Common.Continue')}
                     onPress={props.onContinuePress}
                     titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
 
@@ -81,4 +83,4 @@ const styles = StyleSheet.create({
         paddingVertical: heightPercentageToDP(15)
     }
 })
-export default Language;
+export default  withTranslation()(Language);

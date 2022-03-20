@@ -4,8 +4,11 @@ import SplashScreen from 'react-native-splash-screen';
 import { useDispatch, useSelector } from 'react-redux';
 import Language from '../components/Language'
 import { setTheme } from '../store/Action';
-import {LANGUAGES_LIST} from "../i18n";
+import {getCurrentLang, getCurrentLanguage, LANGUAGES_LIST, LANGUAGES_NAMES} from "../i18n";
 import realmDb from "../db/RealmConfig";
+import i18next from "i18next";
+import {withTranslation} from "react-i18next";
+import {getKeyByValue} from "../utils";
 const LanguageScreen = ({ navigation }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
     const dispatch = useDispatch();
@@ -37,15 +40,15 @@ const LanguageScreen = ({ navigation }) => {
     const hideShowLanguageModal = () => {
         setLanguageModal(!languageModal)
         //navigation.navigate("Welcome")
-
-
     }
     const proceed = (lan:string) => {
-        setDropDownText(lan)
-        console.log('proceed');
-        console.log(lan);
-        realmDb.setLanguage(lan).then(r => {})
-        setLanguageModal(!languageModal)
+        setDropDownText(lan);
+        // @ts-ignore
+        realmDb.setLanguage(LANGUAGES_NAMES[lan]).then(r => {});
+        // @ts-ignore
+        i18next.changeLanguage(LANGUAGES_NAMES[lan]).then(r => {});
+
+        setLanguageModal(!languageModal);
     }
     const checkTheme = async () => {
         let isBlackTheme = await AsyncStorage.getItem('isBlackTheme');
@@ -54,9 +57,7 @@ const LanguageScreen = ({ navigation }) => {
         if (isBlackTheme == null)
             dispatch(setTheme(false))
         else
-            dispatch(setTheme(isBlackTheme == "0" ? true : false))
-
-
+            dispatch(setTheme(isBlackTheme == "0"))
     }
     return (
         <Language
@@ -75,4 +76,4 @@ const LanguageScreen = ({ navigation }) => {
     )
 }
 
-export default LanguageScreen
+export default withTranslation()(LanguageScreen)

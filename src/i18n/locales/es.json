@@ -1,5 +1,10 @@
 {
-  "title": "Hola mundo",
+  "Common": {
+    "Continue": "Continuar"
+  },
+  "LanguageScreen": {
+    "selectLanguage": "Seleccionar Lenguaje"
+  },
   "routes": {
     "home": "Inicio",
     "settings": "Ajustes",
