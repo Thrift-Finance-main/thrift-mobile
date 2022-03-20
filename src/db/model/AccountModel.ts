@@ -10,7 +10,6 @@ export const ACCOUNT_TABLE = 'Account';
 export interface IAccount {
   _id: string;
   accountName: string;
-  pinHash: string;
   balance: string; // #
   tokens: INativeToken[]; // #
   encryptedMasterKey: string;
@@ -27,7 +26,6 @@ export const AccountSchema = {
   properties: {
     _id: 'uuid',
     accountName: 'string',
-    pinHash: 'string',
     balance: 'string',
     tokens: 'NativeToken[]',
     encryptedMasterKey: 'string',

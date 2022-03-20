@@ -24,6 +24,7 @@ react-native link @emurgo/react-native-haskell-shelley
 Start the Metro Bundler:
 ```
 yarn start
+npx react-native start --reset-cache
 ```
 
 Build and start the app:

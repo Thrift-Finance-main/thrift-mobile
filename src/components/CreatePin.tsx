@@ -4,16 +4,23 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import OTPTextView from 'react-native-otp-textinput'
 import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
-import Button from './Common/Button'
 import Back from '../assets/back.svg'
 import DarkBack from '../assets//DarkBack.svg'
 import CustomModal from './PopUps/CustomModal'
+import CustomColors from "../constants/CustomColors";
+import { Button } from 'react-native-ui-lib'
+
 interface CreatePinProps {
-    onConfirmPress: () => void
-    onBackIconPress: () => void
+    onConfirmPress: () => void,
+    onBackIconPress: () => void,
+    setPincode: (pincode:string) => void,
+    setConfirmedPincode: (confirmedPincode:string) => void,
+    pincode: string,
+    confirmedPincode: string,
     visible: boolean,
     hideModal: () => void,
-    isBlackTheme: any
+    isBlackTheme: any,
+    validate: boolean,
 }
 const CreatePin: FC<CreatePinProps> = (props) => {
     return (
@@ -55,9 +62,7 @@ const CreatePin: FC<CreatePinProps> = (props) => {
                         <OTPTextView
                             autoFocusOnLoad={true}
                             autoFocus={true}
-                            handleTextChange={(e) => {
-                                console.log(e)
-                            }}
+                            handleTextChange={(e) => props.setPincode(e)}
                             textInputStyle={{
                                 ...styles.roundedTextInput, backgroundColor: props.isBlackTheme ? Colors.darkInput :
                                     Colors.otpBackground,
@@ -86,9 +91,7 @@ const CreatePin: FC<CreatePinProps> = (props) => {
                         <OTPTextView
                             autoFocusOnLoad={true}
 
-                            handleTextChange={(e) => {
-                                console.log(e)
-                            }}
+                            handleTextChange={(e) => props.setConfirmedPincode(e)}
                             textInputStyle={{
                                 ...styles.roundedTextInput, backgroundColor: props.isBlackTheme ? Colors.darkInput :
                                     Colors.otpBackground,
@@ -109,11 +112,20 @@ const CreatePin: FC<CreatePinProps> = (props) => {
                     <View
                         style={{ height: heightPercentageToDP(14) }}
                     />
+
                     <Button
-                        backgroundColor={Colors.primaryButton}
-                        buttonTitle='Confirm'
+                        label="Confirm"
+                        borderRadius={5}
+                        size={Button.sizes.large}
+                        color={props.isBlackTheme ? Colors.black : Colors.white}
+                        text60
+                        labelStyle={{fontSize: 14, fontWeight: 'bold', letterSpacing: 2, textAlign: "center"}}
+                        style={styles.buttonStyle}
+                        backgroundColor={CustomColors.primaryButton}
+                        disabled={!props.validate}
+                        enableShadow
+                        animateLayout
                         onPress={props.onConfirmPress}
-                        titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
                     />
                     <View
                         style={{ height: heightPercentageToDP(4) }}
@@ -133,6 +145,13 @@ const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
         width: "100%"
+    },
+    buttonStyle: {
+        width: widthPercentageToDP(80),
+        height: heightPercentageToDP(8),
+        borderRadius: 9,
+        justifyContent: "center",
+        alignSelf: "center"
     },
     imageStyle: {
         width: widthPercentageToDP(100),

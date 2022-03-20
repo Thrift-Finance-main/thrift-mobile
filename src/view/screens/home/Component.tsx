@@ -52,6 +52,7 @@ class Home extends React.PureComponent<HomeProps, HomeState> {
       _id: '882dd631-bc6e-4e0e-a9e8-f07b685fec8c',
       name: 'Tim Doer.',
       currentAccount: 'Jaime',
+      pinhash: '',
       language: 'es',
       currentEndpoint: 'http://192.168.1.141:3101/graphql',
       version: '0.1.0',

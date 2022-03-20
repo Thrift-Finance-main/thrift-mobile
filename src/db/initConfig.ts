@@ -4,7 +4,9 @@ import {IConfig} from "./model/appConfigModel";
 export const DEFAULT_CONFIG: IConfig = {
     _id: '0',
     currentAccount: '',
+    pinhash: '',
     language: 'en',
+    themeMode: 'light',
     currentEndpoint: 'http://192.168.1.141:3101/graphql',
     version: '0.1.0',
 };

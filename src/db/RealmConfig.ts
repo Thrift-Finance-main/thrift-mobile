@@ -36,7 +36,7 @@ export class RealmDb {
         NativeTokenSchema,
         AccountSchema,
       ],
-      schemaVersion: 14,
+      schemaVersion: 15,
       migration: (oldRealm, newRealm) => {
         console.log('migrate');
         /*
@@ -84,7 +84,9 @@ export class RealmDb {
         this.realm.create(APP_CONFIGURATION, {
           _id: new UUID(), // create a _id with a randomly generated UUID
           currentAccount: config.currentAccount,
+          pinhash: config.pinhash,
           language: config.language,
+          themeMode: config.themeMode,
           currentEndpoint: config.currentEndpoint,
           version: config.version,
         });
@@ -98,7 +100,9 @@ export class RealmDb {
       this.realm.write(() => {
         // @ts-ignore
         appConf.currentAccount = config.currentAccount;
+        appConf.pinhash = config.pinhash;
         appConf.language = config.language;
+        appConf.themeMode = config.themeMode;
         appConf.currentEndpoint = config.currentEndpoint;
         appConf.version = config.version;
       });
@@ -204,7 +208,6 @@ export class RealmDb {
         // @ts-ignore
         _id: new UUID(), // create a _id with a randomly generated UUID
         accountName: account.accountName,
-        pinHash: account.pinHash,
         balance: account.balance,
         tokens,
         encryptedMasterKey: account.encryptedMasterKey,
@@ -225,7 +228,7 @@ export class RealmDb {
         console.log(e);
       }
     } else {
-      console.log('Account Name already exists');
+      console.log('Account name already exists');
       return {
         error: 'Account already exists',
       };
@@ -239,15 +242,23 @@ export class RealmDb {
     });
   };
 
-  updatePINAccount = async (accountName: string, pinHash: string) => {
-    return this.realm.write(() => {
-      // search for a realm object with a primary key that is an int.
-      const acc: Realm.Object = this.realm.objectForPrimaryKey(
-        ACCOUNT_TABLE,
-        accountName,
-      );
-      acc.pinHash = pinHash;
-    });
+  setPinCode = async (pinHash: string) => {
+    console.log('set pinHash');
+    console.log(pinHash);
+    // get current config
+    try{
+      const appConfiguration = this.realm.objects(APP_CONFIGURATION);
+      const appConf: Realm.Object = appConfiguration[0];
+      this.realm.write(() => {
+        // @ts-ignore
+        appConf.pinhash = pinHash;
+      });
+    } catch (e) {
+      return {
+        error: e
+      }
+    }
+
   };
 
   getAllAccounts = async () => {

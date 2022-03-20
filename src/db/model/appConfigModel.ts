@@ -3,7 +3,9 @@ export const APP_CONFIGURATION = 'APP_CONFIGURATION';
 export interface IConfig {
   _id: string;
   currentAccount: string;
+  pinhash: string;
   language: string;
+  themeMode: string;
   currentEndpoint: string;
   version: string;
 }
@@ -13,6 +15,7 @@ export const AppConfigurationSchema = {
   properties: {
     _id: 'uuid',
     currentAccount: 'string',
+    pinhash: 'string',
     language: 'string',
     currentEndpoint: 'string',
     version: 'string',

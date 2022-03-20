@@ -252,7 +252,6 @@ export const createAccount = async (
   const newAccount: IAccount = {
     _id: '',
     accountName,
-    pinHash: '',
     balance: '0',
     tokens: [],
     encryptedMasterKey,

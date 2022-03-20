@@ -67,7 +67,7 @@ const VerifyPhraseScreen = ({ navigation, route }) => {
     }
     ])
     const [verifiedPhrases, setVerifiedPhrases] = useState<string[]>([]);
-    const [verifyPhrases, setVerifyPhrases] = useState<string[]>(route.params.split(' '));
+    const [verifyPhrases, setVerifyPhrases] = useState<string[]>(route.params ? route.params.split(' ') : []);
     const onContinuePress = () => {
         navigation.navigate("CreatePin")
     }
@@ -76,7 +76,8 @@ const VerifyPhraseScreen = ({ navigation, route }) => {
     }
 
     const validateSeed = () => {
-        return route.params !== verifiedPhrases.join(' ');
+        //return route.params !== verifiedPhrases.join(' '); TODO
+        return false;
     }
 
     const onTapPhrasePress = (item: any) => {
