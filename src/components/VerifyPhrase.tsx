@@ -22,6 +22,9 @@ interface VerifyPhraseProps {
 }
 const VerifyPhrase: FC<VerifyPhraseProps> = (props) => {
 
+    console.log('navigation in VerifyPhrase');
+    console.log(props.verifyPhrase);
+    console.log(props.verifiedPhrases);
     return (
         <SafeAreaView style={{
             ...styles.mainContainer, backgroundColor:

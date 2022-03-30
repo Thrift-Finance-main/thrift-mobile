@@ -2,74 +2,25 @@ import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
 import VerifyPhrase from '../components/VerifyPhrase'
 import {shuffle} from "../utils";
+import realmDb from "../db/RealmConfig";
+import {IAccount} from "../db/model/AccountModel";
+import {createAccount} from "../lib/account";
 
 const VerifyPhraseScreen = ({ navigation, route }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
 
-    const [verifyPhrase, setVerifyPhrase] = useState<any>([{
-        id: 1,
-        title: "Lounch"
-    }
-        ,
-    {
-        id: 2,
-
-        title: "Enumirate"
-    }
-        , {
-        id: 3,
-        title: "Complete"
-    }
-
-        ,
-    {
-        id: 4,
-        title: "Lounch"
-    }
-        ,
-    {
-        id: 5,
-        title: "Enumirate"
-    }
-        , {
-        id: 6,
-        title: "Complete"
-    }
-
-        ,
-    {
-        id: 7,
-        title: "Lounch"
-    }
-        ,
-    {
-        id: 8,
-        title: "Enumirate"
-    }
-        ,
-    {
-        id: 7,
-        title: "Lounch"
-    }
-        ,
-    {
-        id: 8,
-        title: "Enumirate"
-    },
-    {
-        id: 7,
-        title: "Lounch"
-    }
-        ,
-    {
-        id: 8,
-        title: "Enumirate"
-    }
-    ])
+    console.log('navigation in VerifyPhraseScreen');
+    console.log(route.params);
+    const [error, setError] = useState<string>('');
     const [verifiedPhrases, setVerifiedPhrases] = useState<string[]>([]);
-    const [verifyPhrases, setVerifyPhrases] = useState<string[]>(route.params ? route.params.split(' ') : []);
+    const [verifyPhrases, setVerifyPhrases] = useState<string[]>(route.params && route.params.seed ? route.params.seed.split(' ') : []);
     const onContinuePress = () => {
-        navigation.navigate("CreatePin")
+        console.log('onContinuePress in VerifyPhraseScreen');
+        createAcc(route.params).then(r => {
+            console.log('Account');
+            console.log(r);
+            navigation.navigate("CreatePin");
+        });
     }
     const onBackIconPress = () => {
         navigation.goBack()
@@ -104,7 +55,48 @@ const VerifyPhraseScreen = ({ navigation, route }) => {
         updatedVerifyPhrases.push(item);
         setVerifyPhrases(updatedVerifyPhrases);
     }
-    console.log('navigation');
+
+    const createAcc = async (accData:any) => {
+        setError('');
+        const accountData = accData;
+        console.log('\ncreateAcc');
+        console.log('accountData');
+        console.log(accountData);
+
+        const name = accountData.name;
+        const passwd = accountData.passwd;
+        const seed = route.params.seed;
+
+        console.log('seed');
+        console.log(seed);
+
+        if (name.length) {
+            const accInState = await realmDb.getAllAccounts();
+            console.log(accInState);
+            const acc: IAccount = await createAccount(
+                seed,
+                name,
+                passwd
+            );
+            console.log('acc');
+            console.log(JSON.stringify(acc, null, 2));
+
+            const accAdded =  await realmDb.addAccount(acc);
+            console.log('accAdded');
+            console.log(accAdded);
+            if (accAdded && accAdded.error) {
+                // handle error
+                console.log('error');
+                setError(accAdded.error);
+                navigation.navigate("VerifyPhrase", seed)
+            } else {
+                console.log('navigate to verify');
+                navigation.navigate("VerifyPhrase")
+            }
+        }
+    }
+
+    console.log('navigation in VerifyPhraseScreen');
     console.log(route.params);
 
     return (

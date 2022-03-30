@@ -9,60 +9,16 @@ import { Toast } from 'react-native-ui-lib';
 const CopyPhraseScreen = ({ navigation, route }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
 
-    const [phraseTags, setPhraseTags] = useState<any>([{
-        title: "1. Lounch"
-    }
-        ,
-    {
-        title: "2. Enumirate"
-    }
-        , {
-        title: "3. Complete"
-    }
-
-        ,
-    {
-        title: "4. Lounch"
-    }
-        ,
-    {
-        title: "5. Enumirate"
-    }
-        , {
-        title: "6. Complete"
-    }
-
-        ,
-    {
-        title: "7. Lounch"
-    }
-        ,
-    {
-        title: "8. Enumirate"
-    },
-    {
-        title: "9. Enumirate"
-    },
-    {
-        title: "10. Enumirate"
-    },
-    {
-        title: "11. Enumirate"
-    },
-    {
-        title: "12. Enumirate"
-    },
-
-    ])
     const [copiedText, setCopiedText] = useState<string>('');
     const [error, setError] = useState<string>('');
     const [seed, setSeed] = useState<string>(generateAdaMnemonic());
     const [showCopyNotification, setCopyNotification] = useState<boolean>(false)
     const onContinuePress = () => {
-        console.log('onContinuePress');
+        console.log('\nonContinuePress');
         console.log('route.params');
         console.log(route.params);
-        createAcc(route.params).then(r => {});
+        // createAcc(route.params).then(r => {});
+        navigation.navigate("VerifyPhrase", {...{seed, name: route.params.name, passwd: route.params.passwd }})
     }
     const onBackIconPress = () => {
         navigation.goBack()
@@ -72,9 +28,9 @@ const CopyPhraseScreen = ({ navigation, route }) => {
         navigation.navigate("ShowQRCode")
     }
 
-    const onCopyPress = () => {
+    const onCopyPress = (data:string) => {
         setCopyNotification(true)
-        Clipboard.setString('hello world');
+        Clipboard.setString(data);
         setTimeout(() => {
             setCopyNotification(false)
             navigation.navigate("VerifyPhrase")
@@ -99,41 +55,7 @@ const CopyPhraseScreen = ({ navigation, route }) => {
         );
     };
 
-    const createAcc = async (accData:any) => {
-        setError('');
-        const accountData = accData;
-        console.log('\ncreateAcc');
-        console.log('accountData');
-        console.log(accountData);
 
-        const name = accountData.name;
-        const passwd = accountData.passwd;
-        if (name.length) {
-            const accInState = await realmDb.getAllAccounts();
-            console.log(accInState);
-            const acc: IAccount = await createAccount(
-                seed,
-                name,
-                passwd
-            );
-            console.log('acc');
-            console.log(JSON.stringify(acc, null, 2));
-
-            const accAdded =  await realmDb.addAccount(acc);
-            console.log('accAdded');
-            console.log(accAdded);
-            if (accAdded && accAdded.error) {
-                // handle error
-                console.log('error');
-                setError(accAdded.error);
-                renderToast(accAdded.error);
-                navigation.navigate("VerifyPhrase", seed)
-            } else {
-                console.log('navigate to verify');
-                navigation.navigate("VerifyPhrase")
-            }
-        }
-    }
 
 
     console.log('seed')
@@ -144,7 +66,7 @@ const CopyPhraseScreen = ({ navigation, route }) => {
             onContinuePress={onContinuePress}
             onBackIconPress={onBackIconPress}
             onShowQRPress={onShowQRPress}
-            onCopyPress={onCopyPress}
+            onCopyPress={() => onCopyPress(seed)}
             showCopyNotification={showCopyNotification}
             isBlackTheme={isBlackTheme}
             account={route.params}

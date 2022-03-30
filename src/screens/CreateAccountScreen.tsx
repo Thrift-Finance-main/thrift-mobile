@@ -1,7 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
-import CreateAccount from '../components/CreateAccount'
-import CreateAccount from "../components/CreateAccount";
+import CreateAccount from '../components/CreateAccount';
 
 const CreateAccountScreen = ({ navigation, route }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
