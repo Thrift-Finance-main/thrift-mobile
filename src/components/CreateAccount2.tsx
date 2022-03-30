@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, {FC, useState} from 'react'
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '../../src/constants/CustomColors';
@@ -7,14 +7,19 @@ import Button from './Common/Button'
 import Back from '../../src/assets/back.svg';
 import DarkBack from '../../src/assets/DarkBack.svg';
 
-import InputField from './Common/InputField'
+import InputField from './Common/InputField';
 interface CreateAccountProps {
-    onContinuePress: () => void
+    onContinuePress: (p: { passwd: string; name: string }) => void
     onBackIconPress: () => void
     fromScreen: any
     isBlackTheme: any
 }
 const CreateAccount2: FC<CreateAccountProps> = (props) => {
+    console.log('CreateAccount props');
+    console.log(props);
+    const [name, setName] = useState('');
+    const [passwd, setPasswd] = useState('');
+    const [confirmPasswd, setConfirmPassd] = useState('');
     return (
         <SafeAreaView style={{
             ...styles.mainContainer, backgroundColor:
@@ -51,9 +56,10 @@ const CreateAccount2: FC<CreateAccountProps> = (props) => {
                         }}
                     >Name</Text>
                     <InputField
+                        onChangeText={(n:string) => setName(n)}
                         backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
                         placeholderTextColor={props.isBlackTheme ? Colors.white : Colors.black}
-
+                        placeHolder={'Name'}
                     />
                     <Text
                         style={{
@@ -68,8 +74,8 @@ const CreateAccount2: FC<CreateAccountProps> = (props) => {
                         secureText={true}
                         backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
                         placeholderTextColor={props.isBlackTheme ? Colors.white : Colors.black}
-
-                    />
+                        onChangeText={(p:string) => setPasswd(p)}
+                        placeHolder={'Password'}/>
                     <Text
                         style={styles.hintStyle}
                     >Password should containt a number and alphabet</Text>
@@ -85,8 +91,8 @@ const CreateAccount2: FC<CreateAccountProps> = (props) => {
                         secureText={true}
                         backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
                         placeholderTextColor={props.isBlackTheme ? Colors.white : Colors.black}
-
-                    />
+                        onChangeText={(p:string) => setConfirmPassd(p)}
+                        placeHolder={'Enter password again'}/>
                     <Text
                         style={styles.hintStyle}
                     >Password should containt a number and alphabet</Text>
@@ -96,8 +102,8 @@ const CreateAccount2: FC<CreateAccountProps> = (props) => {
                     <Button
                         backgroundColor={Colors.primaryButton}
                         buttonTitle={props.fromScreen == "CreateAccount" ? "Continue" : "Now Set"}
-                        onPress={props.onContinuePress}
                         titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
+                        onPress={() => props.onContinuePress({name, passwd})}
                     />
                 </View>
             </ScrollView>

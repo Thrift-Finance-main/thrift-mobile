@@ -3,8 +3,8 @@ import { StyleSheet, TextInput } from 'react-native'
 import Colors from '../../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimensions'
 interface InputFieldProps {
-    // onChange: () => void,
-    secureText: boolean,
+    onChangeText: (text:string) => void,
+    secureText?: boolean,
     placeHolder: string
     backgroundColor: any
     // value: string
@@ -13,6 +13,7 @@ interface InputFieldProps {
 const InputField: FC<InputFieldProps> = (props) => {
     return (
         <TextInput
+            onChangeText={(text:string) => props.onChangeText(text)}
             secureTextEntry={props.secureText}
             style={{
                 ...styles.mainCOntainer, backgroundColor:
