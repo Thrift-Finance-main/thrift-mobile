@@ -1,7 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
 import CreateAccount from '../components/CreateAccount'
-import CreateAccount2 from "../components/CreateAccount2";
+import CreateAccount from "../components/CreateAccount";
 
 const CreateAccountScreen = ({ navigation, route }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
@@ -17,7 +17,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
     }
 
     return (
-        <CreateAccount2
+        <CreateAccount
             onContinuePress={(payload) => onContinuePress(payload)}
             onBackIconPress={onBackIconPress}
             fromScreen={fromScreen}
