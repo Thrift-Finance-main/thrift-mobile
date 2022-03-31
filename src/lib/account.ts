@@ -207,6 +207,7 @@ export const createAccount = async (
     ).to_address()
   ).to_bech32();
 
+  console.log('hey3');
   const externalPubAddress: IAddress[] = [];
   for (let i = 0; i < TOTAL_ADDRESS_INDEX; i++) {
     // eslint-disable-next-line no-await-in-loop
@@ -238,6 +239,7 @@ export const createAccount = async (
       TESTNET_NETWORK_INDEX,
     );
 
+    console.log('hey4');
     if (internalPubAddressM && internalPubAddressM.length) {
       internalPubAddress.push({
         _id: '',
@@ -261,5 +263,7 @@ export const createAccount = async (
     externalPubAddress,
     mode: 'Full',
   };
+  console.log('newAccount');
+  console.log(newAccount);
   return newAccount;
 };

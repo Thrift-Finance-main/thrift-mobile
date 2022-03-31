@@ -1,7 +1,8 @@
 import { createRealmContext, Realm } from '@realm/react';
 import { Task } from './Task';
 import {Address} from "./Address";
-import {NativeTokens} from "./NativeTokens";
+import {NativeToken} from "./NativeToken";
+import { Account } from './Account';
 
 export class Project {
   createdAt: Date;
@@ -27,6 +28,6 @@ export class Project {
 }
 
 export const { useRealm, useQuery, RealmProvider } = createRealmContext({
-  schema: [Address.schema, NativeTokens.schema, Task.schema, Project.schema],
+  schema: [Address.schema, NativeToken.schema, Account.schema, Task.schema, Project.schema],
   deleteRealmIfMigrationNeeded: true,
 });

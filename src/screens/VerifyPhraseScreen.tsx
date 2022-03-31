@@ -1,22 +1,29 @@
-import React, { useState } from 'react'
+import React, {useMemo, useState} from 'react'
 import { useSelector } from 'react-redux';
 import VerifyPhrase from '../components/VerifyPhrase'
 import {createAccount} from "../lib/account";
+import {useQuery, useRealm} from "../db/models/Project";
+import {Account, ACCOUNT_TABLE} from "../db/models/Account";
+import {Alert} from "react-native";
 
 const VerifyPhraseScreen = ({ navigation, route }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
+    const realm = useRealm();
 
     console.log('navigation in VerifyPhraseScreen');
     console.log(route.params);
     const [error, setError] = useState<string>('');
     const [verifiedPhrases, setVerifiedPhrases] = useState<string[]>([]);
     const [verifyPhrases, setVerifyPhrases] = useState<string[]>(route.params && route.params.seed ? route.params.seed.split(' ') : []);
+
+    const result = useQuery("Account");
+
     const onContinuePress = () => {
         console.log('onContinuePress in VerifyPhraseScreen');
         createAcc(route.params).then(r => {
             console.log('Account');
             console.log(r);
-            navigation.navigate("CreatePin");
+            // navigation.navigate("CreatePin");
         });
     }
     const onBackIconPress = () => {
@@ -66,6 +73,54 @@ const VerifyPhraseScreen = ({ navigation, route }) => {
 
         console.log('seed');
         console.log(seed);
+        console.log('name');
+        console.log(name);
+        console.log('passwd');
+        console.log(passwd);
+
+
+
+        try {
+
+            realm.write(() => {
+                // check for account
+                const query = `accountName == '${name}'`;
+                let accountsResults = realm.objects(ACCOUNT_TABLE).filtered(query);
+
+                console.log('accountsResults');
+                console.log(accountsResults);
+
+                if (!accountsResults.length){
+                    // create account
+                    createAccount(seed,name,passwd).then(createdAccount => {
+                        realm.write(() => {
+                            realm.create(ACCOUNT_TABLE, Account.generate({
+                                accountName: createdAccount.accountName,
+                                balance: createdAccount.balance,
+                                tokens: createdAccount.tokens,
+                                encryptedMasterKey: createdAccount.encryptedMasterKey,
+                                publicKeyHex: createdAccount.publicKeyHex,
+                                rewardAddress: createdAccount.rewardAddress,
+                                internalPubAddress: createdAccount.internalPubAddress,
+                                externalPubAddress: createdAccount.externalPubAddress,
+                            }));
+                            console.log('createdAccount');
+                            console.log(createdAccount);
+                        });
+                    });
+                    /*
+                    let accountsResults2 = realm.objects(ACCOUNT_TABLE).filtered(query);
+
+                    console.log('accountsResults2');
+                    console.log(accountsResults2);
+                     */
+                }
+            });
+        } catch (e) {
+            console.log(e);
+            Alert.alert("Error Creating Account", e.message);
+        }
+
 
         if (name.length) {
             /*

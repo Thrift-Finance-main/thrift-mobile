@@ -2,29 +2,41 @@ import { Realm, createRealmContext } from '@realm/react';
 
 export const ACCOUNT_TABLE = 'Account';
 
-export class Account {
-  _id: Realm.BSON.ObjectId;
-  accountName: string;
-  balance: string;
-  tokens: any;
-  encryptedMasterKey: string;
-  publicKeyHex: string;
-  rewardAddress: string;
-  internalPubAddress: any;
-  externalPubAddress: any;
-  mode: string;
-  constructor({id = new Realm.BSON.ObjectId(), accountName, encryptedMasterKey, publicKeyHex, rewardAddress, mode = ''}) {
-    this._id = id;
+export class Account extends Realm.Object {
+  _id!: Realm.BSON.ObjectId;
+  accountName!: string;
+  balance!: string;
+  tokens!: any;
+  encryptedMasterKey!: string;
+  publicKeyHex!: string;
+  rewardAddress!: string;
+  internalPubAddress!: any;
+  externalPubAddress!: any;
+  mode!: string;
 
-    this.accountName = accountName;
-    this.balance = '';
-    this.tokens = [];
-    this.encryptedMasterKey = encryptedMasterKey;
-    this.publicKeyHex = publicKeyHex;
-    this.rewardAddress = rewardAddress;
-    this.internalPubAddress = [];
-    this.externalPubAddress = [];
-    this.mode = mode;
+
+  static generate(
+      {
+        accountName,
+        balance,
+        tokens,
+        encryptedMasterKey,
+        publicKeyHex,
+        rewardAddress,
+        internalPubAddress,
+        externalPubAddress, mode = ''}) {
+    return {
+      _id: new Realm.BSON.ObjectId(),
+      accountName,
+      balance,
+      tokens,
+      encryptedMasterKey,
+      publicKeyHex,
+      rewardAddress,
+      internalPubAddress,
+      externalPubAddress,
+      mode,
+    };
   }
 
   // To use a class as a Realm object type, define the object schema on

@@ -1,9 +1,8 @@
-import { Realm, createRealmContext } from '@realm/react';
-import {ACCOUNT_TABLE} from "../model/AccountModel";
+import { Realm } from '@realm/react';
 
-const NATIVE_TOKENS_TABLE = 'NativeTokens';
+const NATIVE_TOKENS_TABLE = 'NativeToken';
 
-export class NativeTokens {
+export class NativeToken {
   _id: Realm.BSON.ObjectId;
   assetName: string;
   policyId: string;
