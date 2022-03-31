@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
-import CreatePin from '../components/CreatePin'
-import realmDb from "../db/RealmConfig";
+import CreatePin from '../components/CreatePin';
 
 const CreatePinScreen = ({ navigation }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
@@ -15,6 +14,7 @@ const CreatePinScreen = ({ navigation }) => {
     }
     const onConfirmPress = () => {
         // set pincode
+        /*
         realmDb.setPinCode(pincode).then(r => {
             console.log('r');
             console.log(r);
@@ -22,6 +22,7 @@ const CreatePinScreen = ({ navigation }) => {
                 setVisible(true);
             }
         });
+        */
     }
     const onBackIconPress = () => {
         navigation.goBack()

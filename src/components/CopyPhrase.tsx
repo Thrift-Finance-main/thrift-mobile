@@ -5,17 +5,10 @@ import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
 import Button from './Common/Button'
 import Back from '../assets/back.svg'
-import Copy from '../assets/copy.svg'
-import ShowQR from '../assets/showQr.svg'
 import Bulb from '../assets/Bulb.svg'
 import CopyClip from '../assets/CopyClip.svg'
 import Modal from 'react-native-modal'
 import DarkBack from '../assets//DarkBack.svg'
-import CopyDark from '../assets/CopyDark.svg'
-import QrDark from '../assets/QRdark.svg'
-import realmDb from "../db/RealmConfig";
-import {createAccount, generateAdaMnemonic} from "../lib/account";
-import {IAccount} from "../db/model/AccountModel";
 
 interface CopyPhraseProps {
     onContinuePress: () => void

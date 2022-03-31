@@ -2,9 +2,7 @@ import React, { useState } from 'react'
 import CopyPhrase from '../components/CopyPhrase'
 import Clipboard from '@react-native-community/clipboard';
 import { useSelector } from 'react-redux';
-import realmDb from "../db/RealmConfig";
 import {createAccount, generateAdaMnemonic} from "../lib/account";
-import {IAccount} from "../db/model/AccountModel";
 import { Toast } from 'react-native-ui-lib';
 const CopyPhraseScreen = ({ navigation, route }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);

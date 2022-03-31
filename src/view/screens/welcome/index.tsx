@@ -15,9 +15,6 @@ import {getCurrentLang, translate} from '../../../i18n';
 
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {createAccount, generateAdaMnemonic} from '../../../lib/account';
-import realmDb from '../../../db/RealmConfig';
-import {IAccount} from '../../../db/model/AccountModel';
-import {IConfig} from '../../../db/model/appConfigModel';
 import {setCurrentAccount} from '../../../redux/actions/AccountActions';
 
 export type RootTabParamList = {
@@ -62,48 +59,18 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
 
   async componentDidMount() {
     console.log('All acounts');
-    const allAccounts = await realmDb.getAllAccounts();
-    console.log(allAccounts);
-    this.setState({
-      // eslint-disable-next-line react/no-unused-state
-      allAccounts,
-    });
+    //const allAccounts = await realmDb.getAllAccounts();
+    //console.log(allAccounts);
+
 
     console.log('\n\nthis.props.currentAccountName');
     const {currentAccountName} = this.props;
 
     console.log(currentAccountName);
-    const config = await realmDb.getConfig();
-    console.log('config');
-    console.log(config);
-    const accountName = await realmDb.getCurrentAccount();
+    // const config = await realmDb.getConfig();
 
-    if (!accountName) {
-      console.log('no current name in db');
-      const config: IConfig = {
-        _id: '882dd631-bc6e-4e0e-a9e8-f07b685fec8c',
-        name: 'Tim Doer.',
-        currentAccount: accountName,
-        pinhash: 'accountName',
-        language: 'es',
-        currentEndpoint: 'http://192.168.1.141:3101/graphql',
-        version: '0.1.0',
-      };
-      realmDb.setConfig(config).then(r => {});
-    }
+    // const accountName = await realmDb.getCurrentAccount();
 
-    console.log('componentDidMount');
-    console.log('accountName');
-    console.log(accountName);
-    const account = await realmDb.getAccount(accountName);
-    console.log('account');
-    console.log(account);
-
-    this.setState({
-      // eslint-disable-next-line react/no-unused-state
-      acc: account,
-      name: account.accountName,
-    });
   }
 
   showPushScreen = () => {
@@ -129,7 +96,8 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     const {name} = this.state;
     if (name.length) {
       console.log('accInState');
-      const accInState = await realmDb.getAllAccounts();
+      //const accInState = await realmDb.getAllAccounts();
+      /*
       console.log(accInState);
       const seed: string = generateAdaMnemonic();
       const acc: IAccount = await createAccount(
@@ -162,6 +130,8 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
         seed,
       });
       // lets update the db
+
+       */
     }
   };
 
@@ -180,7 +150,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
   resetCurrentAccount = async () => {
     // @ts-ignore
     // eslint-disable-next-line react/destructuring-assignment
-    await realmDb.setCurrentAccount('');
+    // await realmDb.setCurrentAccount('');
   };
 
   setSelectedValue = (value: string) => {
@@ -189,7 +159,7 @@ class Welcome extends React.PureComponent<WelcomeProps, WelcomeState> {
     console.log('setSelectedValue in Welcome');
     const acc = allAccounts.filter(acc => acc.accountName === value)[0];
     console.log(acc);
-    realmDb.setCurrentAccount(acc.accountName).then(r => {});
+    // realmDb.setCurrentAccount(acc.accountName).then(r => {});
     this.setState({
       name: value,
       acc,

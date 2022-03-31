@@ -1,15 +1,16 @@
 import {  ISBLACKTHEME } from "./ActionTypes";
-import realmDb from "../db/RealmConfig";
-import {DEFAULT_CONFIG} from "../db/initConfig";
 
 export const getInitialState = () => {
     console.log('initConfig');
-    let currentConfig = DEFAULT_CONFIG;
+    let currentConfig = "";
+    /*
     realmDb.getConfig().then(r =>{
         if (r.length){
             currentConfig = r[0]
         }
     });
+
+     */
     const state = {
         isBlackTheme:false,
         currentAccount: currentConfig.currentAccount

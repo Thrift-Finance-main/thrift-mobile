@@ -2,7 +2,6 @@ import i18next from 'i18next';
 import enJson from './locales/en.json';
 import esJson from './locales/es.json';
 import { initReactI18next } from 'react-i18next';
-import realmDb from "../db/RealmConfig";
 
 export const STORAGE_KEY = '@APP:languageCode';
 
@@ -25,8 +24,9 @@ export const getRoute = (route:string) => {
     return defaultJson.routes[route];
 }
 
+// @ts-ignore
 export const getCurrentLanguage= async ():Promise<string> => {
-    return await realmDb.getLanguage();
+    //return await realmDb.getLanguage();
 }
 
 export function translate(cell:string) {
@@ -51,18 +51,15 @@ export const resources = {
 } as const;
 
 export function initi18n() {
-    realmDb.getLanguage().then(lang => {
-        i18next
-            .use(initReactI18next)
-            .init({
-                lng: 'en',
-                // tslint:disable-next-line:object-shorthand-properties-first
-                resources,
-                debug: true,
-                // tslint:disable-next-line:ter-arrow-parens
-            });
-
-    });
+    i18next
+        .use(initReactI18next)
+        .init({
+            lng: 'en',
+            // tslint:disable-next-line:object-shorthand-properties-first
+            resources,
+            debug: true,
+            // tslint:disable-next-line:ter-arrow-parens
+        });
 }
 
 initi18n();

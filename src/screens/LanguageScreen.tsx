@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Language from '../components/Language'
 import { setTheme } from '../store/Action';
 import {getCurrentLang, getCurrentLanguage, LANGUAGES_LIST, LANGUAGES_NAMES} from "../i18n";
-import realmDb from "../db/RealmConfig";
 import i18next from "i18next";
 import {withTranslation} from "react-i18next";
 import {getKeyByValue} from "../utils";
@@ -44,7 +43,7 @@ const LanguageScreen = ({ navigation }) => {
     const proceed = (lan:string) => {
         setDropDownText(lan);
         // @ts-ignore
-        realmDb.setLanguage(LANGUAGES_NAMES[lan]).then(r => {});
+        // realmDb.setLanguage(LANGUAGES_NAMES[lan]).then(r => {});
         // @ts-ignore
         i18next.changeLanguage(LANGUAGES_NAMES[lan]).then(r => {});
 

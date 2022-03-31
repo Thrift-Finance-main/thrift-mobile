@@ -1,9 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
 import VerifyPhrase from '../components/VerifyPhrase'
-import {shuffle} from "../utils";
-import realmDb from "../db/RealmConfig";
-import {IAccount} from "../db/model/AccountModel";
 import {createAccount} from "../lib/account";
 
 const VerifyPhraseScreen = ({ navigation, route }) => {
@@ -71,6 +68,7 @@ const VerifyPhraseScreen = ({ navigation, route }) => {
         console.log(seed);
 
         if (name.length) {
+            /*
             const accInState = await realmDb.getAllAccounts();
             console.log(accInState);
             const acc: IAccount = await createAccount(
@@ -93,6 +91,8 @@ const VerifyPhraseScreen = ({ navigation, route }) => {
                 console.log('navigate to verify');
                 navigation.navigate("VerifyPhrase")
             }
+
+             */
         }
     }
 
