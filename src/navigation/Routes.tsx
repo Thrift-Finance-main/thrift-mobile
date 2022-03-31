@@ -58,7 +58,7 @@ const DashboardTab = () => {
   );
 };
 
-const AuthenticationStackNavigation = () => {
+export const AuthenticationStackNavigation = () => {
   return (
     <AuthenticationStack.Navigator screenOptions={{headerShown: false}}>
       <AuthenticationStack.Screen name="Language" component={LanguageScreen} />
@@ -117,13 +117,3 @@ const AuthenticationStackNavigation = () => {
     </AuthenticationStack.Navigator>
   );
 };
-
-const Routes = () => {
-  return (
-    <NavigationContainer>
-      <AuthenticationStackNavigation />
-    </NavigationContainer>
-  );
-};
-
-export default Routes;
