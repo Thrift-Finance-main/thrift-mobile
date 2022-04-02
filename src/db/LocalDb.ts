@@ -41,7 +41,7 @@ class LocalDb implements Release {
     async getAllAccounts(): Promise<IAccount[]> {
         console.log('AddAccount');
 
-        let allAccounts: IAccount[] = [];
+        let allAccounts = [];
         let keys = await getAllKeys();
         if (keys){
             // filter account keys

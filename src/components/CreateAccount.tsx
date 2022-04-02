@@ -29,7 +29,6 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
 
     console.log('accs in CreateAccountScreen');
     console.log(accs);
-    console.log(result);
     return (
         <SafeAreaView style={{
             ...styles.mainContainer, backgroundColor:
