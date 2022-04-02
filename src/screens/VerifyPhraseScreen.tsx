@@ -74,7 +74,11 @@ function VerifyPhraseScreen ({ navigation, route }) {
 
             const name = data.name;
 
-            apiDb.AddAccount(createdAccount);
+            apiDb.addAccount(createdAccount).then(r => {
+                if (r && r.error){
+                    Alert.alert("Error:", r.error);
+                }
+            });
         });
     }
 

@@ -2,16 +2,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const storeData = async (key:string, value:string) => {
     try {
-        await AsyncStorage.setItem('@storage_Key', value)
+        await AsyncStorage.setItem(key, value)
     } catch (e) {
         // saving error
+        return true;
     }
 }
 
 export const storeObj = async (key:string, obj:Object) => {
     try {
         const jsonValue = JSON.stringify(obj)
-        await AsyncStorage.setItem('@storage_Key', jsonValue)
+        await AsyncStorage.setItem(key, jsonValue)
     } catch (e) {
         // saving error
     }
@@ -74,7 +75,9 @@ export const getMultipleData = async (keys:string[]) => {
     try {
         return await AsyncStorage.multiGet(keys)
     } catch(e) {
-        // read error
+        return {
+            error: e
+        }
     }
 }
 
@@ -84,7 +87,7 @@ export const getMultipleData = async (keys:string[]) => {
 export const mergeObj = async (key:string, newObj:Object) => {
     try {
         if (AsyncStorage.mergeItem) {
-            await AsyncStorage.mergeItem('@MyApp_user', JSON.stringify(newObj));
+            await AsyncStorage.mergeItem(key, JSON.stringify(newObj));
         }
     } catch(e) {
         // error reading value

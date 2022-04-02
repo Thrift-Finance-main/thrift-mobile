@@ -1,4 +1,4 @@
-interface Account {
+interface IAccount {
     accountName: string;
     balance: string;
     tokens: any;

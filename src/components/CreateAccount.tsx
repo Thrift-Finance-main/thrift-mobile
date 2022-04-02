@@ -10,6 +10,8 @@ import DarkBack from '../../src/assets/DarkBack.svg';
 import InputField from './Common/InputField';
 import {useQuery} from "../db/models/Project";
 import {Account} from "../db/models/Account";
+import {useAsyncStorage} from "@react-native-async-storage/async-storage";
+import {apiDb} from "../db/LocalDb";
 interface CreateAccountProps {
     onContinuePress: (p: { passwd: string; name: string }) => void
     onBackIconPress: () => void
@@ -23,8 +25,7 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
     const [passwd, setPasswd] = useState('');
     const [confirmPasswd, setConfirmPassd] = useState('');
 
-    const result = useQuery("Account");
-    const accs = useMemo(() => result.sorted("accountName"), [result]);
+    const { accs, setAccs } = useState(apiDb.getAllAccounts());
 
     console.log('accs in CreateAccountScreen');
     console.log(accs);

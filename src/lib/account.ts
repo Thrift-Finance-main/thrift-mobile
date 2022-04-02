@@ -242,7 +242,6 @@ export const createAccount = async (
   console.log('internalPubAddress');
   console.log(internalPubAddress);
   const newAccount = {
-    _id: '',
     accountName,
     balance: '0',
     tokens: [],
