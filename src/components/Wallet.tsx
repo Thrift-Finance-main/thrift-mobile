@@ -18,6 +18,7 @@ import {useSelector} from "react-redux";
 interface WalletProps {
     List: any
     receiveTokenModal: boolean
+    onContinuePress: (route: string) => void
     hideShowReceiveTokenModal: () => void
     transactionDetailsModal: boolean
     hideShowTransactionDetailsModal: () => void
@@ -199,6 +200,7 @@ const Wallet: FC<WalletProps> = (props) => {
                         style={styles.topContainer}
                     >
                         <Text
+                            onPress={() => props.onContinuePress("Authentication")}
                             style={{ ...styles.topTitle, color: props.isBlackTheme ? Colors.white : Colors.black }}
                         >{currentAccount.accountName}</Text>
                         <View

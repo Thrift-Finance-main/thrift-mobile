@@ -58,8 +58,8 @@ const WalletScreen = ({ navigation }) => {
     useEffect(() => {
         SplashScreen.hide()
     }, [])
-    const onContinuePress = () => {
-        navigation.navigate("CreateAccount")
+    const onContinuePress = (route:string) => {
+        navigation.navigate(route)
     }
 
     const hideShowReceiveTokenModal = () => {
@@ -105,6 +105,7 @@ const WalletScreen = ({ navigation }) => {
             onTransactionPress={onTransactionPress}
             onDarkThemePresss={onDarkThemePresss}
             isBlackTheme={isBlackTheme}
+            onContinuePress={(route:string) => onContinuePress(route)}
         />
     )
 }
