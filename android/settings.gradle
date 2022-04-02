@@ -1,4 +1,6 @@
 rootProject.name = 'thriftMobile'
+include ':realm'
+project(':realm').projectDir = new File(rootProject.projectDir, '../node_modules/realm/react-native/android')
 include ':@emurgo_react-native-haskell-shelley'
 project(':@emurgo_react-native-haskell-shelley').projectDir = new File(rootProject.projectDir, '../node_modules/@emurgo/react-native-haskell-shelley/android')
 include ':react-native-reanimated'

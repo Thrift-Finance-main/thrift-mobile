@@ -23,7 +23,7 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
     const [passwd, setPasswd] = useState('');
     const [confirmPasswd, setConfirmPassd] = useState('');
 
-    const result = useQuery(Account);
+    const result = useQuery("Account");
     const accs = useMemo(() => result.sorted("accountName"), [result]);
 
     console.log('accs in CreateAccountScreen');

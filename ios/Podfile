@@ -19,6 +19,8 @@ target 'thriftMobile' do
 
   pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
 
+  pod 'RealmJS', :path => '../node_modules/realm'
+
   target 'thriftMobileTests' do
     inherit! :complete
     # Pods for testing

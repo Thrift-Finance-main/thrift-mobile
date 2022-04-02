@@ -4,6 +4,9 @@ import VerifyPhrase from '../components/VerifyPhrase'
 import {createAccount} from "../lib/account";
 import {realmConfig, useQuery, useRealm} from "../db/models/Project";
 import {Account, ACCOUNT_TABLE} from "../db/models/Account";
+import {Alert} from "react-native";
+import {Address} from "../db/models/Address";
+import {Task} from "../db/models/Task";
 
 function VerifyPhraseScreen ({ navigation, route }) {
     const [realm, setRealm] = React.useState(useRealm());
@@ -67,32 +70,67 @@ function VerifyPhraseScreen ({ navigation, route }) {
                 console.log(createdAccount);
 
                 const name = data.name;
-                const passwd = data.passwd;
-                const seed = data.seed;
 
-                realm.write(() => {
-                    console.log('realm hola');
-                    // check for account
-                    const query = `accountName == '${name}'`;
-                    let accountsResults = realm.objects(ACCOUNT_TABLE).filtered(query);
-                    const e = 'oinfs';
-                    const query2 = `accountName != '${e}'`;
-                    let accountsResults2 = realm.objects(ACCOUNT_TABLE).filtered(query2);
+                try{
+                    realm.write(() => {
+                        console.log('realm hola');
+                        // check for account
+                        const query = `accountName == '${name}'`;
+                        let accountsResults = realm.objects(ACCOUNT_TABLE).filtered(query);
 
-                    console.log('accountsResults');
-                    console.log(accountsResults);
-                    console.log('accountsResults2');
-                    console.log(accountsResults2);
-                    // Normally when updating a record in a NoSQL or SQL database, we have to type
-                    // a statement that will later be interpreted and used as instructions for how
-                    // to update the record. But in RealmDB, the objects are "live" because they are
-                    // actually referencing the object's location in memory on the device (memory mapping).
-                    // So rather than typing a statement, we modify the object directly by changing
-                    // the property values. If the changes adhere to the schema, Realm will accept
-                    // this new version of the object and wherever this object is being referenced
-                    // locally will also see the changes "live".
-                    console.log('in realm.write');
-                });
+                        console.log('accountsResults');
+                        console.log(accountsResults);
+
+                        if (!accountsResults.length){
+                            realm.create("Task", Task.generate('newDescription'));
+
+
+                            /*
+                            const addr = realm.create("Address",  Address.generate({
+                                reference: 'jaime2',
+                                tags: [],
+                                index: 0,
+                                address: 'piblic_kljnklnad',
+                                network: 'ojnadoncasnad'
+                            }));
+                            accountsResults = [
+                               realm.create('Account', Account.generate({
+                                    accountName: 'jaime2',
+                                    balance: '0',
+                                    tokens: [],
+                                    encryptedMasterKey: 'kljbasdhbsda',
+                                    publicKeyHex: 'piblic_kljnklnad',
+                                    rewardAddress: 'ojnadoncasnad',
+                                    internalPubAddress: [],
+                                    externalPubAddress: [],
+                                }))
+                            ]
+
+
+                             */
+                        }
+
+                        const accountO = accountsResults[0];
+
+                        console.log('accountO');
+                        console.log(accountO);
+
+                        // Normally when updating a record in a NoSQL or SQL database, we have to type
+                        // a statement that will later be interpreted and used as instructions for how
+                        // to update the record. But in RealmDB, the objects are "live" because they are
+                        // actually referencing the object's location in memory on the device (memory mapping).
+                        // So rather than typing a statement, we modify the object directly by changing
+                        // the property values. If the changes adhere to the schema, Realm will accept
+                        // this new version of the object and wherever this object is being referenced
+                        // locally will also see the changes "live".
+                        console.log('in realm.write');
+                    });
+                    Alert.alert("Success Creating New Task");
+                } catch (e) {
+                    console.log(e);
+                    Alert.alert("Error Creating New Account");
+                }
+
             });
             // Alternatively if passing the ID as the argument to handleToggleTaskStatus:
             // realm?.write(() => {

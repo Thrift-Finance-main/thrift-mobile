@@ -27,6 +27,6 @@ export class Project {
 }
 
 export const { useRealm, useQuery, RealmProvider } = createRealmContext({
-  schema: [Address, NativeToken, Account, Project],
+  schema: [Task.schema, Address.schema, NativeToken.schema, Account.schema, Project],
   deleteRealmIfMigrationNeeded: true,
 });

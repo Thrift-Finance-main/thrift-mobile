@@ -1,6 +1,6 @@
 import { Realm } from '@realm/react';
 
-class Task extends Realm.Object {
+export class Task extends Realm.Object {
   _id!: Realm.BSON.ObjectId;
   description!: string;
   isComplete!: boolean;
