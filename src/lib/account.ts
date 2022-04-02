@@ -25,8 +25,7 @@ import {
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import {TESTNET_NETWORK_INDEX} from './network';
 import {encryptData} from './cryptoLib';
-import {IAddress} from '../db/model/AddressModel';
-import {IAccount} from '../db/model/AccountModel';
+import {Realm} from "@realm/react";
 
 export const CONFIG = {
   MNEMONIC_STRENGTH: 160,
@@ -197,7 +196,7 @@ export const createAccount = async (
   ).to_bech32();
 
   console.log('hey3');
-  const externalPubAddress: IAddress[] = [];
+  const externalPubAddress = [];
   for (let i = 0; i < TOTAL_ADDRESS_INDEX; i++) {
     // eslint-disable-next-line no-await-in-loop
     const externalPubAddressM = await generatePayAddress(
@@ -209,7 +208,6 @@ export const createAccount = async (
 
     if (externalPubAddressM && externalPubAddressM.length) {
       externalPubAddress.push({
-        _id: '',
         index: i,
         network: TESTNET_NETWORK_INDEX,
         reference: '',
@@ -218,7 +216,9 @@ export const createAccount = async (
       });
     }
   }
-  const internalPubAddress: IAddress[] = [];
+  console.log('externalPubAddress');
+  console.log(externalPubAddress);
+  const internalPubAddress = [];
   for (let i = 0; i < TOTAL_ADDRESS_INDEX; i++) {
     // eslint-disable-next-line no-await-in-loop
     const internalPubAddressM = await generatePayAddress(
@@ -231,7 +231,6 @@ export const createAccount = async (
     console.log('hey4');
     if (internalPubAddressM && internalPubAddressM.length) {
       internalPubAddress.push({
-        _id: '',
         index: i,
         network: TESTNET_NETWORK_INDEX,
         reference: '',
@@ -240,7 +239,9 @@ export const createAccount = async (
       });
     }
   }
-  const newAccount: IAccount = {
+  console.log('internalPubAddress');
+  console.log(internalPubAddress);
+  const newAccount = {
     _id: '',
     accountName,
     balance: '0',

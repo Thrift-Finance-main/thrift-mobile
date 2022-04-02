@@ -1,11 +1,13 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 import { useSelector } from 'react-redux';
 import CreateAccount from '../components/CreateAccount';
+import {useQuery} from "../db/models/Project";
 
 const CreateAccountScreen = ({ navigation, route }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
 
-    const { fromScreen, data} = route.params
+    const { fromScreen, data} = route.params;
+
     const onContinuePress = (payload: any) => {
         console.log('payload');
         console.log(payload);

@@ -11,6 +11,7 @@ const CopyPhraseScreen = ({ navigation, route }) => {
     const [error, setError] = useState<string>('');
     const [seed, setSeed] = useState<string>(generateAdaMnemonic());
     const [showCopyNotification, setCopyNotification] = useState<boolean>(false)
+
     const onContinuePress = () => {
         console.log('\nonContinuePress');
         console.log('route.params');

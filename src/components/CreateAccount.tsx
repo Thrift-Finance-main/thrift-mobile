@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react'
+import React, {FC, useMemo, useState} from 'react'
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '../../src/constants/CustomColors';
@@ -8,6 +8,8 @@ import Back from '../../src/assets/back.svg';
 import DarkBack from '../../src/assets/DarkBack.svg';
 
 import InputField from './Common/InputField';
+import {useQuery} from "../db/models/Project";
+import {Account} from "../db/models/Account";
 interface CreateAccountProps {
     onContinuePress: (p: { passwd: string; name: string }) => void
     onBackIconPress: () => void
@@ -20,6 +22,13 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
     const [name, setName] = useState('');
     const [passwd, setPasswd] = useState('');
     const [confirmPasswd, setConfirmPassd] = useState('');
+
+    const result = useQuery(Account);
+    const accs = useMemo(() => result.sorted("accountName"), [result]);
+
+    console.log('accs in CreateAccountScreen');
+    console.log(accs);
+    console.log(result);
     return (
         <SafeAreaView style={{
             ...styles.mainContainer, backgroundColor:
