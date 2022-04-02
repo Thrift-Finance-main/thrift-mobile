@@ -1,10 +1,9 @@
 import React, {useEffect} from 'react';
 import {createStore, combineReducers, applyMiddleware} from 'redux';
-import {Provider, useDispatch} from 'react-redux';
+import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
 import Reducers from './src/store/Reducers';
 import AppWrapper from "./src/AppWrapper";
-import { RealmProvider } from './src/db/models/Project';
 import {apiDb} from "./src/db/LocalDb";
 import {DEFAULT_CONFIG} from "./src/config/default";
 import {setCurrentAccount, setEntryRoute} from "./src/store/Action";

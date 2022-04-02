@@ -14,6 +14,8 @@ const CreatePinScreen = ({ navigation }) => {
     }
     const onConfirmPress = () => {
         // set pincode
+        let pin = pincode;
+
         /*
         realmDb.setPinCode(pincode).then(r => {
             console.log('r');
