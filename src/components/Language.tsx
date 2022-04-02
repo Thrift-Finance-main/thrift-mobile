@@ -19,9 +19,12 @@ interface LanguageProps {
     languageModal: boolean
     hideShowLanguageModal: () => void
     proceed: (ARG1: any) => void,
-    isBlackTheme: any
+    isBlackTheme: any,
+    currentAccount: any,
 }
 const Language: FC<LanguageProps> = (props) => {
+    console.log('props.currentAccount');
+    console.log(props.currentAccount);
     return (
         <SafeAreaView style={{
             ...styles.mainContainer, backgroundColor:
@@ -36,6 +39,13 @@ const Language: FC<LanguageProps> = (props) => {
                                 Colors.black,
                     }}
                 >{translate('LanguageScreen.selectLanguage')}</Text>
+                <Text
+                    style={{
+                        color:
+                            props.isBlackTheme ? Colors.white :
+                                Colors.black,
+                    }}
+                >{props.currentAccount}</Text>
                 <DropDownMenu
                     dropDownVisible={false}
                     hideDropDownMenu={props.hideDropDownMenu}

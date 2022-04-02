@@ -1,6 +1,5 @@
-import {createAccount} from "../lib/account";
 import {getAllKeys, getMultipleData, getObj, storeObj} from "./LocalApis";
-import {ACCOUNT_DATA_TABLE} from "./tables";
+import {ACCOUNT_DATA_TABLE, CONFIGURATION_COMMON_DATA_TABLE, CONFIGURATION_DATA_TABLE} from "./tables";
 import {ERROR_ACCOUNT} from "../constants/error";
 
 
@@ -39,7 +38,7 @@ class LocalDb implements Release {
 
     }
     async getAllAccounts(): Promise<IAccount[]> {
-        console.log('AddAccount');
+        console.log('getAllAccounts');
 
         let allAccounts = [];
         let keys = await getAllKeys();
@@ -55,6 +54,41 @@ class LocalDb implements Release {
         console.log(allAccounts);
         console.log(JSON.parse(allAccounts));
         return allAccounts;
+    }
+    async getCurrentAccount() {
+        console.log('getCurrentAccount');
+        try {
+            const commonConfig = await getObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE);
+            const currentAccountName = commonConfig.currentAccountName;
+            return await getObj(ACCOUNT_DATA_TABLE + ':' + currentAccountName);
+        }  catch (e) {
+            return {
+                error: e
+            }
+        }
+
+    }
+    async getCurrentConfig() {
+        console.log('getCurrentConfig');
+        try {
+            return await getObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE);
+        }  catch (e) {
+            return {
+                error: e
+            }
+        }
+
+    }
+    async setConfig(confObj) {
+        console.log('setConfig');
+        try {
+            await storeObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE, confObj);
+        }  catch (e) {
+            return {
+                error: e
+            }
+        }
+
     }
 }
 

@@ -2,18 +2,10 @@ import React, {useCallback, useMemo, useState, useContext, useEffect} from 'reac
 import { useSelector } from 'react-redux';
 import VerifyPhrase from '../components/VerifyPhrase'
 import {createAccount} from "../lib/account";
-import {realmConfig, useQuery, useRealm} from "../db/models/Project";
-import {Account, ACCOUNT_TABLE} from "../db/models/Account";
 import {Alert} from "react-native";
-import {Address} from "../db/models/Address";
-import {Task} from "../db/models/Task";
 import {apiDb} from "../db/LocalDb";
 
 function VerifyPhraseScreen ({ navigation, route }) {
-    const [realm, setRealm] = React.useState(useRealm());
-    const result = useQuery("Account");
-    const resultProject = useQuery("Project");
-    const accounts = useMemo(() => result.sorted("accountName"), [result]);
 
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
 
@@ -25,12 +17,11 @@ function VerifyPhraseScreen ({ navigation, route }) {
 
     useEffect(() =>{
 
-    }, [realm]);
+    }, []);
     // const result = useQuery("Account");
 
     const onContinuePress = () => {
         console.log('onContinuePress in VerifyPhraseScreen');
-        createAcct2(route.params);
             // navigation.navigate("CreatePin");
     }
     const onBackIconPress = () => {

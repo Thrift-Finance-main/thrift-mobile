@@ -1,19 +1,9 @@
-import {  ISBLACKTHEME } from "./ActionTypes";
+import {ISBLACKTHEME, SET_CURRENT_ACCOUNT} from "./ActionTypes";
 
 export const getInitialState = () => {
-    console.log('initConfig');
-    let currentConfig = "";
-    /*
-    realmDb.getConfig().then(r =>{
-        if (r.length){
-            currentConfig = r[0]
-        }
-    });
-
-     */
     const state = {
-        isBlackTheme:false,
-        currentAccount: currentConfig.currentAccount
+        isBlackTheme: false,
+        currentAccount: {}
     }
     return state;
 
@@ -21,11 +11,20 @@ export const getInitialState = () => {
 const initialState = getInitialState();
 
 const Reducers = (state = initialState, action:any) => {
+    console.log('Reducer:');
+    console.log(action.type);
+    console.log(action);
     switch (action.type) {
         case ISBLACKTHEME: {
             return {
                 ...state,
                 isBlackTheme: action.isBlackTheme,
+            };
+        }
+        case SET_CURRENT_ACCOUNT: {
+            return {
+                ...state,
+                currentAccount: action.currentAccount,
             };
         }
 
