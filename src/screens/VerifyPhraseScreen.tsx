@@ -59,6 +59,7 @@ function VerifyPhraseScreen ({ navigation, route }) {
         setVerifyPhrases(updatedVerifyPhrases);
     }
 
+
     const createAcct2 = useCallback(
         (data) => {
             createAccount(data.seed,data.name,data.passwd).then(createdAccount => {
