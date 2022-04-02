@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import VerifyPhrase from '../components/VerifyPhrase'
 import {createAccount} from "../lib/account";
 import {realmConfig, useQuery, useRealm} from "../db/models/Project";
-import {Account} from "../db/models/Account";
+import {Account, ACCOUNT_TABLE} from "../db/models/Account";
 
 function VerifyPhraseScreen ({ navigation, route }) {
     const [realm, setRealm] = React.useState(useRealm());
@@ -64,7 +64,24 @@ function VerifyPhraseScreen ({ navigation, route }) {
             createAccount(data.seed,data.name,data.passwd).then(createdAccount => {
                 console.log('createdAccount');
                 console.log(createdAccount);
-                realm?.write(() => {
+
+                const name = data.name;
+                const passwd = data.passwd;
+                const seed = data.seed;
+
+                realm.write(() => {
+                    console.log('realm hola');
+                    // check for account
+                    const query = `accountName == '${name}'`;
+                    let accountsResults = realm.objects(ACCOUNT_TABLE).filtered(query);
+                    const e = 'oinfs';
+                    const query2 = `accountName != '${e}'`;
+                    let accountsResults2 = realm.objects(ACCOUNT_TABLE).filtered(query2);
+
+                    console.log('accountsResults');
+                    console.log(accountsResults);
+                    console.log('accountsResults2');
+                    console.log(accountsResults2);
                     // Normally when updating a record in a NoSQL or SQL database, we have to type
                     // a statement that will later be interpreted and used as instructions for how
                     // to update the record. But in RealmDB, the objects are "live" because they are
