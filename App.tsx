@@ -42,7 +42,7 @@ const setConfig = (store) => {
     });
 }
 const initApp = () => {
-    clearAll().then(r => {})
+    // clearAll().then(r => {})
     const store = createStore(rootReducer, applyMiddleware(thunk));
     setConfig(store);
     console.log('\n\n\ninitApp');

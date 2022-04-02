@@ -11,12 +11,15 @@ import DarkBack from '../assets//DarkBack.svg'
 
 interface RestoreWalletProps {
     onRestoreWalletPress: () => void
+    handleSeed: (seed:string) => void
     onBackIconPress: () => void
     visible: boolean,
     hideModal: () => void,
     isBlackTheme: any
 }
 const RestoreWallet: FC<RestoreWalletProps> = (props) => {
+    console.log('RestoreWallet props');
+    console.log(props);
     return (
         <SafeAreaView style={{
             ...styles.mainContainer, backgroundColor:
@@ -64,7 +67,9 @@ const RestoreWallet: FC<RestoreWalletProps> = (props) => {
                         }}
                     >
 
-                        <TextInput style={styles.VerifiedtagsContainer}
+                        <TextInput
+                            onChangeText={(text) => props.handleSeed(text.trim().replace(/ +(?= )/g,'').replace(/\n/g, " "))}
+                            style={styles.VerifiedtagsContainer}
                             multiline={true}
                         />
                     </View>

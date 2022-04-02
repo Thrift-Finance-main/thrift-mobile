@@ -9,7 +9,7 @@ const CreateAccountScreen = ({ navigation, route }) => {
     const { fromScreen, data} = route.params;
 
     const onContinuePress = (payload: any) => {
-        console.log('payload');
+        console.log('payload in CreateAccountScreen');
         console.log(payload);
         navigation.navigate(fromScreen == "CreateAccount" ? "Terms" : "RestoreWallet", payload)
     }

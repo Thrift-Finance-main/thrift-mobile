@@ -78,7 +78,7 @@ function VerifyPhraseScreen ({ navigation, route }) {
                         const payload = {
                             previousRoute: ''
                         }
-                        navigation.navigate("DashboardTab", payload)
+                        navigation.navigate("CreatePin", payload)
                     });
                 }
             });
