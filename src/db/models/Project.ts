@@ -28,5 +28,16 @@ export class Project {
 
 export const { useRealm, useQuery, RealmProvider } = createRealmContext({
   schema: [Task.schema, Address.schema, NativeToken.schema, Account.schema, Project],
-  deleteRealmIfMigrationNeeded: true,
+  deleteRealmIfMigrationNeeded: false,
 });
+
+Realm.open({
+  schema: [Task.schema, Address.schema, NativeToken.schema, Account.schema, Project],
+  deleteRealmIfMigrationNeeded: false,
+}).then((realm) => {
+  console.log('hey Realm is located at: ' + realm.path);
+  console.log('* REALM PATH: ' + Realm.defaultPath);
+  console.log(Realm.defaultPath)
+});
+
+

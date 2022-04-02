@@ -10,6 +10,10 @@ import {Task} from "../db/models/Task";
 
 function VerifyPhraseScreen ({ navigation, route }) {
     const [realm, setRealm] = React.useState(useRealm());
+    const result = useQuery("Account");
+    const resultProject = useQuery("Project");
+    const accounts = useMemo(() => result.sorted("accountName"), [result]);
+
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
 
     console.log('navigation in VerifyPhraseScreen');
@@ -85,7 +89,6 @@ function VerifyPhraseScreen ({ navigation, route }) {
                             realm.create("Task", Task.generate('newDescription'));
 
 
-                            /*
                             const addr = realm.create("Address",  Address.generate({
                                 reference: 'jaime2',
                                 tags: [],
@@ -93,6 +96,32 @@ function VerifyPhraseScreen ({ navigation, route }) {
                                 address: 'piblic_kljnklnad',
                                 network: 'ojnadoncasnad'
                             }));
+
+
+                            console.log('addr')
+                            console.log(addr)
+
+                            // @ts-ignore
+                            accountsResults = [realm.create('Account', Account.generate({
+                                accountName: 'jaime2',
+                                balance: '0',
+                                tokens: [],
+                                encryptedMasterKey: 'kljbasdhbsda',
+                                publicKeyHex: 'piblic_kljnklnad',
+                                rewardAddress: 'ojnadoncasnad',
+                                internalPubAddress: [],
+                                externalPubAddress: [],
+                            }))];
+
+                            const accountO = accountsResults[0];
+
+                            console.log('accountO');
+                            console.log(accountsResults);
+                            console.log(accountO);
+
+                            /*
+
+
                             accountsResults = [
                                realm.create('Account', Account.generate({
                                     accountName: 'jaime2',
@@ -108,12 +137,13 @@ function VerifyPhraseScreen ({ navigation, route }) {
 
 
                              */
+
+                            //let accs1 = JSON.parse(JSON.stringify(realm.objects('Account')))
+                            let accs1 = realm.objects('Account');
+                            console.log('\nquery accounts in realm\n');
+                            console.log(accs1);
                         }
 
-                        const accountO = accountsResults[0];
-
-                        console.log('accountO');
-                        console.log(accountO);
 
                         // Normally when updating a record in a NoSQL or SQL database, we have to type
                         // a statement that will later be interpreted and used as instructions for how
@@ -124,6 +154,9 @@ function VerifyPhraseScreen ({ navigation, route }) {
                         // this new version of the object and wherever this object is being referenced
                         // locally will also see the changes "live".
                         console.log('in realm.write');
+
+
+
                     });
                     Alert.alert("Success Creating New Task");
                 } catch (e) {
