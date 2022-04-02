@@ -7,6 +7,7 @@ import {Account, ACCOUNT_TABLE} from "../db/models/Account";
 import {Alert} from "react-native";
 import {Address} from "../db/models/Address";
 import {Task} from "../db/models/Task";
+import {apiDb} from "../db/LocalDb";
 
 function VerifyPhraseScreen ({ navigation, route }) {
     const [realm, setRealm] = React.useState(useRealm());
@@ -66,115 +67,16 @@ function VerifyPhraseScreen ({ navigation, route }) {
         setVerifyPhrases(updatedVerifyPhrases);
     }
 
+    const createAcct2 = (data: {seed:string, name:string, passwd:string}) => {
+        createAccount(data.seed,data.name,data.passwd).then(createdAccount => {
+            console.log('createdAccount');
+            console.log(createdAccount);
 
-    const createAcct2 = useCallback(
-        (data) => {
-            createAccount(data.seed,data.name,data.passwd).then(createdAccount => {
-                console.log('createdAccount');
-                console.log(createdAccount);
+            const name = data.name;
 
-                const name = data.name;
-
-                try{
-                    realm.write(() => {
-                        console.log('realm hola');
-                        // check for account
-                        const query = `accountName == '${name}'`;
-                        let accountsResults = realm.objects(ACCOUNT_TABLE).filtered(query);
-
-                        console.log('accountsResults');
-                        console.log(accountsResults);
-
-                        if (!accountsResults.length){
-                            realm.create("Task", Task.generate('newDescription'));
-
-
-                            const addr = realm.create("Address",  Address.generate({
-                                reference: 'jaime2',
-                                tags: [],
-                                index: 0,
-                                address: 'piblic_kljnklnad',
-                                network: 'ojnadoncasnad'
-                            }));
-
-
-                            console.log('addr')
-                            console.log(addr)
-
-                            // @ts-ignore
-                            accountsResults = [realm.create('Account', Account.generate({
-                                accountName: 'jaime2',
-                                balance: '0',
-                                tokens: [],
-                                encryptedMasterKey: 'kljbasdhbsda',
-                                publicKeyHex: 'piblic_kljnklnad',
-                                rewardAddress: 'ojnadoncasnad',
-                                internalPubAddress: [],
-                                externalPubAddress: [],
-                            }))];
-
-                            const accountO = accountsResults[0];
-
-                            console.log('accountO');
-                            console.log(accountsResults);
-                            console.log(accountO);
-
-                            /*
-
-
-                            accountsResults = [
-                               realm.create('Account', Account.generate({
-                                    accountName: 'jaime2',
-                                    balance: '0',
-                                    tokens: [],
-                                    encryptedMasterKey: 'kljbasdhbsda',
-                                    publicKeyHex: 'piblic_kljnklnad',
-                                    rewardAddress: 'ojnadoncasnad',
-                                    internalPubAddress: [],
-                                    externalPubAddress: [],
-                                }))
-                            ]
-
-
-                             */
-
-                            //let accs1 = JSON.parse(JSON.stringify(realm.objects('Account')))
-                            let accs1 = realm.objects('Account');
-                            console.log('\nquery accounts in realm\n');
-                            console.log(accs1);
-                        }
-
-
-                        // Normally when updating a record in a NoSQL or SQL database, we have to type
-                        // a statement that will later be interpreted and used as instructions for how
-                        // to update the record. But in RealmDB, the objects are "live" because they are
-                        // actually referencing the object's location in memory on the device (memory mapping).
-                        // So rather than typing a statement, we modify the object directly by changing
-                        // the property values. If the changes adhere to the schema, Realm will accept
-                        // this new version of the object and wherever this object is being referenced
-                        // locally will also see the changes "live".
-                        console.log('in realm.write');
-
-
-
-                    });
-                    Alert.alert("Success Creating New Task");
-                } catch (e) {
-                    console.log(e);
-                    Alert.alert("Error Creating New Account");
-                }
-
-            });
-            // Alternatively if passing the ID as the argument to handleToggleTaskStatus:
-            // realm?.write(() => {
-            //   const task = realm?.objectForPrimaryKey('Task', id); // If the ID is passed as an ObjectId
-            //   const task = realm?.objectForPrimaryKey('Task', Realm.BSON.ObjectId(id));  // If the ID is passed as a string
-            //   task.isComplete = !task.isComplete;
-            // });
-        },
-        [realm]
-    );
-
+            apiDb.AddAccount(createdAccount);
+        });
+    }
 
     console.log('navigation in VerifyPhraseScreen');
     console.log(route.params);

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const storeData = async (key:string, value:string) => {
+export const storeData = async (key:string, value:string) => {
     try {
         await AsyncStorage.setItem('@storage_Key', value)
     } catch (e) {
@@ -8,7 +8,7 @@ const storeData = async (key:string, value:string) => {
     }
 }
 
-const storeObj = async (key:string, obj:Object) => {
+export const storeObj = async (key:string, obj:Object) => {
     try {
         const jsonValue = JSON.stringify(obj)
         await AsyncStorage.setItem('@storage_Key', jsonValue)
@@ -17,7 +17,7 @@ const storeObj = async (key:string, obj:Object) => {
     }
 }
 
-const getData = async (key:string) => {
+export const getData = async (key:string) => {
     try {
         const value = await AsyncStorage.getItem(key)
         if(value !== null) {
@@ -29,7 +29,7 @@ const getData = async (key:string) => {
 }
 
 
-const getObj = async (key:string) => {
+export const getObj = async (key:string) => {
     try {
         const jsonValue = await AsyncStorage.getItem(key)
         return jsonValue != null ? JSON.parse(jsonValue) : null;
@@ -38,7 +38,7 @@ const getObj = async (key:string) => {
     }
 }
 
-const getAllKeys = async () => {
+export const getAllKeys = async () => {
 
     try {
         return await AsyncStorage.getAllKeys()
@@ -47,7 +47,7 @@ const getAllKeys = async () => {
     }
 }
 
-const removeData = async (key:string) => {
+export const removeData = async (key:string) => {
     try {
         await AsyncStorage.removeItem(key)
     } catch(e) {
@@ -55,7 +55,7 @@ const removeData = async (key:string) => {
     }
 }
 
-const removeMultiple = async (keys:string[]) => {
+export const removeMultiple = async (keys:string[]) => {
     try {
         await AsyncStorage.multiRemove(keys)
     } catch(e) {
@@ -63,14 +63,14 @@ const removeMultiple = async (keys:string[]) => {
     }
 }
 
-const setMultipleData = async (data: [string,string][]) => {
+export const setMultipleData = async (data: [string,string][]) => {
     try {
         await AsyncStorage.multiSet(data)
     } catch(e) {
         // read error
     }
 }
-const getMultipleData = async (keys:string[]) => {
+export const getMultipleData = async (keys:string[]) => {
     try {
         return await AsyncStorage.multiGet(keys)
     } catch(e) {
@@ -81,7 +81,7 @@ const getMultipleData = async (keys:string[]) => {
 
 
 
-const mergeObj = async (key:string, newObj:Object) => {
+export const mergeObj = async (key:string, newObj:Object) => {
     try {
         if (AsyncStorage.mergeItem) {
             await AsyncStorage.mergeItem('@MyApp_user', JSON.stringify(newObj));
@@ -91,7 +91,7 @@ const mergeObj = async (key:string, newObj:Object) => {
     }
 }
 
-const clearAll = async () => {
+export const clearAll = async () => {
     try {
         await AsyncStorage.clear()
     } catch(e) {

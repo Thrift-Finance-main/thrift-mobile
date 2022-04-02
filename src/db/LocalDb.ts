@@ -1,3 +1,6 @@
+import {createAccount} from "../lib/account";
+import {getObj, storeObj} from "./LocalApis";
+import {ACCOUNT_DATA_TABLE} from "./tables";
 
 
 interface Release {
@@ -11,8 +14,16 @@ class LocalDb implements Release {
         this.version = version;
     }
 
-    AddAccount(account: Account): void {
+    async AddAccount(account: Account): Promise<void> {
+        console.log('AddAccount');
+        console.log(account);
 
+        // Check if account already exists
+        const accExists = await getObj(ACCOUNT_DATA_TABLE + ':' + account.accountName)
+
+        if (!accExists) {
+            await storeObj(ACCOUNT_DATA_TABLE + ':' + account.accountName,account);
+        }
     }
 }
 
