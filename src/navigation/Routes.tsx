@@ -26,6 +26,8 @@ import CreateTokenScreen from '../screens/CreateTokenScreen';
 import ThumbPrintScreen from '../screens/ThumbPrintScreen';
 import CreateTargetScreen from '../screens/CreateTargetScreen';
 import SavingsScreen from '../screens/SavingsScreen';
+import {ENTRY_WITCH_ROUTE} from "../db/tables";
+import MainScreen from "../screens/MainScreen";
 
 const AuthenticationStack = createNativeStackNavigator();
 
@@ -59,8 +61,11 @@ const DashboardTab = () => {
 };
 
 export const AuthenticationStackNavigation = () => {
+    const entryRoute = useSelector(state => state.Reducers.entryRoute);
   return (
     <AuthenticationStack.Navigator screenOptions={{headerShown: false}}>
+
+      <AuthenticationStack.Screen name="/" component={MainScreen} />
       <AuthenticationStack.Screen name="Language" component={LanguageScreen} />
       <AuthenticationStack.Screen
         name="Authentication"

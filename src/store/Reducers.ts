@@ -1,9 +1,10 @@
-import {ISBLACKTHEME, SET_CURRENT_ACCOUNT} from "./ActionTypes";
+import {ISBLACKTHEME, SET_CURRENT_ACCOUNT, SET_ENTRY_ROUTE} from "./ActionTypes";
 
 export const getInitialState = () => {
     const state = {
         isBlackTheme: false,
-        currentAccount: {}
+        currentAccount: {},
+        entryRoute: ''
     }
     return state;
 
@@ -25,6 +26,12 @@ const Reducers = (state = initialState, action:any) => {
             return {
                 ...state,
                 currentAccount: action.currentAccount,
+            };
+        }
+        case SET_ENTRY_ROUTE: {
+            return {
+                ...state,
+                entryRoute: action.entryRoute,
             };
         }
 
