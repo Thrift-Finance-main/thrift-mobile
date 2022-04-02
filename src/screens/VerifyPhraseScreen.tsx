@@ -17,14 +17,7 @@ const VerifyPhraseScreen = ({ navigation, route }) => {
     const [verifiedPhrases, setVerifiedPhrases] = useState<string[]>([]);
     const [verifyPhrases, setVerifyPhrases] = useState<string[]>(route.params && route.params.seed ? route.params.seed.split(' ') : []);
 
-    const result = useQuery(Account);
-    const accs = useMemo(() => result.sorted("accountName"), [result]);
-
     console.log('result in VerifyPhraseScreen');
-    console.log(result);
-    console.log('accs:');
-    console.log(accs);
-
 
     const onContinuePress = () => {
         console.log('onContinuePress in VerifyPhraseScreen');
@@ -87,10 +80,10 @@ const VerifyPhraseScreen = ({ navigation, route }) => {
         console.log(passwd);
 
 
-
         try {
 
             realm.write(() => {
+                console.log('realm hola');
                 // check for account
                 const query = `accountName == '${name}'`;
                 let accountsResults = realm.objects(ACCOUNT_TABLE).filtered(query);
@@ -107,52 +100,49 @@ const VerifyPhraseScreen = ({ navigation, route }) => {
                     // create account
                     createAccount(seed,name,passwd).then(createdAccount => {
                         try {
-                            realm.write(() => {
+                            let storedAccount = realm.create(ACCOUNT_TABLE, Account.generate({
+                                accountName: createdAccount.accountName,
+                                balance: createdAccount.balance,
+                                tokens: [],
+                                encryptedMasterKey: createdAccount.encryptedMasterKey,
+                                publicKeyHex: createdAccount.publicKeyHex,
+                                rewardAddress: createdAccount.rewardAddress,
+                                internalPubAddress: [],
+                                externalPubAddress: [],
+                            }));
 
-                                let storedAccount = realm.create(ACCOUNT_TABLE, Account.generate({
-                                    accountName: createdAccount.accountName,
-                                    balance: createdAccount.balance,
-                                    tokens: [],
-                                    encryptedMasterKey: createdAccount.encryptedMasterKey,
-                                    publicKeyHex: createdAccount.publicKeyHex,
-                                    rewardAddress: createdAccount.rewardAddress,
-                                    internalPubAddress: [],
-                                    externalPubAddress: [],
-                                }));
+                            storedAccount = storedAccount[0];
+                            console.log('storedAccount');
+                            console.log(storedAccount);
 
-                                storedAccount = storedAccount[0];
-                                console.log('storedAccount');
-                                console.log(storedAccount);
-
-                                createdAccount.internalPubAddress.map(address => {
-                                    const addr = realm.create("Address",
-                                        Address.generate({
-                                            reference: address.reference,
-                                            tags: address.tags,
-                                            index: address.index,
-                                            address: address.address,
-                                            network: address.network
-                                        })
-                                    );
-                                    storedAccount.internalPubAddress.push(addr);
-                                });
-                                createdAccount.externalPubAddress.map(address => {
-                                    const addr = realm.create("Address",
-                                        Address.generate({
-                                            reference: address.reference,
-                                            tags: address.tags,
-                                            index: address.index,
-                                            address: address.address,
-                                            network: address.network
-                                        })
-                                    );
-                                    storedAccount.externalPubAddress.push(addr);
-                                });
-
-                                console.log('storedAccount2');
-                                console.log(storedAccount);
-
+                            createdAccount.internalPubAddress.map(address => {
+                                const addr = realm.create("Address",
+                                    Address.generate({
+                                        reference: address.reference,
+                                        tags: address.tags,
+                                        index: address.index,
+                                        address: address.address,
+                                        network: address.network
+                                    })
+                                );
+                                storedAccount.internalPubAddress.push(addr);
                             });
+                            createdAccount.externalPubAddress.map(address => {
+                                const addr = realm.create("Address",
+                                    Address.generate({
+                                        reference: address.reference,
+                                        tags: address.tags,
+                                        index: address.index,
+                                        address: address.address,
+                                        network: address.network
+                                    })
+                                );
+                                storedAccount.externalPubAddress.push(addr);
+                            });
+
+                            console.log('storedAccount2');
+                            console.log(storedAccount);
+
                         } catch (e) {
                             console.log(e);
                             Alert.alert("Error adding Account", e.message);
