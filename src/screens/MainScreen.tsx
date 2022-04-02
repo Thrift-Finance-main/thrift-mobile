@@ -22,8 +22,6 @@ interface RouteHandlerProps {
     entryRoute: any
 }
 const RouteHandler: FC<RouteHandlerProps> = (props) => {
-    console.log('props.currentAccount in RouteHandler');
-    console.log(props.currentAccount);
     console.log('props.entryRoute');
     console.log(props.entryRoute);
 

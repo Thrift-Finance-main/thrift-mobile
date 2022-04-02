@@ -13,6 +13,7 @@ import EntypoIcon from 'react-native-vector-icons/Entypo'
 import ReceiveTokenModal from './PopUps/ReceiveTokenModal'
 import DarkTheme from '../assets/darkTheme.svg'
 import DarkScanner from '../assets/DarkScanner.svg'
+import {useSelector} from "react-redux";
 
 interface WalletProps {
     List: any
@@ -30,8 +31,15 @@ interface WalletProps {
     isBlackTheme: any
 }
 const Wallet: FC<WalletProps> = (props) => {
-    const [scanner, setScanner] = useState(false)
+    const [scanner, setScanner] = useState(false);
+    const currentAccount = useSelector((state) => state.Reducers.currentAccount);
 
+
+
+    console.log('\n\ncurrentAccount in Wallet');
+    console.log(props.isBlackTheme);
+    console.log(currentAccount);
+    console.log('________\n\n');
     const renderItemMenuList = ({ item, index }) => {
         return (
             <View
@@ -192,7 +200,7 @@ const Wallet: FC<WalletProps> = (props) => {
                     >
                         <Text
                             style={{ ...styles.topTitle, color: props.isBlackTheme ? Colors.white : Colors.black }}
-                        >Wallet</Text>
+                        >{currentAccount.accountName}</Text>
                         <View
                             style={styles.topContainer2}
                         >

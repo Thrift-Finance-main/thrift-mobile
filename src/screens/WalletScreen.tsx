@@ -55,9 +55,6 @@ const WalletScreen = ({ navigation }) => {
     const [showAssets, setShowAssets] = useState<boolean>(true)
     const [showTransaction, setShowTransaction] = useState<boolean>(false)
 
-
-
-
     useEffect(() => {
         SplashScreen.hide()
     }, [])
