@@ -5,6 +5,7 @@ import {createAccount} from "../lib/account";
 import {useQuery, useRealm} from "../db/models/Project";
 import {Account, ACCOUNT_TABLE} from "../db/models/Account";
 import {Alert} from "react-native";
+import {Address} from "../db/models/Address";
 
 const VerifyPhraseScreen = ({ navigation, route }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
@@ -16,7 +17,14 @@ const VerifyPhraseScreen = ({ navigation, route }) => {
     const [verifiedPhrases, setVerifiedPhrases] = useState<string[]>([]);
     const [verifyPhrases, setVerifyPhrases] = useState<string[]>(route.params && route.params.seed ? route.params.seed.split(' ') : []);
 
-    const result = useQuery("Account");
+    const result = useQuery(Account);
+    const accs = useMemo(() => result.sorted("accountName"), [result]);
+
+    console.log('result in VerifyPhraseScreen');
+    console.log(result);
+    console.log('accs:');
+    console.log(accs);
+
 
     const onContinuePress = () => {
         console.log('onContinuePress in VerifyPhraseScreen');
@@ -86,34 +94,70 @@ const VerifyPhraseScreen = ({ navigation, route }) => {
                 // check for account
                 const query = `accountName == '${name}'`;
                 let accountsResults = realm.objects(ACCOUNT_TABLE).filtered(query);
+                const e = 'oinfs';
+                const query2 = `accountName != '${e}'`;
+                let accountsResults2 = realm.objects(ACCOUNT_TABLE).filtered(query2);
 
                 console.log('accountsResults');
                 console.log(accountsResults);
+                console.log('accountsResults2');
+                console.log(accountsResults2);
 
                 if (!accountsResults.length){
                     // create account
                     createAccount(seed,name,passwd).then(createdAccount => {
-                        realm.write(() => {
-                            realm.create(ACCOUNT_TABLE, Account.generate({
-                                accountName: createdAccount.accountName,
-                                balance: createdAccount.balance,
-                                tokens: createdAccount.tokens,
-                                encryptedMasterKey: createdAccount.encryptedMasterKey,
-                                publicKeyHex: createdAccount.publicKeyHex,
-                                rewardAddress: createdAccount.rewardAddress,
-                                internalPubAddress: createdAccount.internalPubAddress,
-                                externalPubAddress: createdAccount.externalPubAddress,
-                            }));
-                            console.log('createdAccount');
-                            console.log(createdAccount);
-                        });
-                    });
-                    /*
-                    let accountsResults2 = realm.objects(ACCOUNT_TABLE).filtered(query);
+                        try {
+                            realm.write(() => {
 
-                    console.log('accountsResults2');
-                    console.log(accountsResults2);
-                     */
+                                let storedAccount = realm.create(ACCOUNT_TABLE, Account.generate({
+                                    accountName: createdAccount.accountName,
+                                    balance: createdAccount.balance,
+                                    tokens: [],
+                                    encryptedMasterKey: createdAccount.encryptedMasterKey,
+                                    publicKeyHex: createdAccount.publicKeyHex,
+                                    rewardAddress: createdAccount.rewardAddress,
+                                    internalPubAddress: [],
+                                    externalPubAddress: [],
+                                }));
+
+                                storedAccount = storedAccount[0];
+                                console.log('storedAccount');
+                                console.log(storedAccount);
+
+                                createdAccount.internalPubAddress.map(address => {
+                                    const addr = realm.create("Address",
+                                        Address.generate({
+                                            reference: address.reference,
+                                            tags: address.tags,
+                                            index: address.index,
+                                            address: address.address,
+                                            network: address.network
+                                        })
+                                    );
+                                    storedAccount.internalPubAddress.push(addr);
+                                });
+                                createdAccount.externalPubAddress.map(address => {
+                                    const addr = realm.create("Address",
+                                        Address.generate({
+                                            reference: address.reference,
+                                            tags: address.tags,
+                                            index: address.index,
+                                            address: address.address,
+                                            network: address.network
+                                        })
+                                    );
+                                    storedAccount.externalPubAddress.push(addr);
+                                });
+
+                                console.log('storedAccount2');
+                                console.log(storedAccount);
+
+                            });
+                        } catch (e) {
+                            console.log(e);
+                            Alert.alert("Error adding Account", e.message);
+                        }
+                    });
                 }
             });
         } catch (e) {

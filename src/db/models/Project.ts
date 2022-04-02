@@ -21,13 +21,12 @@ export class Project {
     properties: {
       _id: 'objectId',
       name: 'string',
-      tasks: 'Task[]',
       createdAt: 'date'
     },
   };
 }
 
 export const { useRealm, useQuery, RealmProvider } = createRealmContext({
-  schema: [Address.schema, NativeToken.schema, Account.schema, Task.schema, Project.schema],
+  schema: [Address, NativeToken, Account, Project],
   deleteRealmIfMigrationNeeded: true,
 });
