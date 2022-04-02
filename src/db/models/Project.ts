@@ -26,8 +26,13 @@ export class Project {
     },
   };
 }
+export const realmConfig = {
+  schema: [Address.schema, NativeToken.schema, Account.schema, Task.schema, Project.schema],
+  deleteRealmIfMigrationNeeded: true,
+};
+
 
 export const { useRealm, useQuery, RealmProvider } = createRealmContext({
-  schema: [Address.schema, NativeToken.schema, Account.schema, Task.schema, Project.schema],
+  schema: [Task.schema, Project.schema],
   deleteRealmIfMigrationNeeded: true,
 });

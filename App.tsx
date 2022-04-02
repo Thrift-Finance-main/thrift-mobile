@@ -17,6 +17,9 @@ const initApp = () => {
 };
 const store = initApp();
 const App = () => {
+    if (!RealmProvider) {
+        return null;
+    }
   return (
     <Provider store={store}>
         <RealmProvider>

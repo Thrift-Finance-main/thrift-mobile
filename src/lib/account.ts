@@ -171,19 +171,8 @@ export const createAccount = async (
   const encryptedMasterKey = await encryptData(masterKey, pass);
 
   console.log('hey2');
-  const paymentKey = await (
-    await (await accountKey.derive(1)).derive(0)
-  ).to_raw_key();
 
-  const paymentKeyPub = await paymentKey.to_public();
-  const paymentKeyPubHash = await paymentKeyPub.hash();
-  const paymentKeyPubBytes = await paymentKeyPubHash.to_bytes();
-
-  const paymentKeyHash = Buffer.from(
-    paymentKeyPubBytes.toString(),
-    'hex',
-  ).toString('hex');
-
+  console.log('hey2.5');
   // Stake key
   const stakeKey = await accountKey.derive(
     numbers.ChainDerivations.ChimericAccount,
@@ -191,12 +180,12 @@ export const createAccount = async (
   const stakeKey2 = await stakeKey.derive(numbers.StakingKeyIndex);
   const stakeKey3 = await stakeKey2.to_raw_key();
 
+  console.log('hey2.6');
   const stakeKeyPub = await stakeKey3.to_public();
-  const stakeKeyPubHash = await stakeKeyPub.hash();
-  const stakeKeyPubBytes = await stakeKeyPubHash.to_bytes();
-  const stakeKeyHash = Buffer.from(stakeKeyPubBytes.toString(), 'hex').toString(
-    'hex',
-  );
+  console.log('hey2.7');
+
+  console.log('hey2.8');
+
 
   const rewardAddress = await (
     await (

@@ -8909,7 +8909,7 @@ realm-network-transport@^0.7.1:
     abort-controller "^3.0.0"
     node-fetch "^2.6.0"
 
-realm@>=10, realm@^10.14.0:
+realm@>=10, realm@^10.11.0:
   version "10.14.0"
   resolved "https://registry.yarnpkg.com/realm/-/realm-10.14.0.tgz#7bf046fe3a8f1760ef96b7f4f9edf840193117bf"
   integrity sha512-KcXw6V1b3DgPWTbOlNZfBtNY6MQGpFJBeMdZBjItsJnc2ZlNjXc6NG3O5oAH9KnRcs7LzMwvGVebZkOKSqvjgA==
