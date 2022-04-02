@@ -33,12 +33,6 @@ const WalletScreen = ({ navigation }) => {
             icon: <Dana />,
             title: "DANA",
         },
-
-
-
-
-
-
     ]
     const transactionList = [{
         icon: <AntDesignIcon

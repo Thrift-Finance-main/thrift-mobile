@@ -66,7 +66,18 @@ class LocalDb implements Release {
                 error: e
             }
         }
-
+    }
+    async setCurrentAccount(accountName:string) {
+        console.log('setCurrentAccount');
+        try {
+            let commonConfig = await getObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE);
+            commonConfig.currentAccountName = accountName;
+            await storeObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE,commonConfig);
+        }  catch (e) {
+            return {
+                error: e
+            }
+        }
     }
     async getCurrentConfig() {
         console.log('getCurrentConfig');

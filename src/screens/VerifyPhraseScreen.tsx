@@ -1,14 +1,15 @@
 import React, {useCallback, useMemo, useState, useContext, useEffect} from 'react'
-import { useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import VerifyPhrase from '../components/VerifyPhrase'
 import {createAccount} from "../lib/account";
 import {Alert} from "react-native";
 import {apiDb} from "../db/LocalDb";
+import {setCurrentAccount, setEntryRoute} from "../store/Action";
+import {ENTRY_WITCH_ROUTE} from "../config/routes";
 
 function VerifyPhraseScreen ({ navigation, route }) {
-
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
-
+    const dispatch = useDispatch();
     console.log('navigation in VerifyPhraseScreen');
     console.log(route.params);
     const [error, setError] = useState<string>('');
@@ -59,6 +60,7 @@ function VerifyPhraseScreen ({ navigation, route }) {
     }
 
     const createAcct2 = (data: {seed:string, name:string, passwd:string}) => {
+        console.log('createAcct2')
         createAccount(data.seed,data.name,data.passwd).then(createdAccount => {
             console.log('createdAccount');
             console.log(createdAccount);
@@ -66,8 +68,18 @@ function VerifyPhraseScreen ({ navigation, route }) {
             const name = data.name;
 
             apiDb.addAccount(createdAccount).then(r => {
+                console.log('r');
+                console.log(r);
                 if (r && r.error){
                     Alert.alert("Error:", r.error);
+                } else {
+                    apiDb.setCurrentAccount(createdAccount.accountName).then(r => {
+                        dispatch(setCurrentAccount(createdAccount));
+                        const payload = {
+                            previousRoute: ''
+                        }
+                        navigation.navigate("DashboardTab", payload)
+                    });
                 }
             });
         });

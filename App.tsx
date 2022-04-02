@@ -9,6 +9,7 @@ import {apiDb} from "./src/db/LocalDb";
 import {DEFAULT_CONFIG} from "./src/config/default";
 import {setCurrentAccount, setEntryRoute} from "./src/store/Action";
 import {ENTRY_WITCH_ROUTE} from "./src/config/routes";
+import {clearAll} from "./src/db/LocalApis";
 
 const rootReducer = combineReducers({
   Reducers,
@@ -41,6 +42,7 @@ const setConfig = (store) => {
     });
 }
 const initApp = () => {
+    // clearAll().then(r => {})
     const store = createStore(rootReducer, applyMiddleware(thunk));
     setConfig(store);
     console.log('\n\n\ninitApp');

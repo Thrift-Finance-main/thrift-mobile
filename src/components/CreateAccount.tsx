@@ -25,10 +25,6 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
     const [passwd, setPasswd] = useState('');
     const [confirmPasswd, setConfirmPassd] = useState('');
 
-    const { accs, setAccs } = useState(apiDb.getAllAccounts());
-
-    console.log('accs in CreateAccountScreen');
-    console.log(accs);
     return (
         <SafeAreaView style={{
             ...styles.mainContainer, backgroundColor:
