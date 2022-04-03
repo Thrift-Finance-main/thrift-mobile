@@ -4,10 +4,18 @@ import SplashScreen from 'react-native-splash-screen';
 import { useDispatch, useSelector } from 'react-redux';
 import Language from '../components/Language'
 import { setTheme } from '../store/Action';
-import {getCurrentLang, getCurrentLanguage, LANGUAGES_LIST, LANGUAGES_NAMES} from "../i18n";
+import {
+    changeLang,
+    getCurrentLang,
+    getCurrentLanguage,
+    LANGUAGES_LIST,
+    LANGUAGES_NAMES,
+    LANGUAGES_NAMES_INVERT
+} from "../i18n";
 import i18next from "i18next";
 import {withTranslation} from "react-i18next";
 import {getKeyByValue} from "../utils";
+import {apiDb} from "../db/LocalDb";
 const LanguageScreen = ({ navigation }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
     const dispatch = useDispatch();
@@ -42,11 +50,11 @@ const LanguageScreen = ({ navigation }) => {
     }
     const proceed = (lan:string) => {
         setDropDownText(lan);
-        // @ts-ignore
-        // realmDb.setLanguage(LANGUAGES_NAMES[lan]).then(r => {});
-        // @ts-ignore
-        i18next.changeLanguage(LANGUAGES_NAMES[lan]).then(r => {});
-
+        apiDb.setCurrentLanguage(lan).then(r => {
+            changeLang(lan).then(r => {
+                setLanguageModal(false);
+            });
+        });
         setLanguageModal(!languageModal);
     }
     const checkTheme = async () => {
