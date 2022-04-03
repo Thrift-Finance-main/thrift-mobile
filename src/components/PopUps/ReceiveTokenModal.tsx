@@ -10,6 +10,8 @@ import QRImage from '../../assets/QRImage.svg';
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import {useSelector} from "react-redux";
 import {addressSlice} from "../../utils";
+import Clipboard from '@react-native-community/clipboard';
+
 interface ReceiveTokenModalProps {
   visible: boolean,
   hideModal: () => void,
@@ -19,6 +21,11 @@ interface ReceiveTokenModalProps {
 }
 const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
   const currentAccount = useSelector((state) => state.Reducers.currentAccount);
+
+  const firstAddress = currentAccount
+      && currentAccount.externalPubAddress
+      && currentAccount.externalPubAddress.length
+      && currentAccount.externalPubAddress[0].address || 'addr_empty';
   const onSuccess = e => {
     Linking.openURL(e.data).catch(err =>
       console.log('An error occured', err)
@@ -123,7 +130,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                     color: props.isBlackTheme ? Colors.white : Colors.black,
                   }}
 
-                >{addressSlice(currentAccount && currentAccount.externalPubAddress[0].address,20)}</Text>
+                >{addressSlice(firstAddress, 18) || ''}</Text>
                 <View style={{backgroundColor : Colors.white, elevation : 5, shadowColor : Colors.black, shadowOpacity : .1, shadowRadius : 5, shadowOffset : {height : .5, width : .5}, paddingVertical : heightPercentageToDP(2), flexDirection: 'row', marginHorizontal : widthPercentageToDP(5), paddingHorizontal : widthPercentageToDP(5), justifyContent: 'space-between', borderRadius : 5, marginVertical : heightPercentageToDP(3)}} >
                 <TouchableOpacity
                   //  onPress={props.onBackIconPress}
@@ -194,7 +201,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                   }}
                 >
                   <Text
-                      onPress={()=>{}}
+                      onPress={() => Clipboard.setString(firstAddress)}
                     style={{ textAlign: "center", color: Colors.white }}
                   >Copy</Text>
 

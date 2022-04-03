@@ -22,8 +22,6 @@ interface RouteHandlerProps {
     entryRoute: any
 }
 const RouteHandler: FC<RouteHandlerProps> = (props) => {
-    console.log('props.entryRoute');
-    console.log(props.entryRoute);
 
     switch (props.entryRoute) {
         case ENTRY_WITCH_ROUTE.LANGUAGE:
@@ -45,8 +43,6 @@ const RouteHandler: FC<RouteHandlerProps> = (props) => {
 
 const MainScreen = ({ navigation }) => {
     const entryRoute = useSelector((state) => state.Reducers.entryRoute);
-    console.log('props.entryRoute in MainScreen');
-    console.log(entryRoute);
     const navigateTo = (navigate:string) => {
         navigation.navigate(navigate)
     }

@@ -19,8 +19,6 @@ interface CreateAccountProps {
     isBlackTheme: any
 }
 const CreateAccount: FC<CreateAccountProps> = (props) => {
-    console.log('CreateAccount props');
-    console.log(props);
     const [name, setName] = useState('');
     const [passwd, setPasswd] = useState('');
     const [confirmPasswd, setConfirmPassd] = useState('');
