@@ -25,6 +25,8 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
     const dispatch = useDispatch();
     const [accounts, setAccounts] = useState([]);
     const currentAccount = useSelector(state => state.Reducers.currentAccount);
+    const [currentPublicHex, setCurrentPublicHex] = useState(currentAccount.publicKeyHex);
+
 
     useEffect(() =>{
         apiDb.getAllAccounts().then(allAccs =>{
@@ -35,6 +37,7 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
     const onSelectAccount = (account:IAccount) => {
         apiDb.setCurrentAccount(account.accountName).then(r => {
             dispatch(setCurrentAccount(account));
+            setCurrentPublicHex(account.publicKeyHex);
         });
     }
 
@@ -74,7 +77,17 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
                             return <TouchableOpacity
                                         onPress={() => onSelectAccount(account)}
                                         style={{...styles.accountsContainer }} key={index}>
-                                            <View style={{ padding: 10, borderRadius: 10, flex:1, flexDirection: 'row',  backgroundColor: account.publicKeyHex === currentAccount.publicKeyHex ? '#eaeaea' : ''}}>
+                                            <View style={{
+                                                padding: 10,
+                                                borderRadius: 10,
+                                                flex:1,
+                                                flexDirection: 'row',
+                                                backgroundColor:
+                                                    account.publicKeyHex === currentPublicHex ?
+                                                        '#eaeaea' :
+                                                        (props.isBlackTheme
+                                                            ? Colors.blackTheme
+                                                            : Colors.inputFieldBackground)}}>
                                                 <Key />
                                                 <Text style={styles.termsText}>
                                                     {account.accountName}
