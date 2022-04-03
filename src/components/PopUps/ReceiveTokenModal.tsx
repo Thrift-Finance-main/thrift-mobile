@@ -8,6 +8,8 @@ import ThriftLogo from '../../assets/ThriftLogo.svg'
 import ThriftLogoWhite from '../../assets/ThriftFinancelogo.svg'
 import QRImage from '../../assets/QRImage.svg';
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import {useSelector} from "react-redux";
+import {addressSlice} from "../../utils";
 interface ReceiveTokenModalProps {
   visible: boolean,
   hideModal: () => void,
@@ -16,6 +18,7 @@ interface ReceiveTokenModalProps {
   QRScanner : boolean
 }
 const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
+  const currentAccount = useSelector((state) => state.Reducers.currentAccount);
   const onSuccess = e => {
     Linking.openURL(e.data).catch(err =>
       console.log('An error occured', err)
@@ -86,7 +89,9 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                     color: props.isBlackTheme ? Colors.white : Colors.black,
                   }}
 
-                >addrlq95e.....addrlq95eaddrlq95eaddrlq95eeaddrlq95eeaddrlq95e</Text>
+                >
+                  addrlq95e.....addrlq95eaddrlq95eaddrlq95eeaddrlq95eeaddrlq95e
+                </Text>
                 <TouchableOpacity
                   //  onPress={props.onBackIconPress}
                   style={{
@@ -118,7 +123,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                     color: props.isBlackTheme ? Colors.white : Colors.black,
                   }}
 
-                >addrlq95e.....addrlq95eaddrlq95eaddrlq95eeaddrlq95eeaddrlq95e</Text>
+                >{addressSlice(currentAccount && currentAccount.externalPubAddress[0].address,20)}</Text>
                 <View style={{backgroundColor : Colors.white, elevation : 5, shadowColor : Colors.black, shadowOpacity : .1, shadowRadius : 5, shadowOffset : {height : .5, width : .5}, paddingVertical : heightPercentageToDP(2), flexDirection: 'row', marginHorizontal : widthPercentageToDP(5), paddingHorizontal : widthPercentageToDP(5), justifyContent: 'space-between', borderRadius : 5, marginVertical : heightPercentageToDP(3)}} >
                 <TouchableOpacity
                   //  onPress={props.onBackIconPress}
@@ -189,6 +194,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                   }}
                 >
                   <Text
+                      onPress={()=>{}}
                     style={{ textAlign: "center", color: Colors.white }}
                   >Copy</Text>
 

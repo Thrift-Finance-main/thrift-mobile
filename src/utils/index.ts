@@ -1,6 +1,3 @@
-const SALT_LENGTH = 32;
-const NONCE_LENGTH = 24;
-
 const cryptoImport = require('crypto');
 
 export const sha256 = (input:string) => {
