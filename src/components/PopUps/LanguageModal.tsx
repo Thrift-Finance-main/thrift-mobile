@@ -4,11 +4,14 @@ import Colors from '../../constants/CustomColors';
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimensions';
 import Button from '../Common/Button';
 import Modal from 'react-native-modal'
+import {LANGUAGE_DICT} from "../../i18n";
+
 interface LanguageModalProps {
   visible: boolean,
   hideModal: () => void,
   modalText: string
-  proceed: (ARG1: any) => void,
+  proceed: (lang: string) => void,
+  selectedLang: string,
   isBlackTheme: any
   Data: any
 
@@ -17,7 +20,7 @@ const LanguageModal: FC<LanguageModalProps> = (props) => {
   const _renderItemLanguage = ({ item }) => {
     return (
       <TouchableOpacity
-        onPress={() => props.proceed(item.title)}
+        onPress={() => props.proceed(LANGUAGE_DICT[item.title])}
         style={{
           backgroundColor:
             props.isBlackTheme ? Colors.darkInput :
@@ -75,12 +78,8 @@ const LanguageModal: FC<LanguageModalProps> = (props) => {
                   title: "English"
                 },
                 {
-                  title: "French"
-                },
-                {
                   title: "Spanish"
-                },
-
+                }
                 ]}
 
             keyExtractor={(item, index) => index.toString()}

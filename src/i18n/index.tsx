@@ -3,18 +3,32 @@ import enJson from './locales/en.json';
 import esJson from './locales/es.json';
 import { initReactI18next } from 'react-i18next';
 
-export const STORAGE_KEY = '@APP:languageCode';
+export const LANGUAGES_LIST = ['English','Spanish']
 
-export const LANGUAGES_LIST = ['English','Spanish', 'French']
+export const LANGUAGE_DICT = {
+    "English": "en",
+    "Spanish": "es",
+}
 
 export const LANGUAGES_KEYS = {
     EN: 'en',
     ES: 'es'
 }
+export const LANGUAGES_MODAL =  [
+    {
+        title: "English"
+    },
+    {
+        title: "Spanish"
+    }
+]
 export const LANGUAGES_NAMES = {
     'English': 'en',
-    'Spanish': 'es',
-    'French': 'fr',
+    'Spanish': 'es'
+}
+export const LANGUAGES_NAMES_INVERT = {
+    'en': 'English',
+    'es': 'Spanish'
 }
 
 export const getRoute = (route:string) => {

@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, {FC, useEffect, useState} from 'react'
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '../constants/CustomColors'
@@ -12,6 +12,9 @@ import DarkBack from '../assets//DarkBack.svg'
 import LanguageModal from './PopUps/LanguageModal'
 import PushNotificationModal from './PopUps/PushNotificationModal'
 import CurrencyConvertorModal from './PopUps/CurrencyConvertorModal'
+import {apiDb} from "../db/LocalDb";
+import {setCurrentAccount} from "../store/Action";
+import {changeLang, LANGUAGES_MODAL, LANGUAGES_NAMES_INVERT} from "../i18n";
 
 
 interface SettingsProps {
@@ -27,6 +30,22 @@ interface SettingsProps {
 }
 const Settings: FC<SettingsProps> = (props) => {
     const [languageModal, setLanguageModal] = useState(false);
+    const [currentLanguage, setCurrentLanguage] = useState('English');
+
+    useEffect(() =>{
+        apiDb.getCurrentLanguage().then(lang =>{
+            setCurrentLanguage(LANGUAGES_NAMES_INVERT[lang]);
+        });
+    }, []);
+
+    const updateCurrentLanguage = (lang:string) => {
+        apiDb.setCurrentLanguage(lang).then(r => {
+            changeLang(lang).then(r => {
+                setCurrentLanguage(LANGUAGES_NAMES_INVERT[lang]);
+                setLanguageModal(false);
+            });
+        });
+    }
 
     const renderItemMenuList = ({ item, index }) => {
         return (
@@ -61,7 +80,7 @@ const Settings: FC<SettingsProps> = (props) => {
                                     props.isBlackTheme ? Colors.white :
                                         Colors.black,
                             }}
-                        >English</Text>
+                        >{currentLanguage}</Text>
                         :
                         props.isBlackTheme ? <DarkForward
                             style={{ paddingHorizontal: widthPercentageToDP(5) }}
@@ -126,9 +145,11 @@ const Settings: FC<SettingsProps> = (props) => {
                 />
             </View>
             <LanguageModal
+                Data={LANGUAGES_MODAL}
+                selectedLang ={currentLanguage}
                 visible={languageModal}
                 hideModal={() => setLanguageModal(false)}
-                proceed={() => setLanguageModal(false)}
+                proceed={(lang) => updateCurrentLanguage(lang)}
                 isBlackTheme={props.isBlackTheme}
             />
             <PushNotificationModal

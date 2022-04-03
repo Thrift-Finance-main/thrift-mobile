@@ -90,6 +90,29 @@ class LocalDb implements Release {
             }
         }
     }
+    async setCurrentLanguage(language:string) {
+        console.log('setCurrentLanguage');
+        try {
+            let commonConfig = await getObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE);
+            commonConfig.language = language;
+            await storeObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE,commonConfig);
+        }  catch (e) {
+            return {
+                error: e
+            }
+        }
+    }
+    async getCurrentLanguage() {
+        console.log('getCurrentLanguage');
+        try {
+            let commonConfig = await getObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE);
+            return commonConfig.language;
+        }  catch (e) {
+            return {
+                error: e
+            }
+        }
+    }
     async getCurrentConfig() {
         console.log('getCurrentConfig');
         try {
