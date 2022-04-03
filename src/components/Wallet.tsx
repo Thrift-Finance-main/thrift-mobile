@@ -14,6 +14,8 @@ import ReceiveTokenModal from './PopUps/ReceiveTokenModal'
 import DarkTheme from '../assets/darkTheme.svg'
 import DarkScanner from '../assets/DarkScanner.svg'
 import {useSelector} from "react-redux";
+import ThriftLogoWhite from "../assets/ThriftFinancelogo.svg";
+import ThriftLogo from "../assets/ThriftLogo.svg";
 
 interface WalletProps {
     List: any
@@ -199,10 +201,22 @@ const Wallet: FC<WalletProps> = (props) => {
                     <View
                         style={styles.topContainer}
                     >
-                        <Text
-                            onPress={() => props.onContinuePress("Authentication")}
-                            style={{ ...styles.topTitle, color: props.isBlackTheme ? Colors.white : Colors.black }}
-                        >{currentAccount.accountName}</Text>
+                        {
+                            props.isBlackTheme ?
+                                <ThriftLogoWhite
+                                    style={{
+                                        width: widthPercentageToDP(5), height: heightPercentageToDP(6),
+                                        marginTop: heightPercentageToDP(2)
+                                    }}
+                                />
+                                :
+                                <ThriftLogo
+                                    style={{
+                                        width: widthPercentageToDP(6), height: heightPercentageToDP(6),
+                                        marginTop: heightPercentageToDP(2)
+                                    }}
+                                />
+                        }
                         <View
                             style={styles.topContainer2}
                         >
@@ -234,10 +248,18 @@ const Wallet: FC<WalletProps> = (props) => {
                     </View>
                     <View
                         style={styles.walletContainer}>
+                        <View>
+                            <Text
+                                onPress={() => props.onContinuePress("Authentication")}
+                                style={{ ...styles.topTitle, color: props.isBlackTheme ? Colors.white : Colors.black }}
+                            >{currentAccount.accountName}</Text>
+
+                        </View>
                         <View
                             style={styles.walletInnerContainer}>
                             <Text
                                 style={styles.normalText} >Deligate</Text>
+
                         </View>
                         <Text
                             style={styles.adaText}
