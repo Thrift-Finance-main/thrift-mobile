@@ -13,6 +13,7 @@ interface CreateTokenProps {
     onBackIconPress: () => void
     // fromScreen: any
     isBlackTheme: any
+    address?: string
 }
 const CreateToken: FC<CreateTokenProps> = (props) => {
     return (
@@ -46,6 +47,7 @@ const CreateToken: FC<CreateTokenProps> = (props) => {
                         }}
                     >Send to</Text>
                     <InputField
+                        value={props.address || ''}
                         placeHolder="Address"
                         backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
                         placeholderTextColor={props.isBlackTheme ? Colors.lightWhite : Colors.black}

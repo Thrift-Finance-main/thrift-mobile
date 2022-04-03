@@ -20,7 +20,7 @@ import ThriftLogo from "../assets/ThriftLogo.svg";
 interface WalletProps {
     List: any
     receiveTokenModal: boolean
-    onContinuePress: (route: string) => void
+    onContinuePress: (route: string, payload?:any) => void
     hideShowReceiveTokenModal: () => void
     transactionDetailsModal: boolean
     hideShowTransactionDetailsModal: () => void
@@ -351,6 +351,7 @@ const Wallet: FC<WalletProps> = (props) => {
                         hideModal={props.hideShowReceiveTokenModal}
                         isBlackTheme={props.isBlackTheme}
                         QRScanner={scanner}
+                        onReadQr={(data:string) => props.onContinuePress("CreateToken", data)}
                     />
                     <View
                         style={{ height: heightPercentageToDP(4) }}

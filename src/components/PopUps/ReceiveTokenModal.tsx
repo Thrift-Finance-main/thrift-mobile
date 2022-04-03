@@ -11,10 +11,12 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import {useSelector} from "react-redux";
 import {addressSlice} from "../../utils";
 import Clipboard from '@react-native-community/clipboard';
+import Scan from "../QrCodeCamera";
 
 interface ReceiveTokenModalProps {
   visible: boolean,
   hideModal: () => void,
+  onReadQr: (data:string) => void,
   modalText: string,
   isBlackTheme: any,
   QRScanner : boolean
@@ -27,9 +29,8 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
       && currentAccount.externalPubAddress.length
       && currentAccount.externalPubAddress[0].address || 'addr_empty';
   const onSuccess = e => {
-    Linking.openURL(e.data).catch(err =>
-      console.log('An error occured', err)
-    );
+    const addr = e.data;
+    props.onReadQr(addr);
   };
   return (
     <Modal
@@ -73,6 +74,8 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                       </View>
                       :
                       <View style={{}} >
+                        <Scan/>
+                        {/*}
           <QRCodeScanner
             cameraStyle={[styles.camerStyle]}
             onRead={onSuccess}
@@ -118,6 +121,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
               </View>
             }
           />
+                        */}
           </View>
                       }
                       {

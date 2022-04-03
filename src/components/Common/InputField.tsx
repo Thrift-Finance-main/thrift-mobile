@@ -6,13 +6,15 @@ interface InputFieldProps {
     onChangeText: (text:string) => void,
     secureText?: boolean,
     placeHolder: string
-    backgroundColor: any
+    backgroundColor: any,
+    value: string,
     // value: string
     placeholderTextColor: any
 }
 const InputField: FC<InputFieldProps> = (props) => {
     return (
         <TextInput
+            value={props.value || undefined}
             onChangeText={(text:string) => props.onChangeText(text)}
             secureTextEntry={props.secureText}
             style={{
@@ -27,6 +29,7 @@ const InputField: FC<InputFieldProps> = (props) => {
 
     )
 }
+
 const styles = StyleSheet.create({
     mainCOntainer: {
         borderRadius: 5,

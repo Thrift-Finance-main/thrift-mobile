@@ -58,8 +58,8 @@ const WalletScreen = ({ navigation }) => {
     useEffect(() => {
         SplashScreen.hide()
     }, [])
-    const onContinuePress = (route:string) => {
-        navigation.navigate(route)
+    const onContinuePress = (route:string, data?:any) => {
+        navigation.navigate(route,data)
     }
 
     const hideShowReceiveTokenModal = () => {
@@ -71,7 +71,7 @@ const WalletScreen = ({ navigation }) => {
 
     }
     const showCreateTokenScreen = () => {
-        navigation.navigate("CreateToken")
+        navigation.navigate("CreateToken", "addr_xxx")
     }
     const onAssetsPress = () => {
         setShowAssets(true)
@@ -105,7 +105,7 @@ const WalletScreen = ({ navigation }) => {
             onTransactionPress={onTransactionPress}
             onDarkThemePresss={onDarkThemePresss}
             isBlackTheme={isBlackTheme}
-            onContinuePress={(route:string) => onContinuePress(route)}
+            onContinuePress={(route:string, data:any) => onContinuePress(route, data)}
         />
     )
 }
