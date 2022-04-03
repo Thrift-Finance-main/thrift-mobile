@@ -84,11 +84,7 @@ const WalletScreen = ({ navigation }) => {
 
     const onDarkThemePresss = async () => {
         AsyncStorage.setItem('isBlackTheme', !isBlackTheme == true ? "0" : "1");
-
         dispatch(setTheme(!isBlackTheme));
-
-        console.log("djddjj", isBlackTheme);
-
     };
     return (
         <Wallet
