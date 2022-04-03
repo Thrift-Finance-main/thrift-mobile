@@ -71,7 +71,7 @@ const WalletScreen = ({ navigation }) => {
 
     }
     const showCreateTokenScreen = () => {
-        navigation.navigate("CreateToken", "addr_xxx")
+        navigation.navigate("CreateToken");
     }
     const onAssetsPress = () => {
         setShowAssets(true)

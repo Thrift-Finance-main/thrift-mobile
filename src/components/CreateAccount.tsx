@@ -59,7 +59,7 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                         }}
                     >Name</Text>
                     <InputField
-                        onChangeText={(n:string) => setName(n)}
+                        onChangeText={(n:string) => setName(n || '')}
                         backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
                         placeholderTextColor={props.isBlackTheme ? Colors.white : Colors.black}
                         placeHolder={'Name'}

@@ -46,32 +46,18 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
     }
 
     const hideModal1 = () => {
-        console.log('hideModal1');
-        console.log('currentAccount');
-        console.log(currentAccount.accountName);
-        console.log('AccountName to remove');
-        console.log(accountToRemove);
-
         apiDb.removeAccount(accountToRemove).then(r => {
             apiDb.getAllAccounts().then(allAccs =>{
-                console.log("allAccs");
-                // allAccs = allAccs[0];
-                console.log(allAccs[0]);
-                console.log(allAccs);
                 if (allAccs.length === 0){
-                    console.log("No more accounts, remove all db...")
                     apiDb.removeDb().then(r =>{
                         props.navigation.navigate("Language");
                     });
                 }
                 else if (allAccs.length && currentAccount.accountName === accountToRemove){
-                    console.log("removed current account");
                     apiDb.setCurrentAccount(allAccs[0].accountName).then(r => {
                         dispatch(setCurrentAccount(allAccs[0]));
                         setCurrentAccountName(allAccs[0].accountName);
                     });
-                } else{
-                    console.log("Error: no se ")
                 }
 
                 setAccounts(allAccs);
@@ -80,18 +66,10 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
         });
     }
     const onRemoveAccount = (accountName) => {
-        console.log('hideModal1');
-        console.log('currentAccount');
-        console.log(currentAccount);
-        console.log('AccountName to remove');
-        console.log(accountName);
-
         setAccountToRemove(accountName);
         setRemoveModal(true);
     }
 
-    console.log('ManageAccount');
-    console.log(currentAccount);
     return (
         <SafeAreaView
             style={{
