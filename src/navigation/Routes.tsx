@@ -28,6 +28,7 @@ import CreateTargetScreen from '../screens/CreateTargetScreen';
 import SavingsScreen from '../screens/SavingsScreen';
 import {ENTRY_WITCH_ROUTE} from "../db/tables";
 import MainScreen from "../screens/MainScreen";
+import ManageAccountScreen from "../screens/ManageAccountScreen";
 
 const AuthenticationStack = createNativeStackNavigator();
 
@@ -76,6 +77,7 @@ export const AuthenticationStackNavigation = () => {
         name="CreateAccount"
         component={CreateAccountScreen}
       />
+      <AuthenticationStack.Screen name="ManageAccount" component={ManageAccountScreen} />
       <AuthenticationStack.Screen name="Terms" component={TermsScreen} />
       <AuthenticationStack.Screen
         name="CopyPhrase"

@@ -250,7 +250,7 @@ const Wallet: FC<WalletProps> = (props) => {
                         style={styles.walletContainer}>
                         <View>
                             <Text
-                                onPress={() => props.onContinuePress("Authentication")}
+                                onPress={() => props.onContinuePress("ManageAccount")}
                                 style={{ ...styles.topTitle, color: props.isBlackTheme ? Colors.white : Colors.black }}
                             >{currentAccount.accountName}</Text>
 
