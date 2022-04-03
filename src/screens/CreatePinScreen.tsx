@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
 import CreatePin from '../components/CreatePin';
+import {sha256} from "../utils";
+import {apiDb} from "../db/LocalDb";
+import {Alert} from "react-native";
 
 const CreatePinScreen = ({ navigation }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
@@ -14,17 +17,18 @@ const CreatePinScreen = ({ navigation }) => {
     }
     const onConfirmPress = () => {
         // set pincode
-        let pin = pincode;
+        let pin = sha256(pincode);
 
-        /*
-        realmDb.setPinCode(pincode).then(r => {
-            console.log('r');
-            console.log(r);
-            if (!(r && r.error)){
+        console.log('pin');
+        console.log(pin);
+
+        apiDb.setPincode(pin).then(r => {
+            if (r && r.error){
+                Alert.alert("Error Creating Pincode", r.error);
+            } else {
                 setVisible(true);
             }
         });
-        */
     }
     const onBackIconPress = () => {
         navigation.goBack()

@@ -1,3 +1,15 @@
+const SALT_LENGTH = 32;
+const NONCE_LENGTH = 24;
+
+const cryptoImport = require('crypto');
+
+export const sha256 = (input:string) => {
+  return cryptoImport
+      .createHash('sha256')
+      .update(input)
+      .digest('hex');
+};
+
 // eslint-disable-next-line import/prefer-default-export
 export const addressSlice = (address: string, sliceLength: number = 10) => {
   if (address) {
