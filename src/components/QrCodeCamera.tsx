@@ -1,9 +1,17 @@
 import {Linking, View} from "react-native";
 import { withNavigationFocus } from "react-navigation";
-import {Component} from "react";
 import QRCodeScanner from "react-native-qrcode-scanner";
+import React from "react";
 
-class QrCodeCamera extends Component {
+type MyProps = {
+    // using `interface` is also ok
+    message: string;
+    navigation: any
+};
+type MyState = {
+    count: number; // like this
+};
+class QrCodeCamera extends React.Component<MyProps, MyState> {
 
     onSuccess = e => {
         const addr = e.data;
@@ -14,6 +22,7 @@ class QrCodeCamera extends Component {
         );
     };
     renderCamera() {
+        //const isFocused = this.props.navigation.isFocused();
         const isFocused = this.props.navigation.isFocused();
 
         if (!isFocused) {

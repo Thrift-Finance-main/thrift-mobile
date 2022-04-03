@@ -12,6 +12,7 @@ import {useSelector} from "react-redux";
 import {addressSlice} from "../../utils";
 import Clipboard from '@react-native-community/clipboard';
 import Scan from "../QrCodeCamera";
+import CameraQr from "../CameraQr";
 
 interface ReceiveTokenModalProps {
   visible: boolean,
@@ -28,10 +29,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
       && currentAccount.externalPubAddress
       && currentAccount.externalPubAddress.length
       && currentAccount.externalPubAddress[0].address || 'addr_empty';
-  const onSuccess = e => {
-    const addr = e.data;
-    props.onReadQr(addr);
-  };
+
   return (
     <Modal
       style={styles.mainContainer}
@@ -74,11 +72,10 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                       </View>
                       :
                       <View style={{}} >
-                        <Scan/>
-                        {/*}
+
           <QRCodeScanner
             cameraStyle={[styles.camerStyle]}
-            onRead={onSuccess}
+            onRead={() => {}}
             flashMode={RNCamera.Constants.FlashMode.off}
             showMarker={true}
             // topViewStyle={{ marginTop: -heightPercentageToDP(2) }}
@@ -121,7 +118,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
               </View>
             }
           />
-                        */}
+
           </View>
                       }
                       {
