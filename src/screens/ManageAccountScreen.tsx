@@ -19,7 +19,9 @@ const ManageAccountScreen = ({navigation, route}) => {
   }
   const onCreateAccountPress = () => {
     //hideShowLanguageModal();
-    navigation.navigate("CreateAccount")
+    console.log('onCreateAccountPress');
+    console.log(route.params);
+    navigation.navigate("CreateAccount", {fromScreen: 'CreateAccount'})
   }
   const onRestoreAccountPress = () => {
     navigation.navigate("CreateAccount", {

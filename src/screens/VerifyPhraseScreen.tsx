@@ -23,7 +23,7 @@ function VerifyPhraseScreen ({ navigation, route }) {
 
     const onContinuePress = () => {
         console.log('onContinuePress in VerifyPhraseScreen');
-            // navigation.navigate("CreatePin");
+        navigation.navigate("CreatePin");
     }
     const onBackIconPress = () => {
         navigation.goBack()
@@ -78,15 +78,19 @@ function VerifyPhraseScreen ({ navigation, route }) {
                         const payload = {
                             previousRoute: ''
                         }
-                        navigation.navigate("CreatePin", payload)
+                        // Check if pincode in config
+                        apiDb.getCurrentConfig().then(config => {
+                            if (!config.pinhash.length){
+                                navigation.navigate("CreatePin", payload);
+                            } else {
+                                navigation.navigate("DashboardTab");
+                            }
+                        });
                     });
                 }
             });
         });
     }
-
-    console.log('navigation in VerifyPhraseScreen');
-    console.log(route.params);
 
     return (
         <VerifyPhrase

@@ -6,6 +6,8 @@ import {useQuery} from "../db/models/Project";
 const CreateAccountScreen = ({ navigation, route }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
 
+    console.log('route.params')
+    console.log(route.params)
     const { fromScreen, data} = route.params;
 
     const onContinuePress = (payload: any) => {

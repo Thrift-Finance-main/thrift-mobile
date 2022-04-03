@@ -21,7 +21,15 @@ const RestoreWalletScreen = ({ navigation, route }) => {
         const payload = {
             previousRoute: ''
         };
-        navigation.navigate("CreatePin", payload);
+        // Check if pincode in config
+        apiDb.getCurrentConfig().then(config => {
+            if (!config.pinhash.length){
+                navigation.navigate("CreatePin", payload);
+            } else {
+                navigation.navigate("DashboardTab");
+            }
+        });
+
     }
     const onRestoreWalletPress = () => {
 
