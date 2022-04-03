@@ -52,7 +52,7 @@ class LocalDb implements Release {
 
         console.log('allAccounts');
         console.log(allAccounts);
-        console.log(JSON.parse(allAccounts));
+        // console.log(JSON.parse(allAccounts));
         return allAccounts;
     }
     async getCurrentAccount() {

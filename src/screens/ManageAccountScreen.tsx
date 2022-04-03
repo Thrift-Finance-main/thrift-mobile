@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet} from 'react-native';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Colors from '../constants/CustomColors';
 import {heightPercentageToDP, widthPercentageToDP} from '../utils/dimensions';
 import ManageAccount from "../components/ManageAccount";
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     height: heightPercentageToDP(10),
     alignSelf: 'center',
   },
-  termsContainer: {
+  accountsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: widthPercentageToDP(3),

@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react'
-import { View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity } from 'react-native'
+import {View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity, Button} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
@@ -16,6 +16,7 @@ import DarkScanner from '../assets/DarkScanner.svg'
 import {useSelector} from "react-redux";
 import ThriftLogoWhite from "../assets/ThriftFinancelogo.svg";
 import ThriftLogo from "../assets/ThriftLogo.svg";
+import WalletIcon from "../assets/wallet.svg";
 
 interface WalletProps {
     List: any
@@ -201,22 +202,13 @@ const Wallet: FC<WalletProps> = (props) => {
                     <View
                         style={styles.topContainer}
                     >
-                        {
-                            props.isBlackTheme ?
-                                <ThriftLogoWhite
-                                    style={{
-                                        width: widthPercentageToDP(5), height: heightPercentageToDP(6),
-                                        marginTop: heightPercentageToDP(2)
-                                    }}
-                                />
-                                :
-                                <ThriftLogo
-                                    style={{
-                                        width: widthPercentageToDP(6), height: heightPercentageToDP(6),
-                                        marginTop: heightPercentageToDP(2)
-                                    }}
-                                />
-                        }
+                        <WalletIcon
+                            onPress={() => props.onContinuePress("ManageAccount")}
+                            style={{
+                                width: widthPercentageToDP(10), height: heightPercentageToDP(6),
+                                marginTop: heightPercentageToDP(2)
+                            }}
+                        />
                         <View
                             style={styles.topContainer2}
                         >
@@ -248,17 +240,12 @@ const Wallet: FC<WalletProps> = (props) => {
                     </View>
                     <View
                         style={styles.walletContainer}>
-                        <View>
+                        <View style={{padding:5}}>
                             <Text
-                                onPress={() => props.onContinuePress("ManageAccount")}
-                                style={{ ...styles.topTitle, color: props.isBlackTheme ? Colors.white : Colors.black }}
-                            >{currentAccount.accountName}</Text>
+                                style={{ ...styles.topTitle, color: props.isBlackTheme ? Colors.white : Colors.white }}
+                            >{currentAccount.accountName}
+                            </Text>
 
-                        </View>
-                        <View
-                            style={styles.walletInnerContainer}>
-                            <Text
-                                style={styles.normalText} >Deligate</Text>
 
                         </View>
                         <Text
@@ -368,9 +355,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: widthPercentageToDP(6)
     },
     topTitle: {
-        fontSize: 15,
+        fontSize: 18,
         fontWeight: "bold",
-        letterSpacing: 1
+        letterSpacing: 1,
+        paddingVertical: 14
     },
     topContainer: {
         flexDirection: "row",

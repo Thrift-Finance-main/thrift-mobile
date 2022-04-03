@@ -121,7 +121,7 @@ const VerifyPhrase: FC<VerifyPhraseProps> = (props) => {
                     </View>
 
                     <View
-                        style={{ ...styles.termsContainer, marginTop: heightPercentageToDP(1.5) }}
+                        style={{ ...styles.accountsContainer, marginTop: heightPercentageToDP(1.5) }}
                     >
                         <Bulb />
                         <Text
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     tagText: {
         fontSize: 10,
     },
-    termsContainer: {
+    accountsContainer: {
         flexDirection: "row",
         alignItems: "center",
         paddingHorizontal: widthPercentageToDP(3)

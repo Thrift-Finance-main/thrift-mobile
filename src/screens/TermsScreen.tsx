@@ -53,7 +53,7 @@ const TermsScreen = ({navigation, route}) => {
               style={styles.imageStyle}
             />
           </View>
-          <View style={styles.termsContainer}>
+          <View style={styles.accountsContainer}>
             <Key />
             <Text style={styles.termsText}>
               The recovery phrase serves as the {'\n'}only access to your
@@ -62,7 +62,7 @@ const TermsScreen = ({navigation, route}) => {
           </View>
           <View
             style={{
-              ...styles.termsContainer,
+              ...styles.accountsContainer,
               marginTop: heightPercentageToDP(3.5),
             }}>
             <Bulb />
@@ -73,7 +73,7 @@ const TermsScreen = ({navigation, route}) => {
           </View>
           <View
             style={{
-              ...styles.termsContainer,
+              ...styles.accountsContainer,
               marginTop: heightPercentageToDP(3.5),
             }}>
             <Caution />
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     height: heightPercentageToDP(10),
     alignSelf: 'center',
   },
-  termsContainer: {
+  accountsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: widthPercentageToDP(3),

@@ -76,7 +76,7 @@ const RestoreWallet: FC<RestoreWalletProps> = (props) => {
 
 
                     <View
-                        style={{ ...styles.termsContainer, marginTop: heightPercentageToDP(12) }}
+                        style={{ ...styles.accountsContainer, marginTop: heightPercentageToDP(12) }}
                     >
                         <Bulb />
                         <Text
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         marginTop: heightPercentageToDP(5)
     },
-    termsContainer: {
+    accountsContainer: {
         flexDirection: "row",
         alignItems: "center",
         paddingHorizontal: widthPercentageToDP(3)

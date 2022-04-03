@@ -102,7 +102,7 @@ const CopyPhrase: FC<CopyPhraseProps> = (props) => {
 
 
                 <View
-                    style={{ ...styles.termsContainer, marginTop: heightPercentageToDP(5) }}
+                    style={{ ...styles.accountsContainer, marginTop: heightPercentageToDP(5) }}
                 >
                     <Bulb />
                     <Text
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontWeight: "bold"
     },
-    termsContainer: {
+    accountsContainer: {
         flexDirection: "row",
         alignItems: "center",
         paddingHorizontal: widthPercentageToDP(3)
