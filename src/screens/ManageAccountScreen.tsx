@@ -12,6 +12,11 @@ const ManageAccountScreen = ({navigation, route}) => {
     navigation.goBack();
   };
 
+  const onContinuePress = () => {
+    //hideShowLanguageModal();
+    console.log('onContinuePress in ManageAccountScreen')
+    navigation.navigate("Language")
+  }
   const onCreateAccountPress = () => {
     //hideShowLanguageModal();
     navigation.navigate("CreateAccount")
@@ -26,8 +31,12 @@ const ManageAccountScreen = ({navigation, route}) => {
         fromScreen={"DashboardTab"}
         isBlackTheme={isBlackTheme}
         onBackIconPress={onBackIconPress}
+        onContinuePress={() => onContinuePress}
         onCreateAccountPress={onCreateAccountPress}
-        onRestoreAccountPress={onRestoreAccountPress}>
+        onRestoreAccountPress={onRestoreAccountPress}
+        navigation={navigation}
+    >
+
 
     </ManageAccount>
   );

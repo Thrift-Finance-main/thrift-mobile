@@ -80,6 +80,15 @@ export const getMultipleData = async (keys:string[]) => {
         }
     }
 }
+export const clearAll = async () => {
+    try {
+        await AsyncStorage.clear()
+    } catch(e) {
+        // clear error
+    }
+
+    console.log('Done.')
+}
 
 
 
@@ -94,13 +103,4 @@ export const mergeObj = async (key:string, newObj:Object) => {
     }
 }
 
-export const clearAll = async () => {
-    try {
-        await AsyncStorage.clear()
-    } catch(e) {
-        // clear error
-    }
-
-    console.log('Done.')
-}
 

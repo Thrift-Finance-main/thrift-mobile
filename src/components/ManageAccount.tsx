@@ -8,37 +8,86 @@ import Back from '../../src/assets/back.svg';
 import DarkBack from '../../src/assets/DarkBack.svg';
 import Key from "../assets/Key.svg";
 import User from "../assets/user.svg";
-import Caution from "../assets/Caution.svg";
+import RemoveIcon from "../assets/remove.svg";
 import {useDispatch, useSelector} from "react-redux";
 import {apiDb} from "../db/LocalDb";
 import {addressSlice} from "../utils";
 import {setCurrentAccount} from "../store/Action";
+import CustomModal from "./PopUps/CustomModal";
 
 interface CreateAccountProps {
     onBackIconPress: () => void
+    onContinuePress: () => void
     onCreateAccountPress: () => void
     onRestoreAccountPress: () => void
     fromScreen: any
     isBlackTheme: boolean
+    navigation: any
 }
 const ManageAccount: FC<CreateAccountProps> = (props) => {
     const dispatch = useDispatch();
     const [accounts, setAccounts] = useState([]);
+    const [removeModal, setRemoveModal] = useState(false);
+    const [accountToRemove, setAccountToRemove] = useState('');
     const currentAccount = useSelector(state => state.Reducers.currentAccount);
-    const [currentPublicHex, setCurrentPublicHex] = useState(currentAccount.publicKeyHex);
-
+    const [currentAccountName, setCurrentAccountName] = useState(currentAccount.accountName);
 
     useEffect(() =>{
         apiDb.getAllAccounts().then(allAccs =>{
             setAccounts(allAccs);
-        })
+        });
     }, []);
 
     const onSelectAccount = (account:IAccount) => {
         apiDb.setCurrentAccount(account.accountName).then(r => {
             dispatch(setCurrentAccount(account));
-            setCurrentPublicHex(account.publicKeyHex);
+            setCurrentAccountName(account.accountName);
         });
+    }
+
+    const hideModal1 = () => {
+        console.log('hideModal1');
+        console.log('currentAccount');
+        console.log(currentAccount.accountName);
+        console.log('AccountName to remove');
+        console.log(accountToRemove);
+
+        apiDb.removeAccount(accountToRemove).then(r => {
+            apiDb.getAllAccounts().then(allAccs =>{
+                console.log("allAccs");
+                // allAccs = allAccs[0];
+                console.log(allAccs[0]);
+                console.log(allAccs);
+                if (allAccs.length === 0){
+                    console.log("No more accounts, remove all db...")
+                    apiDb.removeDb().then(r =>{
+                        props.navigation.navigate("Language");
+                    });
+                }
+                else if (allAccs.length && currentAccount.accountName === accountToRemove){
+                    console.log("removed current account");
+                    apiDb.setCurrentAccount(allAccs[0].accountName).then(r => {
+                        dispatch(setCurrentAccount(allAccs[0]));
+                        setCurrentAccountName(allAccs[0].accountName);
+                    });
+                } else{
+                    console.log("Error: no se ")
+                }
+
+                setAccounts(allAccs);
+                setRemoveModal(false);
+            });
+        });
+    }
+    const onRemoveAccount = (accountName) => {
+        console.log('hideModal1');
+        console.log('currentAccount');
+        console.log(currentAccount);
+        console.log('AccountName to remove');
+        console.log(accountName);
+
+        setAccountToRemove(accountName);
+        setRemoveModal(true);
     }
 
     console.log('ManageAccount');
@@ -76,6 +125,7 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
                             const account = JSON.parse(acc[1]);
                             return <TouchableOpacity
                                         onPress={() => onSelectAccount(account)}
+                                        onLongPress={() => onRemoveAccount(account.accountName)}
                                         style={{...styles.accountsContainer }} key={index}>
                                             <View style={{
                                                 padding: 10,
@@ -83,7 +133,7 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
                                                 flex:1,
                                                 flexDirection: 'row',
                                                 backgroundColor:
-                                                    account.publicKeyHex === currentPublicHex ?
+                                                    account.accountName === currentAccountName ?
                                                         '#eaeaea' :
                                                         (props.isBlackTheme
                                                             ? Colors.blackTheme
@@ -96,8 +146,6 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
                                                     {addressSlice(account.publicKeyHex, 10)}
                                                 </Text>
                                             </View>
-
-
                                     </TouchableOpacity>
                         })
                     }
@@ -130,6 +178,12 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
 
                 </View>
             </ScrollView>
+            <CustomModal
+                isBlackTheme={props.isBlackTheme}
+                visible={removeModal}
+                hideModal={hideModal1}
+                modalText='Remove account'
+            />
         </SafeAreaView>
     )
 }

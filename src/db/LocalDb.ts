@@ -1,4 +1,4 @@
-import {getAllKeys, getMultipleData, getObj, storeObj} from "./LocalApis";
+import {clearAll, getAllKeys, getMultipleData, getObj, removeData, storeObj} from "./LocalApis";
 import {ACCOUNT_DATA_TABLE, CONFIGURATION_COMMON_DATA_TABLE, CONFIGURATION_DATA_TABLE} from "./tables";
 import {ERROR_ACCOUNT} from "../constants/error";
 
@@ -67,6 +67,17 @@ class LocalDb implements Release {
             }
         }
     }
+    async removeAccount(accountName:string) {
+        console.log('removeAccount');
+        console.log(accountName);
+        try {
+            return await removeData(ACCOUNT_DATA_TABLE + ':' + accountName);
+        }  catch (e) {
+            return {
+                error: e
+            }
+        }
+    }
     async setCurrentAccount(accountName:string) {
         console.log('setCurrentAccount');
         try {
@@ -111,7 +122,16 @@ class LocalDb implements Release {
                 error: e
             }
         }
-
+    }
+    async removeDb() {
+        console.log('removeDb');
+        try {
+            await clearAll();
+        }  catch (e) {
+            return {
+                error: e
+            }
+        }
     }
 }
 
