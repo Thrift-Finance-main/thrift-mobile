@@ -22,7 +22,7 @@ interface CreatePinProps {
     hideModal: () => void,
     isBlackTheme: any,
     validate: boolean,
-    oldpin?: boolean,
+    oldpin?: string,
     title: string
 }
 const CreatePin: FC<CreatePinProps> = (props) => {

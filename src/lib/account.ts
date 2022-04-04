@@ -204,7 +204,7 @@ export const createAccount = async (
     const externalPubAddressM = await generatePayAddress(
       masterKeyPtr,
       0,
-      BASE_ADDRESS_INDEX,
+      i,
       TESTNET_NETWORK_INDEX,
     );
 
@@ -224,7 +224,7 @@ export const createAccount = async (
     const internalPubAddressM = await generatePayAddress(
       masterKeyPtr,
       1,
-      BASE_ADDRESS_INDEX, // TODO, set exact index, or is the position
+      i, // TODO, set exact index, or is the position
       TESTNET_NETWORK_INDEX,
     );
 
