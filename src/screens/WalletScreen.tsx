@@ -58,11 +58,14 @@ const WalletScreen = ({ navigation }) => {
     const [showTransaction, setShowTransaction] = useState<boolean>(false)
 
     useEffect(() => {
+        console.log('currentAccount.externalPubAddress');
+        console.log(currentAccount.externalPubAddress);
         SplashScreen.hide();
-        const address = currentAccount && currentAccount.externalPubAddress && currentAccount.externalPubAddress.length && currentAccount.externalPubAddress[0].address;
+        let address = currentAccount && currentAccount.externalPubAddress && currentAccount.externalPubAddress.length && currentAccount.externalPubAddress[0].address;
         if (address){
+            address = "addresses/"+address
             const tmp = 'blocks/latest'
-            fetchBlockfrost(tmp).then(response => {
+            fetchBlockfrost(address).then(response => {
                 console.log("response");
                 console.log(response);
             });
