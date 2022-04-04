@@ -9,10 +9,12 @@ import AntDesignIcon from 'react-native-vector-icons/AntDesign'
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { setTheme } from "../store/Action"
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Blockfrost, fetchBlockfrost} from "../api/Blockfrost";
 
 const WalletScreen = ({ navigation }) => {
     const dispatch = useDispatch();
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
+    const currentAccount = useSelector((state) => state.Reducers.currentAccount);
 
     const List = [
         {
@@ -56,7 +58,15 @@ const WalletScreen = ({ navigation }) => {
     const [showTransaction, setShowTransaction] = useState<boolean>(false)
 
     useEffect(() => {
-        SplashScreen.hide()
+        SplashScreen.hide();
+        const address = currentAccount && currentAccount.externalPubAddress && currentAccount.externalPubAddress.length && currentAccount.externalPubAddress[0].address;
+        if (address){
+            const tmp = 'blocks/latest'
+            fetchBlockfrost(tmp).then(response => {
+                console.log("response");
+                console.log(response);
+            });
+        }
     }, [])
     const onContinuePress = (route:string, data?:any) => {
         navigation.navigate(route,data)

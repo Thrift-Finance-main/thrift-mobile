@@ -1,7 +1,32 @@
 // eslint-disable-next-line import/prefer-default-export,import/extensions,import/no-unresolved
 import {BLOCKFROST_API, BLOCKFROST_URL_TESTNET} from '../../config';
 
+
+/*
+
+fetch(
+  `https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=${currency}`
+)
+  .then((res) => res.json())
+  .then((res) => res.cardano[currency])
+* */
+export const fetchBlockfrost = async (endpoint: string) => {
+  console.log('\n\nfetchBlockfrost');
+  const address = BLOCKFROST_URL_TESTNET + `/api/v0/${endpoint}`;
+
+  console.log('address');
+  console.log(address);
+
+  const rawResult = await fetch(address, {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json', project_id: BLOCKFROST_API},
+  });
+
+  return await rawResult.json();
+}
+
 export const Blockfrost = () => {
+  console.log('Blockfrost');
   const token = BLOCKFROST_API;
   return {
     name: 'data',
@@ -12,7 +37,10 @@ export const Blockfrost = () => {
           type = 'get';
         }
 
-        const address = `/api/blockfrost${endpoint}`;
+        const address = BLOCKFROST_URL_TESTNET+`/api/v0/${endpoint}`;
+
+        console.log('address');
+        console.log(address);
 
         const response = await fetch(address, {
           headers: {'Content-Type': 'application/json', project_id: token},
@@ -21,6 +49,8 @@ export const Blockfrost = () => {
           .then(r => r.json())
           .catch((e: any) => Promise.reject(e));
 
+        console.log('response');
+        console.log(response);
         return response;
       },
     },
