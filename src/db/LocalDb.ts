@@ -136,6 +136,18 @@ class LocalDb implements Release {
             }
         }
     }
+
+    async getPincode() {
+        console.log('getPincode');
+        try {
+            let commonConfig = await getObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE);
+            return commonConfig.pinhash;
+        }  catch (e) {
+            return {
+                error: e
+            }
+        }
+    }
     async setConfig(confObj) {
         console.log('setConfig');
         try {

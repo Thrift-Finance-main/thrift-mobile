@@ -19,11 +19,11 @@ const RestoreWalletScreen = ({ navigation, route }) => {
     const hideModal = () => {
         setVisible(false);
         const payload = {
-            previousRoute: ''
+            fromScreen: 'RestoreWallet'
         };
         // Check if pincode in config
         apiDb.getCurrentConfig().then(config => {
-            if (!config.pinhash.length){
+            if (!config || !config.pinhash.length){
                 navigation.navigate("CreatePin", payload);
             } else {
                 navigation.navigate("DashboardTab");

@@ -38,7 +38,10 @@ const SecurityScreen = ({ navigation }) => {
     }
 
     const unlockCodePress = () => {
-        navigation.navigate("CreatePin")
+        const payload = {
+            fromScreen: 'Settings'
+        };
+        navigation.navigate("CreatePin", payload)
     }
 
     const onFingerPrintPress = () => {

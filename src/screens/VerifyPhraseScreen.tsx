@@ -23,7 +23,10 @@ function VerifyPhraseScreen ({ navigation, route }) {
 
     const onContinuePress = () => {
         console.log('onContinuePress in VerifyPhraseScreen');
-        navigation.navigate("CreatePin");
+        const payload = {
+            fromScreen: 'VerifyPhrase'
+        };
+        navigation.navigate("CreatePin", payload);
     }
     const onBackIconPress = () => {
         navigation.goBack()

@@ -14,6 +14,7 @@ interface CreatePinProps {
     onConfirmPress: () => void,
     onBackIconPress: () => void,
     setPincode: (pincode:string) => void,
+    setOldPincode?: (oldPincode:string) => void,
     setConfirmedPincode: (confirmedPincode:string) => void,
     pincode: string,
     confirmedPincode: string,
@@ -21,126 +22,157 @@ interface CreatePinProps {
     hideModal: () => void,
     isBlackTheme: any,
     validate: boolean,
+    oldpin?: boolean,
+    title: string
 }
 const CreatePin: FC<CreatePinProps> = (props) => {
-    return (
-        <SafeAreaView style={{
-            ...styles.mainContainer, backgroundColor:
-                props.isBlackTheme ? Colors.blackTheme :
-                    Colors.white,
-        }}>
-            <ScrollView>
-                <View style={styles.secondaryContainer}>
-                    {
-                        props.isBlackTheme ?
-                            <DarkBack
-                                style={{ marginTop: heightPercentageToDP(3) }}
-                                onPress={props.onBackIconPress}
-                            />
-                            : <Back
-                                style={{ marginTop: heightPercentageToDP(3) }}
-                                onPress={props.onBackIconPress}
-                            />
-                    }
-                    <Text
-                        style={{
-                            ...styles.topTitle, color:
-                                props.isBlackTheme ? Colors.white :
-                                    Colors.black,
-                        }}
-                    >Create Pin</Text>
-                    <Text
-                        style={{
-                            ...styles.filedHeader, color:
-                                props.isBlackTheme ? Colors.white :
-                                    Colors.black,
-                        }}
-                    >Create Pin</Text>
-                    <View
-                        style={{ paddingHorizontal: widthPercentageToDP(2.5) }}
-                    >
-                        <OTPTextView
-                            autoFocusOnLoad={true}
-                            autoFocus={true}
-                            handleTextChange={(e) => props.setPincode(e)}
-                            textInputStyle={{
-                                ...styles.roundedTextInput, backgroundColor: props.isBlackTheme ? Colors.darkInput :
-                                    Colors.otpBackground,
-                                    color: props.isBlackTheme ? Colors.white : Colors.black
-                            }}
-                            inputCount={4}
-                            tintColor={"transparent"}
-                            offTintColor={"transparent"}
-                            secureTextEntry={true}
-
+    return <SafeAreaView style={{
+        ...styles.mainContainer, backgroundColor:
+            props.isBlackTheme ? Colors.blackTheme :
+                Colors.white,
+    }}>
+        <ScrollView>
+            <View style={styles.secondaryContainer}>
+                {
+                    props.isBlackTheme ?
+                        <DarkBack
+                            style={{ marginTop: heightPercentageToDP(3) }}
+                            onPress={props.onBackIconPress}
                         />
-                    </View>
-                    <Text
-                        style={styles.hintStyle}
-                    >Four number pin</Text>
-                    <Text
-                        style={{
-                            ...styles.filedHeader, color:
-                                props.isBlackTheme ? Colors.white :
-                                    Colors.black,
-                        }}
-                    >Confirm Pin</Text>
-                    <View
-                        style={{ paddingHorizontal: widthPercentageToDP(2.5) }}
-                    >
-                        <OTPTextView
-                            autoFocusOnLoad={true}
-
-                            handleTextChange={(e) => props.setConfirmedPincode(e)}
-                            textInputStyle={{
-                                ...styles.roundedTextInput, backgroundColor: props.isBlackTheme ? Colors.darkInput :
-                                    Colors.otpBackground,
-                                    color: props.isBlackTheme ? Colors.white : Colors.black
-                            }}
-                            inputCount={4}
-                            tintColor={"transparent"}
-                            offTintColor={"transparent"}
-                            secureTextEntry={true}
-
+                        : <Back
+                            style={{ marginTop: heightPercentageToDP(3) }}
+                            onPress={props.onBackIconPress}
                         />
-                    </View>
-                    <Text
-                        style={styles.hintStyle}
-                    >Four number pin</Text>
+                }
+                <Text
+                    style={{
+                        ...styles.topTitle, color:
+                            props.isBlackTheme ? Colors.white :
+                                Colors.black,
+                    }}
+                >{props.title}</Text>
+                {
+                    props.oldpin ? <>
+                        <Text
+                            style={{
+                                ...styles.filedHeader, color:
+                                    props.isBlackTheme ? Colors.white :
+                                        Colors.black,
+                            }}
+                        >Confirm current pin</Text>
+                        <View
+                            style={{ paddingHorizontal: widthPercentageToDP(2.5) }}
+                        >
+                            <OTPTextView
+                                autoFocusOnLoad={true}
+                                autoFocus={true}
+                                handleTextChange={(e) => props.setOldPincode(e)}
+                                textInputStyle={{
+                                    ...styles.roundedTextInput, backgroundColor: props.isBlackTheme ? Colors.darkInput :
+                                        Colors.otpBackground,
+                                    color: props.isBlackTheme ? Colors.white : Colors.black
+                                }}
+                                inputCount={4}
+                                tintColor={"transparent"}
+                                offTintColor={"transparent"}
+                                secureTextEntry={true}
 
+                            />
+                        </View>
+                    </> : null
+                }
+                <Text
+                    style={{
+                        ...styles.filedHeader, color:
+                            props.isBlackTheme ? Colors.white :
+                                Colors.black,
+                    }}
+                >Create Pin</Text>
+                <View
+                    style={{ paddingHorizontal: widthPercentageToDP(2.5) }}
+                >
+                    <OTPTextView
+                        autoFocusOnLoad={true}
+                        autoFocus={true}
+                        handleTextChange={(e) => props.setPincode(e)}
+                        textInputStyle={{
+                            ...styles.roundedTextInput, backgroundColor: props.isBlackTheme ? Colors.darkInput :
+                                Colors.otpBackground,
+                                color: props.isBlackTheme ? Colors.white : Colors.black
+                        }}
+                        inputCount={4}
+                        tintColor={"transparent"}
+                        offTintColor={"transparent"}
+                        secureTextEntry={true}
 
-                    <View
-                        style={{ height: heightPercentageToDP(14) }}
-                    />
-
-                    <Button
-                        label="Confirm"
-                        borderRadius={5}
-                        size={Button.sizes.large}
-                        color={props.isBlackTheme ? Colors.black : Colors.white}
-                        text60
-                        labelStyle={{fontSize: 14, fontWeight: 'bold', letterSpacing: 2, textAlign: "center"}}
-                        style={styles.buttonStyle}
-                        backgroundColor={CustomColors.primaryButton}
-                        disabled={!props.validate}
-                        enableShadow
-                        animateLayout
-                        onPress={props.onConfirmPress}
-                    />
-                    <View
-                        style={{ height: heightPercentageToDP(4) }}
                     />
                 </View>
-            </ScrollView>
-            <CustomModal
-                isBlackTheme={props.isBlackTheme}
-                visible={props.visible}
-                hideModal={props.hideModal}
-                modalText='Pin created successfully'
-            />
-        </SafeAreaView>
-    )
+                <Text
+                    style={styles.hintStyle}
+                >Four number pin</Text>
+                <Text
+                    style={{
+                        ...styles.filedHeader, color:
+                            props.isBlackTheme ? Colors.white :
+                                Colors.black,
+                    }}
+                >Confirm Pin</Text>
+                <View
+                    style={{ paddingHorizontal: widthPercentageToDP(2.5) }}
+                >
+                    <OTPTextView
+                        autoFocusOnLoad={true}
+
+                        handleTextChange={(e) => props.setConfirmedPincode(e)}
+                        textInputStyle={{
+                            ...styles.roundedTextInput, backgroundColor: props.isBlackTheme ? Colors.darkInput :
+                                Colors.otpBackground,
+                                color: props.isBlackTheme ? Colors.white : Colors.black
+                        }}
+                        inputCount={4}
+                        tintColor={"transparent"}
+                        offTintColor={"transparent"}
+                        secureTextEntry={true}
+
+                    />
+                </View>
+                <Text
+                    style={styles.hintStyle}
+                >Four number pin</Text>
+
+
+                <View
+                    style={{ height: heightPercentageToDP(14) }}
+                />
+
+                <Button
+                    label="Confirm"
+                    borderRadius={5}
+                    size={Button.sizes.large}
+                    color={props.isBlackTheme ? Colors.black : Colors.white}
+                    text60
+                    labelStyle={{fontSize: 14, fontWeight: 'bold', letterSpacing: 2, textAlign: "center"}}
+                    style={styles.buttonStyle}
+                    backgroundColor={CustomColors.primaryButton}
+                    disabled={!props.validate}
+                    enableShadow
+                    animateLayout
+                    onPress={props.onConfirmPress}
+                />
+                <View
+                    style={{ height: heightPercentageToDP(4) }}
+                />
+            </View>
+        </ScrollView>
+        <CustomModal
+            isBlackTheme={props.isBlackTheme}
+            visible={props.visible}
+            hideModal={props.hideModal}
+            modalText={props.oldpin ? 'Pin updated successfully' : 'Pin created successfully'}
+        />
+    </SafeAreaView>
 }
+
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
