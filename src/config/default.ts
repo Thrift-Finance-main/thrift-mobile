@@ -4,7 +4,12 @@ export const DEFAULT_CONFIG = {
     endpoint: '',
     network: 'testnet',
     pinhash: '',
-    language: 'en'
+    language: 'en',
+    currency: 'usd',
+    notifications: {
+        push: false,
+        sendReceive: false,
+    }
 }
 
 export const HASH_PROOF = "HASH_PROOF";
