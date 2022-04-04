@@ -3,7 +3,6 @@ import Security from '../components/Security';
 import FingerPrint from '../assets/FingerPrint.svg'
 import Unlock from '../assets/Unlock.svg'
 import Keys from '../assets/Keys.svg'
-import { Alert } from 'react-native';
 import { useSelector } from 'react-redux';
 const SecurityScreen = ({ navigation }) => {
     const [visible, setVisible] = useState<boolean>(false);

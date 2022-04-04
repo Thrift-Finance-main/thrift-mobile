@@ -3,16 +3,20 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
-import Button from './Common/Button'
-import OTPTextView from 'react-native-otp-textinput'
+import { Button } from 'react-native-ui-lib';
 import InputField from './Common/InputField'
 import CustomModal from './PopUps/CustomModal'
+import CustomColors from "../constants/CustomColors";
 interface ChangePasswordProps {
     onContinuePress: () => void
     onBackIconPress: () => void
+    onChangeOldPassword: (text:string) => void
+    onChangePassword: (text:string) => void
+    onChangeConfirmPassword: (text:string) => void
     visible: boolean,
     hideModal: () => void,
-    isBlackTheme: any
+    isBlackTheme: any,
+    valid: boolean
 }
 const ChangePassword: FC<ChangePasswordProps> = (props) => {
     return (
@@ -36,37 +40,10 @@ const ChangePassword: FC<ChangePasswordProps> = (props) => {
                                 props.isBlackTheme ? Colors.white :
                                     Colors.black,
                         }}
-                    >Enter Pin</Text>
-                    <View
-                    // style={{ paddingHorizontal: widthPercentageToDP(2.5) }}
-                    >
-                        <OTPTextView
-                            autoFocusOnLoad={true}
-
-                            handleTextChange={(e) => {
-                                console.log(e)
-                            }}
-                            textInputStyle={{
-                                ...styles.roundedTextInput, backgroundColor: props.isBlackTheme ? Colors.darkInput :
-                                    Colors.otpBackground,
-                                    color: props.isBlackTheme ? Colors.white : Colors.black
-                            }} inputCount={4}
-                            tintColor={"transparent"}
-                            offTintColor={"transparent"}
-                            secureTextEntry={true}
-
-                        />
-                    </View>
-                    <Text
-                        style={{
-                            ...styles.filedHeader, color:
-                                props.isBlackTheme ? Colors.white :
-                                    Colors.black,
-                        }}
                     >Old Password</Text>
                     <InputField
                         backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
-
+                        onChangeText={(text:string) => props.onChangeOldPassword(text)}
                         secureText={true}
                     />
                     <Text
@@ -80,7 +57,7 @@ const ChangePassword: FC<ChangePasswordProps> = (props) => {
                         }}                    >New Password</Text>
                     <InputField
                         backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
-
+                        onChangeText={(text:string) => props.onChangePassword(text)}
                         secureText={true}
                     />
                     <Text
@@ -94,19 +71,28 @@ const ChangePassword: FC<ChangePasswordProps> = (props) => {
                         }}                    >Confirm New Password</Text>
                     <InputField
                         backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
-
+                        onChangeText={(text) => props.onChangeConfirmPassword(text)}
                         secureText={true}
                     />
                     <View
                         style={{ height: heightPercentageToDP(5) }}
                     />
-                    <Button
-                        backgroundColor={Colors.primaryButton}
-                        buttonTitle={"Set New Password"}
-                        onPress={props.onContinuePress}
-                        titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
 
+                    <Button
+                        label="Set New Password"
+                        borderRadius={5}
+                        size={Button.sizes.large}
+                        color={props.isBlackTheme ? Colors.black : Colors.white}
+                        text60
+                        labelStyle={{fontSize: 14, fontWeight: 'bold', letterSpacing: 2, textAlign: "center"}}
+                        style={styles.buttonStyle}
+                        backgroundColor={CustomColors.primaryButton}
+                        disabled={!props.valid}
+                        enableShadow
+                        animateLayout
+                        onPress={props.onContinuePress}
                     />
+
                 </View>
             </ScrollView>
             <CustomModal
@@ -161,6 +147,13 @@ const styles = StyleSheet.create({
         width: widthPercentageToDP(15),
         height: heightPercentageToDP(8),
 
+    },
+    buttonStyle: {
+        width: widthPercentageToDP(80),
+        height: heightPercentageToDP(8),
+        borderRadius: 9,
+        justifyContent: "center",
+        alignSelf: "center"
     },
 
 })

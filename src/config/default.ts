@@ -6,3 +6,5 @@ export const DEFAULT_CONFIG = {
     pinhash: '',
     language: 'en'
 }
+
+export const HASH_PROOF = "HASH_PROOF";

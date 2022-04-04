@@ -8,4 +8,5 @@ interface IAccount {
     internalPubAddress: any;
     externalPubAddress: any;
     mode: string;
+    hashProof: string;
 }

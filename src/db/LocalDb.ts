@@ -67,6 +67,26 @@ class LocalDb implements Release {
             }
         }
     }
+    async getAccount(accountName:string) {
+        console.log('getAccount');
+        try {
+            return await getObj(ACCOUNT_DATA_TABLE + ':' + accountName);
+        }  catch (e) {
+            return {
+                error: e
+            }
+        }
+    }
+    async updateAccount(account:IAccount) {
+        console.log('updateAccount');
+        try {
+            await storeObj(ACCOUNT_DATA_TABLE + ':' + account.accountName,account);
+        }  catch (e) {
+            return {
+                error: e
+            }
+        }
+    }
     async removeAccount(accountName:string) {
         console.log('removeAccount');
         console.log(accountName);

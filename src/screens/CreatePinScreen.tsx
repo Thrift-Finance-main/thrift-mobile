@@ -26,15 +26,11 @@ const CreatePinScreen = ({ navigation, route }) => {
                     // set pincode
                     let pin = sha256(pincode);
 
-                    console.log('pin');
-                    console.log(pin);
-
                     apiDb.setPincode(pin).then(r => {
                         if (r && r.error){
                             Alert.alert("Error Creating Pincode:", r.error);
                         } else {
                             setVisible(true);
-                            navigation.goBack();
                         }
                     });
                 } else {

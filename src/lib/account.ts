@@ -26,6 +26,7 @@ import {
 import {TESTNET_NETWORK_INDEX} from './network';
 import {encryptData} from './cryptoLib';
 import {Realm} from "@realm/react";
+import {HASH_PROOF} from "../config/default";
 
 export const CONFIG = {
   MNEMONIC_STRENGTH: 160,
@@ -168,6 +169,7 @@ export const createAccount = async (
 
   console.log('hey1');
   const encryptedMasterKey = await encryptData(masterKey, pass);
+  const encryptedPublicKeyHex = await encryptData(publicKeyHex, pass);
 
   console.log('hey2');
 
@@ -216,8 +218,6 @@ export const createAccount = async (
       });
     }
   }
-  console.log('externalPubAddress');
-  console.log(externalPubAddress);
   const internalPubAddress = [];
   for (let i = 0; i < TOTAL_ADDRESS_INDEX; i++) {
     // eslint-disable-next-line no-await-in-loop
@@ -239,20 +239,19 @@ export const createAccount = async (
       });
     }
   }
-  console.log('internalPubAddress');
-  console.log(internalPubAddress);
+
+
   const newAccount = {
     accountName,
     balance: '0',
     tokens: [],
     encryptedMasterKey,
     publicKeyHex,
+    encryptedPublicKeyHex,
     rewardAddress,
     internalPubAddress,
     externalPubAddress,
-    mode: 'Full',
+    mode: 'Full'
   };
-  console.log('newAccount');
-  console.log(newAccount);
   return newAccount;
 };
