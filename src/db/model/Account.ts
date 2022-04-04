@@ -4,9 +4,9 @@ interface IAccount {
     tokens: any;
     encryptedMasterKey: string;
     publicKeyHex: string;
+    encryptedPublicKeyHex: string;
     rewardAddress: string;
     internalPubAddress: any;
     externalPubAddress: any;
     mode: string;
-    hashProof: string;
 }

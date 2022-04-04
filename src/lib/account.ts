@@ -152,23 +152,20 @@ export const createAccount = async (
   pass: string
 ) => {
   console.log('createAccount');
+  console.log('mnemonic');
+  console.log(mnemonic);
 
-  const masterKey = await getMasterKeyFromMnemonic(mnemonic);
-  console.log('masterKey');
-  console.log(masterKey);
-
-  const masterKeyPtr = await Bip32PrivateKey.from_bytes(
-    Buffer.from(masterKey, 'hex'),
-  );
+  const rootKey = await generateWalletRootKey(mnemonic);
 
   const accountKey = await (
-    await (await masterKeyPtr.derive(DERIVE_PUROPOSE)).derive(DERIVE_COIN_TYPE)
-  ).derive(BASE_ADDRESS_INDEX);
+    await (await rootKey.derive(harden(DERIVE_PUROPOSE))).derive(harden(DERIVE_COIN_TYPE))
+  ).derive(harden(BASE_ADDRESS_INDEX));
   const publicKey = await accountKey.to_public();
   const publicKeyHex = Buffer.from(await publicKey.as_bytes()).toString('hex');
 
   console.log('hey1');
-  const encryptedMasterKey = await encryptData(masterKey, pass);
+  const accountKeyBytes:string = Buffer.from(await accountKey.as_bytes()).toString('hex')
+  const encryptedMasterKey = await encryptData(accountKeyBytes, pass);
   const encryptedPublicKeyHex = await encryptData(publicKeyHex, pass);
 
   console.log('hey2');
@@ -202,7 +199,7 @@ export const createAccount = async (
   for (let i = 0; i < TOTAL_ADDRESS_INDEX; i++) {
     // eslint-disable-next-line no-await-in-loop
     const externalPubAddressM = await generatePayAddress(
-      masterKeyPtr,
+        accountKey,
       0,
       i,
       TESTNET_NETWORK_INDEX,
@@ -222,7 +219,7 @@ export const createAccount = async (
   for (let i = 0; i < TOTAL_ADDRESS_INDEX; i++) {
     // eslint-disable-next-line no-await-in-loop
     const internalPubAddressM = await generatePayAddress(
-      masterKeyPtr,
+        accountKey,
       1,
       i, // TODO, set exact index, or is the position
       TESTNET_NETWORK_INDEX,
