@@ -88,6 +88,23 @@ const MainScreen = ({ navigation }) => {
                 const relatedAddresses = await fetchBlockfrost(endpoint);
                 console.log('relatedAddresses');
                 console.log(relatedAddresses);
+                if (relatedAddresses.length){
+                    const addressesUtxos = await Promise.all(
+                        relatedAddresses.map(async (a:any) => {
+                            console.log('address');
+                            console.log(a.address);
+                            const response = await fetchBlockfrost(`addresses/${a.address}`);
+
+                            if (!response.error){
+                                return response;
+                            }
+                            console.log('response utxo');
+                            console.log(response);
+                        })
+                    );
+                    console.log('addressesUtxos');
+                    console.log(addressesUtxos);
+                }
             } else {
                 console.log("Not current account in store");
             }

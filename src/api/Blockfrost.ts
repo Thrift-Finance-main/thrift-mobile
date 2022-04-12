@@ -11,17 +11,24 @@ fetch(
   .then((res) => res.cardano[currency])
 * */
 export const fetchBlockfrost = async (endpoint: string) => {
-  // console.log('\n\nfetchBlockfrost');
-  const address = BLOCKFROST_URL_TESTNET + `${endpoint}`;
+  try {
+    // console.log('\n\nfetchBlockfrost');
+    const address = BLOCKFROST_URL_TESTNET + `${endpoint}`;
 
-  console.log("fetchBlockfrost");
-  console.log(address);
-  const rawResult = await fetch(address, {
-    method: 'GET',
-    headers: {'Content-Type': 'application/json', project_id: BLOCKFROST_API},
-  });
+    console.log("fetchBlockfrost");
+    console.log(address);
+    const rawResult = await fetch(address, {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json', project_id: BLOCKFROST_API},
+    });
 
-  return await rawResult.json();
+    return await rawResult.json();
+  } catch (e) {
+    return {
+      error: e
+    }
+  }
+
 }
 
 export const Blockfrost = () => {
