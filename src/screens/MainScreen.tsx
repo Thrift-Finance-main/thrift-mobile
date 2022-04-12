@@ -78,33 +78,56 @@ const MainScreen = ({ navigation }) => {
             console.log(currentAccount);
             const saddress = currentAccount && currentAccount.rewardAddress;
             if (saddress) {
-                let endpoint = "accounts/" + saddress
-                console.log('endpoint');
-                console.log(endpoint);
+                let endpoint = "accounts/" + saddress;
                 const accountState = await fetchBlockfrost(endpoint);
                 console.log('accountState');
                 console.log(accountState);
                 endpoint =  "accounts/" + saddress + "/addresses";
                 const relatedAddresses = await fetchBlockfrost(endpoint);
-                console.log('relatedAddresses');
-                console.log(relatedAddresses);
-                if (relatedAddresses.length){
-                    const addressesUtxos = await Promise.all(
-                        relatedAddresses.map(async (a:any) => {
-                            console.log('address');
-                            console.log(a.address);
-                            const response = await fetchBlockfrost(`addresses/${a.address}`);
+                const addressesUtxos = await Promise.all(
+                    relatedAddresses.map(async (a:any) => {
+                        const response = await fetchBlockfrost(`addresses/${a.address}`);
+                        if (!response.error){
+                            return response;
+                        }
+                    })
+                );
+                console.log('addressesUtxos');
+                console.log(addressesUtxos);
+                let currentAccountInLocal = await apiDb.getAccount(currentAccount.accountName);
+                console.log('currentAccountInLocal');
+                console.log(currentAccountInLocal);
+                currentAccountInLocal.balance = accountState.controlled_amount;
+                currentAccountInLocal.delegated = accountState.active;
+                currentAccountInLocal.activeEpoch = accountState.active_epoch;
+                currentAccountInLocal.poolId = accountState.pool_id;
+                currentAccountInLocal.rewardsSum = accountState.rewards_sum;
+                currentAccountInLocal.withdrawableAmount = accountState.withdrawable_amount;
 
-                            if (!response.error){
-                                return response;
-                            }
-                            console.log('response utxo');
-                            console.log(response);
-                        })
-                    );
-                    console.log('addressesUtxos');
-                    console.log(addressesUtxos);
-                }
+                let assetList: any[] = [];
+                addressesUtxos.map(utxo => {
+                    let assets = utxo.amount;
+                    assets = assets.filter(a => a.unit !== 'lovelace');
+                    assetList.push(...assets);
+                });
+
+                console.log('assetList');
+                console.log(assetList);
+
+                // Init
+                let mergedAssets:{ [key: string]: number } = {};
+
+                assetList.map(a => {
+                    if (mergedAssets[a.unit] !== undefined){
+                        mergedAssets[a.unit] = mergedAssets[a.unit] + a.quantity;
+                    } else {
+                        mergedAssets[a.unit] = a.quantity;
+                    }
+                });
+
+                console.log('mergedAssets');
+                console.log(mergedAssets);
+
             } else {
                 console.log("Not current account in store");
             }

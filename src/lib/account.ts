@@ -232,6 +232,11 @@ export const createAccount = async (
     rewardAddress,
     internalPubAddress,
     externalPubAddress,
+    delegated: false,
+    activeEpoch: 0,
+    poolId: '',
+    rewardsSum: 0,
+    withdrawableAmount: 0,
     mode: 'Full'
   };
   return newAccount;
