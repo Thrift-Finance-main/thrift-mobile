@@ -40,10 +40,13 @@ const Wallet: FC<WalletProps> = (props) => {
 
 
 
+    /*
     console.log('\n\ncurrentAccount in Wallet');
     console.log(props.isBlackTheme);
     console.log(currentAccount);
     console.log('________\n\n');
+
+     */
     const renderItemMenuList = ({ item, index }) => {
         return (
             <View

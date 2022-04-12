@@ -12,8 +12,10 @@ fetch(
 * */
 export const fetchBlockfrost = async (endpoint: string) => {
   // console.log('\n\nfetchBlockfrost');
-  const address = BLOCKFROST_URL_TESTNET + `/api/v0/${endpoint}`;
+  const address = BLOCKFROST_URL_TESTNET + `${endpoint}`;
 
+  console.log("fetchBlockfrost");
+  console.log(address);
   const rawResult = await fetch(address, {
     method: 'GET',
     headers: {'Content-Type': 'application/json', project_id: BLOCKFROST_API},

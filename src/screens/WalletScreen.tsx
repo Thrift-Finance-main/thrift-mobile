@@ -58,27 +58,9 @@ const WalletScreen = ({ navigation }) => {
     const [showTransaction, setShowTransaction] = useState<boolean>(false)
 
     useEffect(() => {
-        console.log('currentAccount');
-        console.log(currentAccount);
-        console.log('currentAccount.externalPubAddress');
-        console.log(currentAccount.externalPubAddress);
-        console.log('currentAccount.internalPubAddress');
-        console.log(currentAccount.internalPubAddress);
         SplashScreen.hide();
-        let address = currentAccount && currentAccount.externalPubAddress && currentAccount.externalPubAddress.length && currentAccount.externalPubAddress[0].address;
-        if (address){
-            address = "addresses/"+address
-            const tmp = 'blocks/latest'
-            fetchBlockfrost(address).then(response => {
-                console.log("response");
-                console.log(response);
-            });
-        }
     }, [])
     const onContinuePress = (route:string, data?:any) => {
-        console.log('onContinuePress in select Wallet');
-        console.log(route);
-        console.log(data);
         navigation.navigate(route);
     }
 
