@@ -38,15 +38,6 @@ const Wallet: FC<WalletProps> = (props) => {
     const [scanner, setScanner] = useState(false);
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
 
-
-
-    /*
-    console.log('\n\ncurrentAccount in Wallet');
-    console.log(props.isBlackTheme);
-    console.log(currentAccount);
-    console.log('________\n\n');
-
-     */
     const renderItemMenuList = ({ item, index }) => {
         return (
             <View
@@ -253,7 +244,7 @@ const Wallet: FC<WalletProps> = (props) => {
                         </View>
                         <Text
                             style={styles.adaText}
-                        >0.000456 Ada</Text>
+                        >{currentAccount.balance/1000000} Ada</Text>
                         <View style={styles.sendReceiveContainer}>
                             <View
                                 style={{ justifyContent: "center", alignItems: "center" }}

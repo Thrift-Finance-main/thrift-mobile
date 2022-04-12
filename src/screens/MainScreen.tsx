@@ -3,7 +3,7 @@ import React, {FC, useEffect, useRef, useState} from 'react'
 import SplashScreen from 'react-native-splash-screen';
 import { useDispatch, useSelector } from 'react-redux';
 import Language from '../components/Language'
-import { setTheme } from '../store/Action';
+import {setCurrentAccount, setTheme} from '../store/Action';
 import {getCurrentLang, getCurrentLanguage, LANGUAGES_LIST, LANGUAGES_NAMES, translate} from "../i18n";
 import i18next from "i18next";
 import {withTranslation} from "react-i18next";
@@ -45,10 +45,9 @@ const RouteHandler: FC<RouteHandlerProps> = (props) => {
 
 
 const MainScreen = ({ navigation }) => {
+    const dispatch = useDispatch();
     const entryRoute = useSelector((state) => state.Reducers.entryRoute);
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
-    console.log('currentAccount 222222');
-    console.log(currentAccount);
 
     const navigateTo = (navigate:string) => {
         navigation.navigate(navigate)
@@ -114,8 +113,6 @@ const MainScreen = ({ navigation }) => {
                 console.log('assetList');
                 console.log(assetList);
 
-
-
                 // Init
                 let mergedAssets:{ [key: string]: number } = {};
 
@@ -132,6 +129,9 @@ const MainScreen = ({ navigation }) => {
 
                 currentAccountInLocal.assets = mergedAssets;
                 await apiDb.updateAccount(currentAccountInLocal);
+
+                dispatch(setCurrentAccount(currentAccountInLocal));
+
                 const accountInLocal =  await apiDb.getAccount(currentAccountInLocal.accountName);
 
                 console.log('accountInLocal');
