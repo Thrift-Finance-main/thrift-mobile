@@ -60,7 +60,7 @@ class LocalDb implements Release {
             }
         }
     }
-    async updateAccount(account:IAccount) {
+    async updateAccount(account:any) {
         try {
             await storeObj(ACCOUNT_DATA_TABLE + ':' + account.accountName,account);
         }  catch (e) {

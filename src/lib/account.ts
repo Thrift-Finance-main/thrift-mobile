@@ -225,7 +225,7 @@ export const createAccount = async (
   const newAccount = {
     accountName,
     balance: '0',
-    tokens: [],
+    assets: {},
     encryptedMasterKey,
     publicKeyHex,
     encryptedPublicKeyHex,

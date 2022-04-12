@@ -114,6 +114,8 @@ const MainScreen = ({ navigation }) => {
                 console.log('assetList');
                 console.log(assetList);
 
+
+
                 // Init
                 let mergedAssets:{ [key: string]: number } = {};
 
@@ -127,6 +129,13 @@ const MainScreen = ({ navigation }) => {
 
                 console.log('mergedAssets');
                 console.log(mergedAssets);
+
+                currentAccountInLocal.assets = mergedAssets;
+                await apiDb.updateAccount(currentAccountInLocal);
+                const accountInLocal =  await apiDb.getAccount(currentAccountInLocal.accountName);
+
+                console.log('accountInLocal');
+                console.log(accountInLocal);
 
             } else {
                 console.log("Not current account in store");
