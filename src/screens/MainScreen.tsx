@@ -21,14 +21,9 @@ import {fetchBlockfrost} from "../api/Blockfrost";
 
 interface RouteHandlerProps {
     navigate: (n:string) => void,
-    entryRoute: any,
-    currentAccount: any
+    entryRoute: any
 }
 const RouteHandler: FC<RouteHandlerProps> = (props) => {
-
-    console.log('props');
-    console.log(props);
-    console.log(props.currentAccount);
     switch (props.entryRoute) {
         case ENTRY_WITCH_ROUTE.LANGUAGE:
             props.navigate("Language");
@@ -81,17 +76,22 @@ const MainScreen = ({ navigation }) => {
             console.log('fetchData');
             console.log('currentAccount');
             console.log(currentAccount);
-            let saddress = currentAccount && currentAccount.rewardAddress;
+            const saddress = currentAccount && currentAccount.rewardAddress;
             if (saddress) {
-                saddress = "accounts/" + saddress
-                console.log('saddress');
-                console.log(saddress);
-                const data = await fetchBlockfrost(saddress);
-                console.log('data');
-                console.log(data);
+                let endpoint = "accounts/" + saddress
+                console.log('endpoint');
+                console.log(endpoint);
+                const accountState = await fetchBlockfrost(endpoint);
+                console.log('accountState');
+                console.log(accountState);
+                endpoint =  "accounts/" + saddress + "/addresses";
+                const relatedAddresses = await fetchBlockfrost(endpoint);
+                console.log('relatedAddresses');
+                console.log(relatedAddresses);
             } else {
                 console.log("Not current account in store");
             }
+
         }
 
         if (isMounted.current) {
