@@ -74,7 +74,7 @@ function VerifyPhraseScreen ({ navigation, route }) {
                 console.log('r');
                 console.log(r);
                 if (r && r.error){
-                    Alert.alert("Error:", r.error);
+                    // Alert.alert("Error:", r.error);
                 } else {
                     apiDb.setCurrentAccount(createdAccount.accountName).then(r => {
                         dispatch(setCurrentAccount(createdAccount));

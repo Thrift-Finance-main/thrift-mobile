@@ -18,8 +18,6 @@ interface RestoreWalletProps {
     isBlackTheme: any
 }
 const RestoreWallet: FC<RestoreWalletProps> = (props) => {
-    console.log('RestoreWallet props');
-    console.log(props);
     return (
         <SafeAreaView style={{
             ...styles.mainContainer, backgroundColor:

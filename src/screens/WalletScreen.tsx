@@ -76,7 +76,10 @@ const WalletScreen = ({ navigation }) => {
         }
     }, [])
     const onContinuePress = (route:string, data?:any) => {
-        navigation.navigate(route,data)
+        console.log('onContinuePress in select Wallet');
+        console.log(route);
+        console.log(data);
+        navigation.navigate(route);
     }
 
     const hideShowReceiveTokenModal = () => {

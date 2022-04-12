@@ -46,7 +46,7 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
     }
 
     const hideModal1 = () => {
-        apiDb.removeAccount(accountToRemove).then(r => {
+        apiDb.removeAccount(accountToRemove).then(accountName => {
             apiDb.getAllAccounts().then(allAccs =>{
                 if (allAccs.length === 0){
                     apiDb.removeDb().then(r =>{
@@ -54,12 +54,14 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
                     });
                 }
                 else if (allAccs.length && currentAccount.accountName === accountToRemove){
-                    apiDb.setCurrentAccount(allAccs[0].accountName).then(r => {
-                        dispatch(setCurrentAccount(allAccs[0]));
-                        setCurrentAccountName(allAccs[0].accountName);
+                    const firstAccountArray = allAccs[0];
+                    const firstAccount = firstAccountArray[1];
+                    const acc = JSON.parse(firstAccount);
+                    apiDb.setCurrentAccount(acc.accountName).then(r => {
+                        dispatch(setCurrentAccount(acc));
+                        setCurrentAccountName(acc.accountName);
                     });
                 }
-
                 setAccounts(allAccs);
                 setRemoveModal(false);
             });

@@ -11,11 +11,8 @@ fetch(
   .then((res) => res.cardano[currency])
 * */
 export const fetchBlockfrost = async (endpoint: string) => {
-  console.log('\n\nfetchBlockfrost');
+  // console.log('\n\nfetchBlockfrost');
   const address = BLOCKFROST_URL_TESTNET + `/api/v0/${endpoint}`;
-
-  console.log('address');
-  console.log(address);
 
   const rawResult = await fetch(address, {
     method: 'GET',
@@ -26,7 +23,7 @@ export const fetchBlockfrost = async (endpoint: string) => {
 }
 
 export const Blockfrost = () => {
-  console.log('Blockfrost');
+  // console.log('Blockfrost');
   const token = BLOCKFROST_API;
   return {
     name: 'data',
@@ -39,9 +36,6 @@ export const Blockfrost = () => {
 
         const address = BLOCKFROST_URL_TESTNET+`/api/v0/${endpoint}`;
 
-        console.log('address');
-        console.log(address);
-
         const response = await fetch(address, {
           headers: {'Content-Type': 'application/json', project_id: token},
           method: type,
@@ -49,8 +43,6 @@ export const Blockfrost = () => {
           .then(r => r.json())
           .catch((e: any) => Promise.reject(e));
 
-        console.log('response');
-        console.log(response);
         return response;
       },
     },
@@ -63,8 +55,6 @@ export const submitTxBlockfrost = async (endpoint: string, data: any) => {
   const token = BLOCKFROST_API;
   const urlb = BLOCKFROST_URL_TESTNET + address;
 
-  console.log('token');
-  console.log(token);
   const result = await fetch(urlb, {
     headers: {
       Authorization: `Bearer \${${token}}`,

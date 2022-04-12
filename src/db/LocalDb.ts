@@ -37,7 +37,7 @@ class LocalDb implements Release {
         }
 
     }
-    async getAllAccounts(): Promise<IAccount[]> {
+    async getAllAccounts() {
         console.log('getAllAccounts');
 
         let allAccounts = [];
@@ -49,9 +49,6 @@ class LocalDb implements Release {
             console.log(keys);
             allAccounts = await getMultipleData(keys);
         }
-
-        console.log('allAccounts');
-        console.log(allAccounts);
         // console.log(JSON.parse(allAccounts));
         return allAccounts;
     }
@@ -91,7 +88,8 @@ class LocalDb implements Release {
         console.log('removeAccount');
         console.log(accountName);
         try {
-            return await removeData(ACCOUNT_DATA_TABLE + ':' + accountName);
+            await removeData(ACCOUNT_DATA_TABLE + ':' + accountName);
+            return accountName;
         }  catch (e) {
             return {
                 error: e
@@ -101,9 +99,13 @@ class LocalDb implements Release {
     async setCurrentAccount(accountName:string) {
         console.log('setCurrentAccount');
         try {
-            let commonConfig = await getObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE);
-            commonConfig.currentAccountName = accountName;
-            await storeObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE,commonConfig);
+            if (accountName && accountName.length){
+                let commonConfig = await getObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE);
+                commonConfig.currentAccountName = accountName;
+                await storeObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE,commonConfig);
+                console.log('commonConfig');
+                console.log(commonConfig);
+            }
         }  catch (e) {
             return {
                 error: e
@@ -148,7 +150,11 @@ class LocalDb implements Release {
         console.log('setPincode');
         try {
             let commonConfig = await getObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE);
+            console.log('commonConfig1');
+            console.log(commonConfig);
             commonConfig.pinhash = pinhash;
+            console.log('commonConfig2');
+            console.log(commonConfig);
             await storeObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE, commonConfig);
         }  catch (e) {
             return {
@@ -170,8 +176,14 @@ class LocalDb implements Release {
     }
     async setConfig(confObj) {
         console.log('setConfig');
+        console.log(confObj);
         try {
-            await storeObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE, confObj);
+            if (confObj){
+                await storeObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE, confObj);
+                let commonConfig = await getObj(CONFIGURATION_DATA_TABLE + ':' + CONFIGURATION_COMMON_DATA_TABLE);
+                console.log('commonConfig after set config')
+                console.log(commonConfig)
+            }
         }  catch (e) {
             return {
                 error: e

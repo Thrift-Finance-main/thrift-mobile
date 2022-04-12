@@ -12,9 +12,6 @@ export const getInitialState = () => {
 const initialState = getInitialState();
 
 const Reducers = (state = initialState, action:any) => {
-    console.log('Reducer:');
-    console.log(action.type);
-    console.log(action);
     switch (action.type) {
         case ISBLACKTHEME: {
             return {

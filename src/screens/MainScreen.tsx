@@ -16,6 +16,7 @@ import {heightPercentageToDP, widthPercentageToDP} from "../utils/dimensions";
 import Button from "../components/Common/Button";
 import LanguageModal from "../components/PopUps/LanguageModal";
 import {ENTRY_WITCH_ROUTE} from "../config/routes";
+import {apiDb} from "../db/LocalDb";
 
 interface RouteHandlerProps {
     navigate: (n:string) => void,
@@ -46,6 +47,7 @@ const MainScreen = ({ navigation }) => {
     const navigateTo = (navigate:string) => {
         navigation.navigate(navigate)
     }
+    // apiDb.removeDb().then(r=>{});
     return (
         <RouteHandler
             navigate ={(n:string) => navigateTo(n)}

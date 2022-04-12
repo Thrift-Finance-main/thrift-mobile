@@ -13,9 +13,6 @@ const RestoreWalletScreen = ({ navigation, route }) => {
     const [visible, setVisible] = useState<boolean>(false);
     const [seed, setSeed] = useState<string>('');
 
-    console.log('route.params');
-    console.log(route.params);
-
     const hideModal = () => {
         setVisible(false);
         const payload = {
@@ -34,14 +31,9 @@ const RestoreWalletScreen = ({ navigation, route }) => {
     const onRestoreWalletPress = () => {
 
         createAccount(seed, route.params.name,route.params.passwd).then(createdAccount => {
-            console.log('createdAccount');
-            console.log(createdAccount);
-
             apiDb.addAccount(createdAccount).then(r => {
-                console.log('r');
-                console.log(r);
                 if (r && r.error){
-                    Alert.alert("Error:", r.error);
+                    // Alert.alert("Error:", r.error);
                 } else {
                     apiDb.setCurrentAccount(createdAccount.accountName).then(r => {
                         dispatch(setCurrentAccount(createdAccount));
@@ -58,8 +50,6 @@ const RestoreWalletScreen = ({ navigation, route }) => {
     }
 
     const handleSeed = (seed:string) => {
-        console.log('seed');
-        console.log(seed);
         setSeed(seed);
     }
 

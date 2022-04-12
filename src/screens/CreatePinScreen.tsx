@@ -28,19 +28,21 @@ const CreatePinScreen = ({ navigation, route }) => {
 
                     apiDb.setPincode(pin).then(r => {
                         if (r && r.error){
-                            Alert.alert("Error Creating Pincode:", r.error);
+                            // Alert.alert("Error Creating Pincode:", r.error);
                         } else {
                             setVisible(true);
                         }
                     });
                 } else {
-                    Alert.alert("Incorrect old pincode");
+                    // Alert.alert("Incorrect old pincode");
                 }
             });
         } else {
             apiDb.setPincode(sha256(pincode)).then(r => {
                 if (r && r.error){
-                    Alert.alert("Error Creating Pincode:", r.error);
+                    // Alert.alert("Error Creating Pincode:", r.error);
+                    console.log('error');
+                    console.log(r.error);
                 } else {
                     setVisible(true);
                     navigation.navigate("DashboardTab");

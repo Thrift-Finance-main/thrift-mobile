@@ -60,11 +60,11 @@ const ChangePasswordScreen = ({ navigation }) => {
                     });
 
                 } else {
-                    Alert.alert("Wrong old password");
+                    // Alert.alert("Wrong old password");
                 }
             });
         } catch (e) {
-            Alert.alert("Error on encrypt: "+e);
+            // Alert.alert("Error on encrypt: "+e);
         }
 
         // setVisible(true);

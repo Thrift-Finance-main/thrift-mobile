@@ -24,18 +24,18 @@ const setConfig = (store) => {
             console.log('Already config currentConfig');
             console.log('currentAccountName');
             console.log(currentConfig.currentAccountName);
-            apiDb.getCurrentAccount(currentConfig.currentAccountName).then(ca => {
-                console.log('ca');
-                console.log(ca);
-                if(!ca){
-                    console.log('No accounts');
-                    store.dispatch(setEntryRoute(ENTRY_WITCH_ROUTE.LANGUAGE));
-                } else {
+            if (!currentConfig.currentAccountName.length){
+                console.log('No accounts in config');
+                store.dispatch(setEntryRoute(ENTRY_WITCH_ROUTE.LANGUAGE));
+            } else {
+                apiDb.getCurrentAccount(currentConfig.currentAccountName).then(ca => {
+                    console.log('ca');
+                    console.log(ca);
                     console.log('There are accounts, going to Homeº');
                     store.dispatch(setCurrentAccount(ca));
                     store.dispatch(setEntryRoute(ENTRY_WITCH_ROUTE.HOME_PAGE));
-                }
-            });
+                });
+            }
         }
     });
 }
