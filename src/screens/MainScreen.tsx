@@ -46,6 +46,8 @@ const RouteHandler: FC<RouteHandlerProps> = (props) => {
 
 const MainScreen = ({ navigation }) => {
     const dispatch = useDispatch();
+
+
     const entryRoute = useSelector((state) => state.Reducers.entryRoute);
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
 
@@ -69,9 +71,7 @@ const MainScreen = ({ navigation }) => {
     // apiDb.removeDb().then(r=>{});
     useEffect(() =>{
 
-
         const fetchData = async () => {
-            await delay(2000);
             console.log('fetchData');
             console.log('currentAccount');
             console.log(currentAccount);
@@ -150,7 +150,7 @@ const MainScreen = ({ navigation }) => {
                 .catch(console.error);
         }
 
-    }, [currentAccount]);
+    }, [currentAccount.accountName]);
 
     return (
         <RouteHandler
