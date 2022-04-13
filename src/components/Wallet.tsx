@@ -113,7 +113,19 @@ const Wallet: FC<WalletProps> = (props) => {
                 console.log('mergedAssets');
                 console.log(mergedAssets);
 
-                currentAccountInLocal.assets = mergedAssets;
+                const assetsWithDetails = await Promise.all(
+                    Object.keys(mergedAssets).map(async(key, index) => {
+                        const response = await fetchBlockfrost(`assets/${key}`);
+                        if (!response.error){
+                            return response;
+                        }
+                    })
+                );
+
+                console.log('assetsWithDetails');
+                console.log(assetsWithDetails.length);
+
+                currentAccountInLocal.assets = assetsWithDetails;
                 await apiDb.updateAccount(currentAccountInLocal);
 
                 dispatch(setCurrentAccount(currentAccountInLocal));
