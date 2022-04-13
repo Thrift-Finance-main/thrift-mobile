@@ -143,7 +143,6 @@ const Wallet: FC<WalletProps> = (props) => {
 
                 }}
             >
-
                 <View
                     style={{
                         flexDirection: "row", alignItems: "center",
