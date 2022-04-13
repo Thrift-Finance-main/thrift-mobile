@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
-import { View, Text, StyleSheet, Image, FlatList, Linking, TouchableOpacity } from 'react-native';
+import React, {FC, useState} from 'react';
+import {View, Text, StyleSheet, Image, FlatList, Linking, TouchableOpacity, Alert} from 'react-native';
 import Colors from '../../constants/CustomColors';
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimensions';
 import QRCodeScanner from 'react-native-qrcode-scanner';
@@ -24,6 +24,8 @@ interface ReceiveTokenModalProps {
 }
 const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
   const currentAccount = useSelector((state) => state.Reducers.currentAccount);
+  const [scanText, setScanText] = useState('');
+
 
   const firstAddress = currentAccount
       && currentAccount.externalPubAddress
@@ -75,8 +77,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
 
           <QRCodeScanner
             cameraStyle={[styles.camerStyle]}
-            onRead={() => {}}
-            flashMode={RNCamera.Constants.FlashMode.off}
+            onRead={(text) => {setScanText(text)}}
             showMarker={true}
             // topViewStyle={{ marginTop: -heightPercentageToDP(2) }}
             // bottomViewStyle={{ marginTop: heightPercentageToDP(6) }}
@@ -89,15 +90,14 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                 }}>Scan QR code to make transactions</Text>
 
 
-
                 <Text
                   style={{
-                    marginTop: heightPercentageToDP(1.5), textAlign: "center", paddingHorizontal: widthPercentageToDP(10),
+                    marginTop: heightPercentageToDP(1.1), textAlign: "center", paddingHorizontal: widthPercentageToDP(10),
                     color: props.isBlackTheme ? Colors.white : Colors.black,
                   }}
 
                 >
-                  addrlq95e.....addrlq95eaddrlq95eaddrlq95eeaddrlq95eeaddrlq95e
+                  result: {scanText}
                 </Text>
                 <TouchableOpacity
                   //  onPress={props.onBackIconPress}
@@ -234,31 +234,6 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
               </View>
                       }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           {/* <Text
             style={{ marginTop: heightPercentageToDP(0.5) }}
 
@@ -271,6 +246,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
     </Modal>
   );
 };
+
 const styles = StyleSheet.create({
   mainContainer:
   {

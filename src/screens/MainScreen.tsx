@@ -55,7 +55,7 @@ const MainScreen = ({ navigation }) => {
     // TODO: Move all useEffect to WalletScreen, MainScreen appear always
 
 
-    // apiDb.removeDb().then(r=>{});
+    //apiDb.removeDb().then(r=>{});
     return (
         <RouteHandler
             navigate ={(n:string) => navigateTo(n)}
