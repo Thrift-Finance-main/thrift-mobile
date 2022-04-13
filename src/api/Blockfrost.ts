@@ -24,9 +24,8 @@ export const fetchBlockfrost = async (endpoint: string) => {
 
     return await rawResult.json();
   } catch (e) {
-    return {
-      error: e
-    }
+    console.log('error');
+    console.log(e);
   }
 
 }

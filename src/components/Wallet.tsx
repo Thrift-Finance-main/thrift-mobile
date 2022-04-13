@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useRef, useState} from 'react'
-import {View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity, Button} from 'react-native'
+import {View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity, Button, Dimensions} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
@@ -91,18 +91,11 @@ const Wallet: FC<WalletProps> = (props) => {
                 currentAccountInLocal.rewardsSum = accountState.rewards_sum;
                 currentAccountInLocal.withdrawableAmount = accountState.withdrawable_amount;
 
-                let assetList: any[] = [];
-                const response = await fetchBlockfrost(`accounts/${saddress}/addresses/assets`);
-                if (!response.error){
-                    return response;
-                }
-
-                console.log('response');
-                console.log(response);
+                const assetResponse = await fetchBlockfrost(endpoint+'/assets');
 
                 const assetsWithDetails = await Promise.all(
-                    Object.keys(response).map(async(key, index) => {
-                        const response = await fetchBlockfrost(`assets/${key}`);
+                    assetResponse.map(async(a) => {
+                        const response = await fetchBlockfrost(`assets/${a.unit}`);
                         if (!response.error){
                             return response;
                         }
@@ -412,11 +405,13 @@ const Wallet: FC<WalletProps> = (props) => {
                             style={{ marginTop: heightPercentageToDP(1), }}
                             data={props.List}
                             renderItem={renderItemMenuList}
+                            contentContainerStyle={{ flexGrow: 1, paddingBottom: 5 }}
                             keyExtractor={(item, index) => index.toString()}
                         /> : <FlatList
                             style={{ marginTop: heightPercentageToDP(1), }}
                             data={props.transactionList}
                             renderItem={renderItemTransaction}
+                            contentContainerStyle={{ flexGrow: 1, paddingBottom: 5 }}
                             keyExtractor={(item, index) => index.toString()}
                         />}
                     </View>
@@ -443,64 +438,69 @@ const Wallet: FC<WalletProps> = (props) => {
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
+        paddingHorizontal: widthPercentageToDP(5),
     },
     secondaryContainer: {
-        paddingHorizontal: widthPercentageToDP(6)
+        paddingHorizontal: widthPercentageToDP(6),
     },
     topTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
+        fontSize: 15,
+        fontWeight: 'bold',
         letterSpacing: 1,
-        paddingVertical: 14
     },
     topContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        paddingVertical: heightPercentageToDP(6)
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: heightPercentageToDP(6),
     },
     topContainer2: {
-        flexDirection: "row",
-        alignItems: "center",
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     walletContainer: {
         backgroundColor: Colors.walletBackground,
-        borderRadius: 10, minHeight: heightPercentageToDP(20),
-        paddingHorizontal: widthPercentageToDP(7)
+        borderRadius: 10,
+        minHeight: heightPercentageToDP(20),
+        paddingHorizontal: widthPercentageToDP(7),
     },
     normalText: {
-        textAlign: "center",
+        textAlign: 'center',
         color: Colors.white,
-        fontSize: 12
+        fontSize: 12,
     },
     walletInnerContainer: {
-        backgroundColor: "#213EC2",
+        backgroundColor: '#213EC2',
         width: widthPercentageToDP(16.5),
-        marginTop: heightPercentageToDP(2)
-        , alignItems: "center", justifyContent: "center",
+        marginTop: heightPercentageToDP(2),
+        alignItems: 'center',
+        justifyContent: 'center',
         height: heightPercentageToDP(4),
-        borderRadius: 8
+        borderRadius: 8,
     },
     adaText: {
         fontSize: 18,
-        fontWeight: "bold",
-        letterSpacing: 1
-        , color: Colors.white,
-        textAlign: "center",
-        marginTop: heightPercentageToDP(3)
+        fontWeight: 'bold',
+        letterSpacing: 1,
+        color: Colors.white,
+        textAlign: 'center',
+        marginTop: heightPercentageToDP(3),
     },
     sendReceiveContainer: {
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
         marginTop: heightPercentageToDP(1.5),
-        paddingVertical: heightPercentageToDP(2.5)
+        paddingVertical: heightPercentageToDP(2.5),
     },
     listHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         paddingHorizontal: widthPercentageToDP(2),
-        paddingVertical: heightPercentageToDP(2)
+        paddingVertical: heightPercentageToDP(2),
+    },
+    listContainer: {
+       maxHeight: 300
     }
-})
+});
 export default Wallet;
