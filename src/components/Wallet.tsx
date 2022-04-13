@@ -130,307 +130,311 @@ const Wallet: FC<WalletProps> = (props) => {
 
     }, [currentAccount.accountName]);
 
-    const renderItemMenuList = ({ item, index }) => {
+    const renderItemMenuList = ({item, index}) => {
         return (
             <View
                 style={{
-                    flexDirection: "row", justifyContent: "space-between", alignItems: "center",
-                    backgroundColor: props.isBlackTheme ? Colors.darkInput : "transparent",
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    backgroundColor: props.isBlackTheme
+                        ? Colors.darkInput
+                        : 'transparent',
                     marginTop: heightPercentageToDP(2),
                     borderRadius: 12,
                     height: heightPercentageToDP(9),
-
-
-                }}
-            >
+                    //   paddingHorizontal: widthPercentageToDP(3),
+                }}>
                 <View
                     style={{
-                        flexDirection: "row", alignItems: "center",
+                        flexDirection: 'row',
+                        alignItems: 'center',
                         // height: heightPercentageToDP(10)
-                    }}
-                >
+                    }}>
                     <View
                         style={{
                             width: widthPercentageToDP(12),
-                            marginLeft: props.isBlackTheme ? widthPercentageToDP(3) : 0
-
-                        }}
-                    >
+                            marginLeft: props.isBlackTheme ? widthPercentageToDP(3) : 0,
+                        }}>
                         {item.icon}
-
                     </View>
 
-                    <View
-                        style={{ paddingHorizontal: widthPercentageToDP(5) }}
-                    >
+                    <View style={{paddingHorizontal: widthPercentageToDP(5)}}>
                         <Text
-                            style={{ color: props.isBlackTheme ? Colors.white : Colors.black, fontSize: 14 }}
-                        >{item.title}</Text>
-                        <Text
-                            style={{ color: props.isBlackTheme ? Colors.lightWhite : Colors.black, fontSize: 11 }}
-                        >$5, 625.01</Text>
+                            style={{
+                                color: props.isBlackTheme ? Colors.white : Colors.black,
+                                fontSize: 14,
+                            }}>
+                            {item.title}
+                        </Text>
+                        <View style={{flexDirection: 'row'}} >
+                            <Text
+                                style={{
+                                    color: props.isBlackTheme ? Colors.lightWhite : Colors.black,
+                                    fontSize: 11,
+                                }}>
+                                $5, 625.01
+                            </Text>
+                            <Text
+                                style={{
+                                    color: item.raising.color,
+                                    fontSize: 11,
+                                    marginLeft: widthPercentageToDP(5)
+                                }}>
+                                {item.raising.value}
+                            </Text>
+                        </View>
                     </View>
                 </View>
                 <Text
                     style={{
-                        color: props.isBlackTheme ? Colors.white : Colors.black, fontSize: 11,
-                        paddingHorizontal: props.isBlackTheme ? widthPercentageToDP(3.4) : 0
-
-                    }}
-                >5 ETH</Text>
+                        color: props.isBlackTheme ? Colors.white : Colors.black,
+                        fontSize: 11,
+                        paddingHorizontal: props.isBlackTheme
+                            ? widthPercentageToDP(3.4)
+                            : widthPercentageToDP(3.4),
+                    }}>
+                    {item.counts}
+                </Text>
             </View>
-
-        )
-    }
-
+        );
+    };
 
 
-
-    const renderItemTransaction = ({ item, index }) => {
+    const renderItemTransaction = ({item, index}) => {
         return (
-
             <View
                 style={{
-                    flexDirection: "row", justifyContent: "space-between", alignItems: "center",
-                    backgroundColor: props.isBlackTheme ? Colors.darkInput : "transparent",
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    backgroundColor: props.isBlackTheme
+                        ? Colors.darkInput
+                        : 'transparent',
                     height: heightPercentageToDP(9),
                     marginTop: heightPercentageToDP(2),
                     borderRadius: 12,
-                }}
-            >
-
-                <View
-                    style={{ flexDirection: "row", alignItems: "center", }}
-                >
+                }}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
                     <View
                         style={{
                             width: widthPercentageToDP(12),
 
-                            marginLeft: props.isBlackTheme ? widthPercentageToDP(3) : 0
-                        }}
-                    >
+                            marginLeft: props.isBlackTheme ? widthPercentageToDP(3) : 0,
+                        }}>
                         {item.icon}
-
                     </View>
 
-                    <View
-                        style={{ paddingHorizontal: widthPercentageToDP(2) }}
-                    >
+                    <View style={{paddingHorizontal: widthPercentageToDP(2)}}>
                         <Text
                             style={{
-                                color:
-                                    props.isBlackTheme ? Colors.white :
-                                        Colors.black, fontSize: 13
-                            }}
-                        >{item.title}</Text>
+                                color: props.isBlackTheme ? Colors.white : Colors.black,
+                                fontSize: 13,
+                            }}>
+                            {item.title}
+                        </Text>
                         <Text
                             style={{
-                                color:
-                                    props.isBlackTheme ? Colors.white :
-                                        Colors.black,
-                            }}
-                        >23-11-2021</Text>
+                                color: props.isBlackTheme ? Colors.white : Colors.black,
+                            }}>
+                            23-11-2021
+                        </Text>
                     </View>
-
                 </View>
-                <TouchableOpacity
-                    onPress={props.hideShowTransactionDetailsModal}
-
-                >
+                <TouchableOpacity onPress={props.hideShowTransactionDetailsModal}>
                     <View
                         style={{
-                            flexDirection: "row", alignItems: "center", justifyContent: "center",
-                            width: props.isBlackTheme ? "80%" : "90%"
-                        }}
-                    >
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: props.isBlackTheme ? '80%' : '90%',
+                        }}>
                         <View>
                             <Text
                                 style={{
-                                    color:
-                                        props.isBlackTheme ? Colors.white :
-                                            Colors.black,
-                                }}
-                            >-1.500 Ada</Text>
+                                    color: props.isBlackTheme ? Colors.white : Colors.black,
+                                }}>
+                                -1.500 Ada
+                            </Text>
                             <Text
                                 style={{
-                                    fontSize: 12, textAlign: "center", color:
-                                        props.isBlackTheme ? Colors.white :
-                                            Colors.black,
-                                }}
-                            >Confirmed</Text>
+                                    fontSize: 12,
+                                    textAlign: 'center',
+                                    color: props.isBlackTheme ? Colors.white : Colors.black,
+                                }}>
+                                Confirmed
+                            </Text>
                         </View>
                         <EntypoIcon
                             name="chevron-right"
                             size={24}
                             color={props.isBlackTheme ? Colors.white : Colors.black}
                         />
-
                     </View>
                 </TouchableOpacity>
             </View>
-        )
-    }
-
-
-
-
-
-
-
+        );
+    };
 
     return (
-        <SafeAreaView style={{
-            ...styles.mainContainer, backgroundColor: props.isBlackTheme ? Colors.blackTheme :
-                Colors.white,
-        }}>
-                <View style={styles.secondaryContainer}>
-                    <View
-                        style={styles.topContainer}
-                    >
-                        <WalletIcon
-                            onPress={() => props.onContinuePress("ManageAccount")}
-                            style={{
-                                width: widthPercentageToDP(10), height: heightPercentageToDP(6),
-                                marginTop: heightPercentageToDP(2)
+        <SafeAreaView
+            style={{
+                ...styles.mainContainer,
+                backgroundColor: props.isBlackTheme ? Colors.blackTheme : Colors.white,
+            }}>
+            <View style={styles.topContainer}>
+                <Text
+                    style={{
+                        ...styles.topTitle,
+                        color: props.isBlackTheme ? Colors.white : Colors.black,
+                    }}>
+                    <WalletIcon
+                        onPress={() => props.onContinuePress("ManageAccount")}
+                        style={{
+                            width: widthPercentageToDP(10), height: heightPercentageToDP(6),
+                            marginTop: heightPercentageToDP(2)
+                        }}
+                    />
+                </Text>
+                <View style={styles.topContainer2}>
+                    <TouchableOpacity onPress={props.onDarkThemePresss}>
+                        {props.isBlackTheme ? (
+                            <DarkTheme style={{paddingHorizontal: widthPercentageToDP(10)}} />
+                        ) : (
+                            <Moon style={{paddingHorizontal: widthPercentageToDP(10)}} />
+                        )}
+                    </TouchableOpacity>
+                    {props.isBlackTheme ? (
+                        <DarkScanner
+                            onPress={() => {
+                                setScanner(true);
+                                props.hideShowReceiveTokenModal();
                             }}
                         />
-                        <View
-                            style={styles.topContainer2}
-                        >
-                            <TouchableOpacity
-                                onPress={props.onDarkThemePresss}
-                            >
-                                {
-                                    props.isBlackTheme ? <DarkTheme
-                                        style={{ paddingHorizontal: widthPercentageToDP(10) }}
-                                    /> : <Moon
-                                        style={{ paddingHorizontal: widthPercentageToDP(10) }}
-                                    />
-
-                                }
-
-                            </TouchableOpacity>
-                            {
-                                props.isBlackTheme ? <DarkScanner
-                                    onPress={() =>  {setScanner(true);props.hideShowReceiveTokenModal()}}
-
-                                />
-                                    : <Scanner
-                                    onPress={() =>  {setScanner(true);props.hideShowReceiveTokenModal()}}
-                                    />
-                            }
-
-                        </View>
-
-                    </View>
-                    <View
-                        style={styles.walletContainer}>
-                        <View style={{padding:5}}>
-                            <Text
-                                style={{ ...styles.topTitle, color: props.isBlackTheme ? Colors.white : Colors.white }}
-                            >{currentAccount.accountName}
-                            </Text>
-
-
-                        </View>
-                        <Text
-                            style={styles.adaText}
-                        >{currentAccount.balance/1000000} Ada</Text>
-                        <View style={styles.sendReceiveContainer}>
-                            <View
-                                style={{ justifyContent: "center", alignItems: "center" }}
-                            >
-                                <TouchableOpacity onPress={props.showCreateTokenScreen} style={{ height: heightPercentageToDP(4), width: heightPercentageToDP(4), borderRadius: heightPercentageToDP(4) / 2, backgroundColor: '#213EC2', justifyContent: 'center', alignItems: 'center' }} >
-
-                                    <Send
-                                        style={{
-                                            paddingHorizontal: widthPercentageToDP(10),
-                                            // marginTop: -heightPercentageToDP(4.8)
-                                        }}
-                                    />
-                                </TouchableOpacity>
-                                <Text
-                                    style={{ ...styles.normalText, marginTop: heightPercentageToDP(.5) }}
-                                >Send</Text>
-                            </View>
-                            <View style={{ width: widthPercentageToDP(15) }} />
-                            <View
-                                style={{ justifyContent: "center", alignItems: "center" }}
-                            >
-                                <TouchableOpacity onPress={() =>  {setScanner(false);props.hideShowReceiveTokenModal()}} style={{ height: heightPercentageToDP(4), width: heightPercentageToDP(4), borderRadius: heightPercentageToDP(4) / 2, backgroundColor: '#213EC2', justifyContent: 'center', alignItems: 'center' }} >
-                                    <Receive />
-                                </TouchableOpacity>
-                                <Text
-                                    style={{ ...styles.normalText, marginTop: heightPercentageToDP(0.2) }}
-                                >Receive</Text>
-                            </View>
-
-                        </View>
-                    </View>
-                    <View
-                        style={styles.listHeader}
-                    >
-                        <TouchableOpacity
-                            onPress={props.onAssetsPress}
-                        >
-
-                            <Text
-                                style={{
-                                    ...styles.topTitle, color:
-                                        props.showAssets ?
-                                            props.isBlackTheme ?
-                                                Colors.white : Colors.black : Colors.hintsColor
-                                }}
-                            >Assets</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={props.onTransactionPress}
-                        >
-                            <Text
-                                style={{
-                                    ...styles.topTitle, color: props.showTransaction ?
-                                        props.isBlackTheme ?
-                                            Colors.white : Colors.black : Colors.hintsColor
-                                }}
-                            >Transactions</Text>
-                        </TouchableOpacity>
-
-
-                    </View>
-                    <View
-
-                    >
-                        {props.showAssets ? <FlatList
-                            style={{ marginTop: heightPercentageToDP(1), }}
-                            data={props.List}
-                            renderItem={renderItemMenuList}
-                            contentContainerStyle={{ flexGrow: 1, paddingBottom: 5 }}
-                            keyExtractor={(item, index) => index.toString()}
-                        /> : <FlatList
-                            style={{ marginTop: heightPercentageToDP(1), }}
-                            data={props.transactionList}
-                            renderItem={renderItemTransaction}
-                            contentContainerStyle={{ flexGrow: 1, paddingBottom: 5 }}
-                            keyExtractor={(item, index) => index.toString()}
-                        />}
-                    </View>
-                    <TransactionDetailsModal
-                        visible={props.transactionDetailsModal}
-                        hideModal={props.hideShowTransactionDetailsModal}
-                        isBlackTheme={props.isBlackTheme}
-
-                    />
-                    <ReceiveTokenModal
-                        visible={props.receiveTokenModal}
-                        hideModal={props.hideShowReceiveTokenModal}
-                        isBlackTheme={props.isBlackTheme}
-                        QRScanner={scanner}
-                        onReadQr={(data:string) => props.onContinuePress("CreateToken", data)}
-                    />
-                    <View
-                        style={{ height: heightPercentageToDP(4) }}
-                    />
+                    ) : (
+                        <Scanner
+                            onPress={() => {
+                                setScanner(true);
+                                props.hideShowReceiveTokenModal();
+                            }}
+                        />
+                    )}
                 </View>
+            </View>
+            <View style={styles.walletContainer}>
+                <View style={styles.walletInnerContainer}>
+                    <Text style={styles.delegated}>{currentAccount.delegated ? 'Delegated' : 'Undelegated'}</Text>
+                </View>
+                <Text style={styles.adaText}>{currentAccount.balance ? currentAccount.balance/1000000 : 0} Ada</Text>
+                <Text style={styles.accountName}>{currentAccount.accountName}</Text>
+                <View style={styles.sendReceiveContainer}>
+                    <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                        <TouchableOpacity
+                            onPress={props.showCreateTokenScreen}
+                            style={{
+                                height: heightPercentageToDP(4),
+                                width: heightPercentageToDP(4),
+                                borderRadius: heightPercentageToDP(4) / 2,
+                                backgroundColor: '#213EC2',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}>
+                            <Send
+                                style={{
+                                    paddingHorizontal: widthPercentageToDP(10),
+                                    // marginTop: -heightPercentageToDP(4.8)
+                                }}
+                            />
+                        </TouchableOpacity>
+                        <Text
+                            style={{
+                                ...styles.normalText,
+                                marginTop: heightPercentageToDP(0.5),
+                            }}>
+                            Send
+                        </Text>
+                    </View>
+                    <View style={{width: widthPercentageToDP(15)}} />
+                    <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                setScanner(false);
+                                props.hideShowReceiveTokenModal();
+                            }}
+                            style={{
+                                height: heightPercentageToDP(4),
+                                width: heightPercentageToDP(4),
+                                borderRadius: heightPercentageToDP(4) / 2,
+                                backgroundColor: '#213EC2',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}>
+                            <Receive />
+                        </TouchableOpacity>
+                        <Text
+                            style={{
+                                ...styles.normalText,
+                                marginTop: heightPercentageToDP(0.2),
+                            }}>
+                            Receive
+                        </Text>
+                    </View>
+                </View>
+            </View>
+            <View style={styles.listHeader}>
+                <TouchableOpacity onPress={props.onAssetsPress}>
+                    <Text
+                        style={{
+                            ...styles.topTitle,
+                            color: props.showAssets
+                                ? props.isBlackTheme
+                                    ? Colors.white
+                                    : Colors.black
+                                : Colors.hintsColor,
+                        }}>
+                        Assets
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={props.onTransactionPress}>
+                    <Text
+                        style={{
+                            ...styles.topTitle,
+                            color: props.showTransaction
+                                ? props.isBlackTheme
+                                    ? Colors.white
+                                    : Colors.black
+                                : Colors.hintsColor,
+                        }}>
+                        Transactions
+                    </Text>
+                </TouchableOpacity>
+            </View>
+            {props.showAssets ? (
+                <FlatList
+                    style={{marginTop: heightPercentageToDP(1)}}
+                    data={props.List}
+                    renderItem={renderItemMenuList}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+            ) : (
+                <FlatList
+                    style={{marginTop: heightPercentageToDP(1)}}
+                    data={props.transactionList}
+                    renderItem={renderItemTransaction}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+            )}
+            <TransactionDetailsModal
+                visible={props.transactionDetailsModal}
+                hideModal={props.hideShowTransactionDetailsModal}
+                isBlackTheme={props.isBlackTheme}
+            />
+            <ReceiveTokenModal
+                visible={props.receiveTokenModal}
+                hideModal={props.hideShowReceiveTokenModal}
+                isBlackTheme={props.isBlackTheme}
+                QRScanner={scanner}
+            />
         </SafeAreaView>
     )
 }
@@ -468,6 +472,11 @@ const styles = StyleSheet.create({
         color: Colors.white,
         fontSize: 12,
     },
+    delegated: {
+        textAlign: 'center',
+        color: Colors.white,
+        fontSize: 9,
+    },
     walletInnerContainer: {
         backgroundColor: '#213EC2',
         width: widthPercentageToDP(16.5),
@@ -484,6 +493,14 @@ const styles = StyleSheet.create({
         color: Colors.white,
         textAlign: 'center',
         marginTop: heightPercentageToDP(3),
+    },
+    accountName: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        letterSpacing: 1,
+        color: Colors.white,
+        textAlign: 'center',
+        marginTop: heightPercentageToDP(1),
     },
     sendReceiveContainer: {
         flexDirection: 'row',
