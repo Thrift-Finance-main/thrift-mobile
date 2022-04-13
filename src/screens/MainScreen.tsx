@@ -32,7 +32,7 @@ const RouteHandler: FC<RouteHandlerProps> = (props) => {
             props.navigate("DashboardTab");
             break;
         default:
-            props.navigate("DashboardTab");
+            props.navigate("Load");
             break;
     }
 
@@ -53,9 +53,9 @@ const MainScreen = ({ navigation }) => {
     }
 
     // TODO: Move all useEffect to WalletScreen, MainScreen appear always
+
+
     // apiDb.removeDb().then(r=>{});
-
-
     return (
         <RouteHandler
             navigate ={(n:string) => navigateTo(n)}

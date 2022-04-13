@@ -60,8 +60,10 @@ const WalletScreen = ({ navigation }) => {
     useEffect(() => {
         SplashScreen.hide();
     }, [])
-    const onContinuePress = (route:string, data?:any) => {
-        navigation.navigate(route);
+    const onContinuePress = (route:string) => {
+        console.log("onContinuePress WalletScreen, click walletIcon");
+        console.log(route);
+        navigation.navigate(route, {fromRoute: "DashboardTab"});
     }
 
     const hideShowReceiveTokenModal = () => {
@@ -103,7 +105,7 @@ const WalletScreen = ({ navigation }) => {
             onTransactionPress={onTransactionPress}
             onDarkThemePresss={onDarkThemePresss}
             isBlackTheme={isBlackTheme}
-            onContinuePress={(route:string, data:any) => onContinuePress(route, data)}
+            onContinuePress={(route:string) => onContinuePress(route)}
         />
     )
 }
