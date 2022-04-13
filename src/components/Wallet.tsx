@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, {FC, useEffect, useRef, useState} from 'react'
 import {View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity, Button} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '../constants/CustomColors'
@@ -13,10 +13,13 @@ import EntypoIcon from 'react-native-vector-icons/Entypo'
 import ReceiveTokenModal from './PopUps/ReceiveTokenModal'
 import DarkTheme from '../assets/darkTheme.svg'
 import DarkScanner from '../assets/DarkScanner.svg'
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import ThriftLogoWhite from "../assets/ThriftFinancelogo.svg";
 import ThriftLogo from "../assets/ThriftLogo.svg";
 import WalletIcon from "../assets/wallet.svg";
+import {fetchBlockfrost} from "../api/Blockfrost";
+import {apiDb} from "../db/LocalDb";
+import {setCurrentAccount} from "../store/Action";
 
 interface WalletProps {
     List: any
@@ -35,8 +38,105 @@ interface WalletProps {
     isBlackTheme: any
 }
 const Wallet: FC<WalletProps> = (props) => {
+    const dispatch = useDispatch();
+
     const [scanner, setScanner] = useState(false);
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
+
+    const useIsMounted = () => {
+        const isMounted = useRef(false);
+        // @ts-ignore
+        useEffect(() => {
+            isMounted.current = true;
+            return () => (isMounted.current = false);
+        }, []);
+        return isMounted;
+    };
+
+    const isMounted = useIsMounted();
+
+    useEffect(() =>{
+
+        const fetchData = async () => {
+            console.log('fetchData');
+            console.log('currentAccount');
+            console.log(currentAccount);
+            const saddress = currentAccount && currentAccount.rewardAddress;
+            if (saddress) {
+                let endpoint = "accounts/" + saddress;
+                const accountState = await fetchBlockfrost(endpoint);
+                console.log('accountState');
+                console.log(accountState);
+                endpoint =  "accounts/" + saddress + "/addresses";
+                const relatedAddresses = await fetchBlockfrost(endpoint);
+                const addressesUtxos = await Promise.all(
+                    relatedAddresses.map(async (a:any) => {
+                        const response = await fetchBlockfrost(`addresses/${a.address}`);
+                        if (!response.error){
+                            return response;
+                        }
+                    })
+                );
+                console.log('addressesUtxos');
+                console.log(addressesUtxos);
+                let currentAccountInLocal = await apiDb.getAccount(currentAccount.accountName);
+                console.log('currentAccountInLocal');
+                console.log(currentAccountInLocal);
+                currentAccountInLocal.balance = accountState.controlled_amount;
+                currentAccountInLocal.delegated = accountState.active;
+                currentAccountInLocal.activeEpoch = accountState.active_epoch;
+                currentAccountInLocal.poolId = accountState.pool_id;
+                currentAccountInLocal.rewardsSum = accountState.rewards_sum;
+                currentAccountInLocal.withdrawableAmount = accountState.withdrawable_amount;
+
+                let assetList: any[] = [];
+                addressesUtxos.map(utxo => {
+                    let assets = utxo.amount;
+                    assets = assets.filter(a => a.unit !== 'lovelace');
+                    assetList.push(...assets);
+                });
+
+                console.log('assetList');
+                console.log(assetList);
+
+                // Init
+                let mergedAssets:{ [key: string]: number } = {};
+
+                assetList.map(a => {
+                    if (mergedAssets[a.unit] !== undefined){
+                        mergedAssets[a.unit] = mergedAssets[a.unit] + a.quantity;
+                    } else {
+                        mergedAssets[a.unit] = a.quantity;
+                    }
+                });
+
+                console.log('mergedAssets');
+                console.log(mergedAssets);
+
+                currentAccountInLocal.assets = mergedAssets;
+                await apiDb.updateAccount(currentAccountInLocal);
+
+                dispatch(setCurrentAccount(currentAccountInLocal));
+
+                const accountInLocal =  await apiDb.getAccount(currentAccountInLocal.accountName);
+
+                console.log('accountInLocal');
+                console.log(accountInLocal);
+
+            } else {
+                console.log("Not current account in store");
+            }
+
+        }
+
+        if (isMounted.current) {
+            // call the function
+            fetchData()
+                // make sure to catch any error
+                .catch(console.error);
+        }
+
+    }, [currentAccount.accountName]);
 
     const renderItemMenuList = ({ item, index }) => {
         return (

@@ -45,112 +45,16 @@ const RouteHandler: FC<RouteHandlerProps> = (props) => {
 
 
 const MainScreen = ({ navigation }) => {
-    const dispatch = useDispatch();
-
 
     const entryRoute = useSelector((state) => state.Reducers.entryRoute);
-    const currentAccount = useSelector((state) => state.Reducers.currentAccount);
 
     const navigateTo = (navigate:string) => {
         navigation.navigate(navigate)
     }
 
-    const useIsMounted = () => {
-        const isMounted = useRef(false);
-        // @ts-ignore
-        useEffect(() => {
-            isMounted.current = true;
-            return () => (isMounted.current = false);
-        }, []);
-        return isMounted;
-    };
-
-    const isMounted = useIsMounted();
-
-
+    // TODO: Move all useEffect to WalletScreen, MainScreen appear always
     // apiDb.removeDb().then(r=>{});
-    useEffect(() =>{
 
-        const fetchData = async () => {
-            console.log('fetchData');
-            console.log('currentAccount');
-            console.log(currentAccount);
-            const saddress = currentAccount && currentAccount.rewardAddress;
-            if (saddress) {
-                let endpoint = "accounts/" + saddress;
-                const accountState = await fetchBlockfrost(endpoint);
-                console.log('accountState');
-                console.log(accountState);
-                endpoint =  "accounts/" + saddress + "/addresses";
-                const relatedAddresses = await fetchBlockfrost(endpoint);
-                const addressesUtxos = await Promise.all(
-                    relatedAddresses.map(async (a:any) => {
-                        const response = await fetchBlockfrost(`addresses/${a.address}`);
-                        if (!response.error){
-                            return response;
-                        }
-                    })
-                );
-                console.log('addressesUtxos');
-                console.log(addressesUtxos);
-                let currentAccountInLocal = await apiDb.getAccount(currentAccount.accountName);
-                console.log('currentAccountInLocal');
-                console.log(currentAccountInLocal);
-                currentAccountInLocal.balance = accountState.controlled_amount;
-                currentAccountInLocal.delegated = accountState.active;
-                currentAccountInLocal.activeEpoch = accountState.active_epoch;
-                currentAccountInLocal.poolId = accountState.pool_id;
-                currentAccountInLocal.rewardsSum = accountState.rewards_sum;
-                currentAccountInLocal.withdrawableAmount = accountState.withdrawable_amount;
-
-                let assetList: any[] = [];
-                addressesUtxos.map(utxo => {
-                    let assets = utxo.amount;
-                    assets = assets.filter(a => a.unit !== 'lovelace');
-                    assetList.push(...assets);
-                });
-
-                console.log('assetList');
-                console.log(assetList);
-
-                // Init
-                let mergedAssets:{ [key: string]: number } = {};
-
-                assetList.map(a => {
-                    if (mergedAssets[a.unit] !== undefined){
-                        mergedAssets[a.unit] = mergedAssets[a.unit] + a.quantity;
-                    } else {
-                        mergedAssets[a.unit] = a.quantity;
-                    }
-                });
-
-                console.log('mergedAssets');
-                console.log(mergedAssets);
-
-                currentAccountInLocal.assets = mergedAssets;
-                await apiDb.updateAccount(currentAccountInLocal);
-
-                dispatch(setCurrentAccount(currentAccountInLocal));
-
-                const accountInLocal =  await apiDb.getAccount(currentAccountInLocal.accountName);
-
-                console.log('accountInLocal');
-                console.log(accountInLocal);
-
-            } else {
-                console.log("Not current account in store");
-            }
-
-        }
-
-        if (isMounted.current) {
-            // call the function
-            fetchData()
-                // make sure to catch any error
-                .catch(console.error);
-        }
-
-    }, [currentAccount.accountName]);
 
     return (
         <RouteHandler

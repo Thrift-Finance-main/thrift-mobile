@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useMemo, useState} from 'react'
+import React, {FC, useEffect, useMemo, useRef, useState} from 'react'
 import {View, Text, StyleSheet, Image, ScrollView, TouchableOpacity} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '../../src/constants/CustomColors';
@@ -32,10 +32,32 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
     const currentAccount = useSelector(state => state.Reducers.currentAccount);
     const [currentAccountName, setCurrentAccountName] = useState(currentAccount.accountName);
 
+    const useIsMounted = () => {
+        const isMounted = useRef(false);
+        // @ts-ignore
+        useEffect(() => {
+            isMounted.current = true;
+            return () => (isMounted.current = false);
+        }, []);
+        return isMounted;
+    };
+
+    const isMounted = useIsMounted();
+
+
     useEffect(() =>{
-        apiDb.getAllAccounts().then(allAccs =>{
-            setAccounts(allAccs);
-        });
+        const getAccounts = async () => {
+            console.log('getAccounts in ManageAccount')
+            const accs = await apiDb.getAllAccounts();
+            setAccounts(accs);
+        }
+
+        if (isMounted.current) {
+            // call the function
+            getAccounts()
+                // make sure to catch any error
+                .catch(console.error);
+        }
     }, []);
 
     const onSelectAccount = (account:IAccount) => {
