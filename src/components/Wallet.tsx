@@ -69,16 +69,18 @@ const Wallet: FC<WalletProps> = (props) => {
                 console.log(accountState);
                 endpoint =  "accounts/" + saddress + "/addresses";
                 const relatedAddresses = await fetchBlockfrost(endpoint);
-                const addressesUtxos = await Promise.all(
+
+                const accountHistory = await Promise.all(
                     relatedAddresses.map(async (a:any) => {
-                        const response = await fetchBlockfrost(`addresses/${a.address}`);
+                        const response = await fetchBlockfrost(`addresses/${a.address}/total`);
                         if (!response.error){
                             return response;
                         }
                     })
                 );
-                console.log('addressesUtxos');
-                console.log(addressesUtxos);
+                console.log('accountHistory');
+                console.log(accountHistory);
+                console.log(accountHistory[0]);
                 let currentAccountInLocal = await apiDb.getAccount(currentAccount.accountName);
                 console.log('currentAccountInLocal');
                 console.log(currentAccountInLocal);
@@ -90,31 +92,16 @@ const Wallet: FC<WalletProps> = (props) => {
                 currentAccountInLocal.withdrawableAmount = accountState.withdrawable_amount;
 
                 let assetList: any[] = [];
-                addressesUtxos.map(utxo => {
-                    let assets = utxo.amount;
-                    assets = assets.filter(a => a.unit !== 'lovelace');
-                    assetList.push(...assets);
-                });
+                const response = await fetchBlockfrost(`accounts/${saddress}/addresses/assets`);
+                if (!response.error){
+                    return response;
+                }
 
-                console.log('assetList');
-                console.log(assetList);
-
-                // Init
-                let mergedAssets:{ [key: string]: number } = {};
-
-                assetList.map(a => {
-                    if (mergedAssets[a.unit] !== undefined){
-                        mergedAssets[a.unit] = mergedAssets[a.unit] + a.quantity;
-                    } else {
-                        mergedAssets[a.unit] = a.quantity;
-                    }
-                });
-
-                console.log('mergedAssets');
-                console.log(mergedAssets);
+                console.log('response');
+                console.log(response);
 
                 const assetsWithDetails = await Promise.all(
-                    Object.keys(mergedAssets).map(async(key, index) => {
+                    Object.keys(response).map(async(key, index) => {
                         const response = await fetchBlockfrost(`assets/${key}`);
                         if (!response.error){
                             return response;
