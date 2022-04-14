@@ -128,10 +128,7 @@ const Wallet: FC<WalletProps> = (props) => {
                     })
                 );
 
-                console.log('addressTxsList');
-                console.log(addressTxsList);
-
-                let fullAddrWithTxsList = [];
+                let addrsWithTxsList = [];
                 for (let addr in addressTxsList) {
                     const r = await Promise.all(
                         addressTxsList[addr].txs.map(async tx => {
@@ -139,22 +136,22 @@ const Wallet: FC<WalletProps> = (props) => {
 
                             if (!utxos.error){
                                 tx.utxos = utxos;
+                                tx.fromAddress = addressTxsList[addr].address;
                                 return tx;
                             }
                         })
                     );
 
-                    fullAddrWithTxsList.push(r)
+                    addrsWithTxsList.push(r)
                 }
 
                 const allAddresses = [...currentAccount.externalPubAddress, ...currentAccount.externalPubAddress];
-                const classifiedTxs = fullAddrWithTxsList.map(addrObj => {
-                    return classifyTxs(addrObj, allAddresses);
+                const classifiedTxsWithAddress = addrsWithTxsList.map(addrObj => {
+                    let cTxs = classifyTxs(addrObj, allAddresses);
+                    return {address: addrObj[0].fromAddress, classifiedTxs: cTxs };
                 });
-
                 console.log('classifiedTxs');
-                console.log(classifiedTxs);
-
+                console.log(classifiedTxsWithAddress);
             } else {
                 console.log("Not current account in store");
             }

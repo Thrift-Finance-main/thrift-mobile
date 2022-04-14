@@ -5,8 +5,6 @@ export const SELF_TX = 'SELF_TX';
 
 export const classifyTxs = (transactions, accountAddresses) => {
 
-    console.log('transactions');
-    console.log(transactions);
     const classifiedTxs = transactions.map(tx => {
         const block_time = tx.block_time;
         const txHash = tx.tx_hash;
@@ -17,12 +15,7 @@ export const classifyTxs = (transactions, accountAddresses) => {
         const accInOutputs = addressInCommon(outputs, accountAddresses);
 
         const processedIns = processInputs(inputs, accountAddresses);
-        console.log('processedInputs');
-        console.log(processedIns);
         const processedOuts = processInputs(outputs, accountAddresses);
-
-        console.log('processedOuts');
-        console.log(processedOuts);
 
         let txType = SELF_TX;
         if (!accInInputs && accInOutputs){
@@ -37,13 +30,7 @@ export const classifyTxs = (transactions, accountAddresses) => {
             if (!othersInInputs && othersInOutputs){
                 txType = SEND_TX;
             }
-            console.log('othersInInputs');
-            console.log(othersInInputs);
-            console.log('othersInInputs');
-            console.log(othersInInputs);
         }
-        console.log('txType');
-        console.log(txType);
 
         return {
             txHash,
