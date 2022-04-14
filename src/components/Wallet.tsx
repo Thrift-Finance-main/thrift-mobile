@@ -17,7 +17,7 @@ import {useDispatch, useSelector} from "react-redux";
 import ThriftLogoWhite from "../assets/ThriftFinancelogo.svg";
 import ThriftLogo from "../assets/ThriftLogo.svg";
 import WalletIcon from "../assets/wallet.svg";
-import {fetchBlockfrost} from "../api/Blockfrost";
+import {fetchBlockfrost, getTxUTxOs} from "../api/Blockfrost";
 import {apiDb} from "../db/LocalDb";
 import {setCurrentAccount} from "../store/Action";
 
@@ -78,9 +78,7 @@ const Wallet: FC<WalletProps> = (props) => {
                         }
                     })
                 );
-                console.log('accountHistory');
-                console.log(accountHistory);
-                console.log(accountHistory[0]);
+
                 let currentAccountInLocal = await apiDb.getAccount(currentAccount.accountName);
                 console.log('currentAccountInLocal');
                 console.log(currentAccountInLocal);
@@ -114,6 +112,44 @@ const Wallet: FC<WalletProps> = (props) => {
 
                 console.log('accountInLocal');
                 console.log(accountInLocal);
+
+                console.log('accountHistory');
+                console.log(accountHistory[0]);
+
+
+                const addressTxsList = await Promise.all(
+                    relatedAddresses.map(async addr =>{
+                        const response = await fetchBlockfrost(`addresses/${addr.address}/transactions`);
+                        if (!response.error){
+                            addr.txs = response;
+                            return addr;
+                        }
+                    })
+                );
+
+                console.log('addressTxsList');
+                console.log(addressTxsList);
+
+                let addressList = [];
+                for (let addr in addressTxsList) {
+                    const r = await Promise.all(
+                        addressTxsList[addr].txs.map(async tx => {
+                            const utxos = await getTxUTxOs(tx.tx_hash);
+
+                            if (!utxos.error){
+                                tx.utxos = utxos;
+                                return tx;
+                            }
+                        })
+                    );
+
+                    addressList.push({...r, address: addressTxsList[addr].address})
+                }
+
+
+                console.log('addressList');
+                console.log(addressList);
+                console.log(addressList[0][0]);
 
             } else {
                 console.log("Not current account in store");
@@ -405,7 +441,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                     : Colors.black
                                 : Colors.hintsColor,
                         }}>
-                        Transactions
+                        History
                     </Text>
                 </TouchableOpacity>
             </View>

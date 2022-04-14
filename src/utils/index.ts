@@ -39,3 +39,6 @@ export const getKeyByValue = (object, value) => {
 
 export const delay = ms => new Promise(res => setTimeout(res, ms));
 
+export const displayUnit = (quantity, decimals = 6) => {
+  return parseInt(quantity) / 10 ** decimals;
+};
