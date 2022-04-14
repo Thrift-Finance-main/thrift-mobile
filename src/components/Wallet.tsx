@@ -20,7 +20,7 @@ import WalletIcon from "../assets/wallet.svg";
 import {fetchBlockfrost, getTxUTxOs} from "../api/Blockfrost";
 import {apiDb} from "../db/LocalDb";
 import {setCurrentAccount} from "../store/Action";
-import {classifyTx} from "../lib/transactions";
+import {classifyTxs} from "../lib/transactions";
 
 interface WalletProps {
     List: any
@@ -148,10 +148,12 @@ const Wallet: FC<WalletProps> = (props) => {
                 }
 
                 const allAddresses = [...currentAccount.externalPubAddress, ...currentAccount.externalPubAddress];
-                fullAddrWithTxsList.map(addrObj => {
-                    classifyTx(addrObj, allAddresses);
+                const classifiedTxs = fullAddrWithTxsList.map(addrObj => {
+                    return classifyTxs(addrObj, allAddresses);
                 });
 
+                console.log('classifiedTxs');
+                console.log(classifiedTxs);
 
             } else {
                 console.log("Not current account in store");

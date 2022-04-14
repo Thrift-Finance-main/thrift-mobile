@@ -3,13 +3,15 @@ export const RECEIVE_TX = 'RECEIVE_TX';
 export const SEND_TX = 'SEND_TX';
 export const SELF_TX = 'SELF_TX';
 
-export const classifyTx = (addrDataList, accountAddresses) => {
+export const classifyTxs = (transactions, accountAddresses) => {
 
-    for (let addrData in addrDataList) {
-        const utxos = addrDataList[addrData].utxos;
-        const block_time = addrDataList[addrData].block_time;
-        const inputs = utxos.inputs;
-        const outputs = utxos.outputs;
+    console.log('transactions');
+    console.log(transactions);
+    const classifiedTxs = transactions.map(tx => {
+        const block_time = tx.block_time;
+        const txHash = tx.tx_hash;
+        const inputs = tx.utxos.inputs;
+        const outputs = tx.utxos.outputs;
 
         const accInInputs = addressInCommon(inputs, accountAddresses);
         const accInOutputs = addressInCommon(outputs, accountAddresses);
@@ -42,11 +44,20 @@ export const classifyTx = (addrDataList, accountAddresses) => {
         }
         console.log('txType');
         console.log(txType);
-    }
+
+        return {
+            txHash,
+            blockTime: block_time,
+            inputs: processedIns,
+            outputs: processedOuts,
+            type: txType
+        }
+    });
+    return classifiedTxs;
 };
 
 export const processInputs = (inputs, allAddresses) => {
-    let usedAddresses: { amount: string; address: string; inputFromAccount:any }[] = [];
+    let usedAddresses: { amount: string; address: string; }[] = [];
 
     inputs.map(input => {
         const amount = input.amount;
@@ -59,7 +70,7 @@ export const processInputs = (inputs, allAddresses) => {
         });
 
         if (inputFromAccount){
-            usedAddresses.push({amount, address, inputFromAccount});
+            usedAddresses.push({amount, address});
         }
     });
     return usedAddresses;
