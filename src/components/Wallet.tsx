@@ -136,11 +136,6 @@ const Wallet: FC<WalletProps> = (props) => {
                             // TODO: chek if tx already in local db, NOT query
                             const txInfo = await getTxInfo(tx.tx_hash);
                             const utxos = await getTxUTxOs(tx.tx_hash);
-
-                            console.log('\n\ntxInfo');
-                            console.log(txInfo);
-                            console.log('utxos');
-                            console.log(utxos);
                             if (!utxos.error){
                                 tx.utxos = utxos;
                                 tx.fees = txInfo.fees;
@@ -157,14 +152,11 @@ const Wallet: FC<WalletProps> = (props) => {
 
                 const allAddresses = [...currentAccount.externalPubAddress, ...currentAccount.externalPubAddress];
                 const classifiedTxsWithAddress = addrsWithTxsList.map(addrObj => {
-                    console.log('addrObj');
-                    console.log(addrObj);
                     let cTxs = classifyTxs(addrObj, allAddresses);
-                    return {address: addrObj[0].fromAddress, classifiedTxs: cTxs };
+                    return {address: addrObj[0].fromAddress, history: cTxs };
                 });
-                console.log('classifiedTxs');
-                console.log(classifiedTxsWithAddress);
-                console.log(classifiedTxsWithAddress[0]);
+                console.log('History');
+                console.log(classifiedTxsWithAddress[0].history);
             } else {
                 console.log("Not current account in store");
             }

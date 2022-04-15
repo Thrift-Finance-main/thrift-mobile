@@ -37,6 +37,7 @@ export const classifyTxs = (transactions, accountAddresses) => {
 
 
         let amount = 0;
+        let amountList = [];
         switch (txType) {
             case SEND_TX:
                 console.log('usedInInputs');
@@ -45,32 +46,46 @@ export const classifyTxs = (transactions, accountAddresses) => {
             case RECEIVE_TX:
                 console.log('usedInOutputs');
                 console.log(usedInOutputs);
-
-                usedInOutputs.map(uinput => {
-                    console.log('uinput.amount');
-                    console.log(uinput.amount);
+                usedInOutputs.map(uoutput => {
+                    console.log('uoutput.amount');
+                    console.log(uoutput.amount);
+                    amountList = [...amountList,...uoutput.amount]
                     // merge amount by uinput.amount[0].unit
-                    amount += parseInt(uinput.amount[0].quantity);
+                    amount += parseInt(uoutput.amount[0].quantity);
                 });
-                console.log('total to receive');
-                console.log(amount);
+
                 break;
             default:
                 break;
         }
+
+        const mergedAmount = mergeAmounts(amountList);
 
         return {
             txHash,
             blockTime: block_time,
             inputs: processedIn,
             outputs: processedOut,
-            amount,
+            amount: mergedAmount,
             fees,
             type: txType
         }
     });
     return classifiedTxs;
 };
+
+export const mergeAmounts = (amounts) => {
+    let amountDict:{ [unit: string]: number } = {};
+
+    amounts.map(amount => {
+        if (amountDict[amount.unit] === undefined){
+            amountDict[amount.unit] = amount.quantity;
+        } else{
+            amountDict[amount.unit] += amount.quantity;
+        }
+    });
+    return amountDict;
+}
 
 export const processInputs = (inputs, allAddresses) => {
     let usedAddresses: { amount: string; address: string; }[] = [];
