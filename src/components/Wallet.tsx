@@ -17,7 +17,7 @@ import {useDispatch, useSelector} from "react-redux";
 import ThriftLogoWhite from "../assets/ThriftFinancelogo.svg";
 import ThriftLogo from "../assets/ThriftLogo.svg";
 import WalletIcon from "../assets/wallet.svg";
-import {fetchBlockfrost, getTxUTxOs} from "../api/Blockfrost";
+import {fetchBlockfrost, getTxInfo, getTxUTxOs} from "../api/Blockfrost";
 import {apiDb} from "../db/LocalDb";
 import {setCurrentAccount} from "../store/Action";
 import {classifyTxs} from "../lib/transactions";
@@ -132,10 +132,20 @@ const Wallet: FC<WalletProps> = (props) => {
                 for (let addr in addressTxsList) {
                     const r = await Promise.all(
                         addressTxsList[addr].txs.map(async tx => {
+
+                            // TODO: chek if tx already in local db, NOT query
+                            const txInfo = await getTxInfo(tx.tx_hash);
                             const utxos = await getTxUTxOs(tx.tx_hash);
 
+                            console.log('\n\ntxInfo');
+                            console.log(txInfo);
+                            console.log('utxos');
+                            console.log(utxos);
                             if (!utxos.error){
                                 tx.utxos = utxos;
+                                tx.fees = txInfo.fees;
+                                tx.size = txInfo.size;
+                                tx.asset_mint_or_burn_count = txInfo.asset_mint_or_burn_count;
                                 tx.fromAddress = addressTxsList[addr].address;
                                 return tx;
                             }
@@ -147,11 +157,14 @@ const Wallet: FC<WalletProps> = (props) => {
 
                 const allAddresses = [...currentAccount.externalPubAddress, ...currentAccount.externalPubAddress];
                 const classifiedTxsWithAddress = addrsWithTxsList.map(addrObj => {
+                    console.log('addrObj');
+                    console.log(addrObj);
                     let cTxs = classifyTxs(addrObj, allAddresses);
                     return {address: addrObj[0].fromAddress, classifiedTxs: cTxs };
                 });
                 console.log('classifiedTxs');
                 console.log(classifiedTxsWithAddress);
+                console.log(classifiedTxsWithAddress[0]);
             } else {
                 console.log("Not current account in store");
             }
