@@ -66,6 +66,8 @@ const Wallet: FC<WalletProps> = (props) => {
 
         const fetchData = async () => {
             console.log('fetchData');
+            console.log('currentAccount');
+            console.log(currentAccount);
 
             const currTxs = await apiDb.getTransactions(currentAccount.accountName, currentAccount.history);
             setCurrentTxs(currTxs);
@@ -165,24 +167,37 @@ const Wallet: FC<WalletProps> = (props) => {
                     }
 
                     const allAddresses = [...currentAccount.externalPubAddress, ...currentAccount.externalPubAddress];
-                    const allTransactions = [];
+                    const allTransactionsByAddr = [];
                     addrsWithTxsList.map(addrObj => {
                         let cTxs = classifyTxs(addrObj, allAddresses);
-                        allTransactions.push({address: addrObj[0].fromAddress, history: cTxs });
+                        allTransactionsByAddr.push({address: addrObj[0].fromAddress, history: cTxs });
                     });
+                    console.log('allTransactions');
+                    console.log(allTransactionsByAddr);
 
-                    allTransactions.map(async tx =>{
-                        if (!currentTxs.includes(tx.txHash)){
-                            currentTxs.push(tx.txHash);
-                        }
+                    allTransactionsByAddr.map(async addr =>{
+
+                        addr.history.map(tx => {
+                            if (!currentTxs.includes(tx.txHash)){
+                                console.log(tx.txHash)
+                                currentTxs.push(tx.txHash);
+                            }
+                        })
                     });
                     // set hash references in account
+                    console.log('currentTxs');
+                    console.log(currentTxs);
                     await apiDb.setAccountTransactionsHashes(currentAccount.accountName, currentTxs);
 
                     // Save transactions
                     await Promise.all(
-                        allTransactions.map(async tx => {
-                            await apiDb.setAccountTransaction(currentAccount.accountName, tx);
+                        allTransactionsByAddr.map(async addr => {
+                            console.log('tx2');
+                            console.log(addr);
+                            addr.history.map(tx => {
+                                apiDb.setAccountTransaction(currentAccount.accountName, tx).then(r=>{});
+                            })
+
                         })
                     );
                     const account = await apiDb.getAccount(currentAccount.accountName);
@@ -312,82 +327,83 @@ const Wallet: FC<WalletProps> = (props) => {
         }
     }
     const renderItemTransaction = ({item, index}) => {
-        console.log('item');
-        console.log(item);
-        return (
-            <View
-                style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    backgroundColor: props.isBlackTheme
-                        ? Colors.darkInput
-                        : 'transparent',
-                    height: heightPercentageToDP(9),
-                    marginTop: heightPercentageToDP(2),
-                    borderRadius: 12,
-                }}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <View
-                        style={{
-                            width: widthPercentageToDP(12),
 
-                            marginLeft: props.isBlackTheme ? widthPercentageToDP(3) : 0,
-                        }}>
-                        {getIconTxType(item.type)}
-                    </View>
+        if (item){
+            return (
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        backgroundColor: props.isBlackTheme
+                            ? Colors.darkInput
+                            : 'transparent',
+                        height: heightPercentageToDP(9),
+                        marginTop: heightPercentageToDP(2),
+                        borderRadius: 12,
+                    }}>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <View
+                            style={{
+                                width: widthPercentageToDP(12),
 
-                    <View style={{paddingHorizontal: widthPercentageToDP(2)}}>
-                        <Text
-                            style={{
-                                color: props.isBlackTheme ? Colors.white : Colors.black,
-                                fontSize: 13,
+                                marginLeft: props.isBlackTheme ? widthPercentageToDP(3) : 0,
                             }}>
-                            addrlq95e.....addrlq95ead..
-                        </Text>
-                        <Text
-                            style={{
-                                color: props.isBlackTheme ? Colors.white : Colors.black,
-                                fontSize: 10,
-                            }}>
-                            {moment.utc(item.blockTime).format("DD-MM-YYYY hh:mm")}
-                        </Text>
-                    </View>
-                </View>
-                <TouchableOpacity onPress={props.hideShowTransactionDetailsModal} onPressOut={() => setSelectedTx(item)}>
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: props.isBlackTheme ? '90%' : '100%',
-                        }}>
-                        <View>
+                            {getIconTxType(item.type)}
+                        </View>
+
+                        <View style={{paddingHorizontal: widthPercentageToDP(2)}}>
                             <Text
                                 style={{
-                                    textAlign: 'right',
                                     color: props.isBlackTheme ? Colors.white : Colors.black,
+                                    fontSize: 13,
                                 }}>
-                                {getSymbolFromTxType(item.type)}{item.amount.lovelace/1000000}
+                                addrlq95e.....addrlq95ead..
                             </Text>
                             <Text
                                 style={{
-                                    fontSize: 8,
-                                    textAlign: 'center',
                                     color: props.isBlackTheme ? Colors.white : Colors.black,
+                                    fontSize: 10,
                                 }}>
-                                Confirmed
+                                {moment.utc(item.blockTime).format("DD-MM-YYYY hh:mm")}
                             </Text>
                         </View>
-                        <EntypoIcon
-                            name="chevron-right"
-                            size={24}
-                            color={props.isBlackTheme ? Colors.white : Colors.black}
-                        />
                     </View>
-                </TouchableOpacity>
-            </View>
-        );
+                    <TouchableOpacity onPress={props.hideShowTransactionDetailsModal} onPressOut={() => setSelectedTx(item)}>
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: props.isBlackTheme ? '90%' : '100%',
+                            }}>
+                            <View>
+                                <Text
+                                    style={{
+                                        textAlign: 'right',
+                                        color: props.isBlackTheme ? Colors.white : Colors.black,
+                                    }}>
+                                    {getSymbolFromTxType(item.type)}{item.amount.lovelace/1000000}
+                                </Text>
+                                <Text
+                                    style={{
+                                        fontSize: 8,
+                                        textAlign: 'center',
+                                        color: props.isBlackTheme ? Colors.white : Colors.black,
+                                    }}>
+                                    Confirmed
+                                </Text>
+                            </View>
+                            <EntypoIcon
+                                name="chevron-right"
+                                size={24}
+                                color={props.isBlackTheme ? Colors.white : Colors.black}
+                            />
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            );
+        }
     };
 
     return (
