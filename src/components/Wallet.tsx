@@ -18,11 +18,12 @@ import {useDispatch, useSelector} from "react-redux";
 import ThriftLogoWhite from "../assets/ThriftFinancelogo.svg";
 import ThriftLogo from "../assets/ThriftLogo.svg";
 import WalletIcon from "../assets/wallet.svg";
-import {fetchBlockfrost, getTxInfo, getTxUTxOs} from "../api/Blockfrost";
+import {fetchBlockfrost, getBlockInfo, getTxInfo, getTxUTxOs} from "../api/Blockfrost";
 import {apiDb} from "../db/LiteDb";
 import {setCurrentAccount} from "../store/Action";
 import {classifyTxs, RECEIVE_TX, SEND_TX} from "../lib/transactions";
 import Ada from '../assets/Ada.svg'
+import moment from "moment";
 
 interface WalletProps {
     List: any
@@ -46,6 +47,7 @@ const Wallet: FC<WalletProps> = (props) => {
     const [scanner, setScanner] = useState(false);
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
     const [currentTxs, setCurrentTxs] = useState([]);
+    const [selectedTx, setSelectedTx] = useState(undefined);
 
 
     const useIsMounted = () => {
@@ -140,10 +142,14 @@ const Wallet: FC<WalletProps> = (props) => {
                         if (addressTxsList[addr] && addressTxsList[addr].txs && addressTxsList[addr].txs.length){
                             const r = await Promise.all(
                                 addressTxsList[addr].txs.map(async tx => {
-
+                                    console.log('tx');
+                                    console.log(tx);
                                     // TODO: chek if tx already in local db, NOT query
                                     const txInfo = await getTxInfo(tx.tx_hash);
+                                    console.log('txInfo');
+                                    console.log(txInfo);
                                     const utxos = await getTxUTxOs(tx.tx_hash);
+                                    const blockInfo = await getBlockInfo(tx.tx_hash);
                                     if (!utxos.error){
                                         tx.utxos = utxos;
                                         tx.fees = txInfo.fees;
@@ -285,10 +291,20 @@ const Wallet: FC<WalletProps> = (props) => {
                 return <AntDesignIcon name="arrowdown" color="green" size={22} />
         }
     }
-    const getAddressToShow = (type:string) => {
+    const getSymbolFromTxType = (type:string) => {
         switch (type) {
             case RECEIVE_TX:
-                return <AntDesignIcon name="arrowdown" color="green" size={22} />
+                return '+'
+            case SEND_TX:
+                return '-'
+            default:
+                return ''
+        }
+    }
+    const getAddressToShow = (item:string) => {
+        switch (item.type) {
+            case RECEIVE_TX:
+                return;
             case SEND_TX:
                 return <AntDesignIcon name="arrowup" color="red" size={22} />
             default:
@@ -332,29 +348,31 @@ const Wallet: FC<WalletProps> = (props) => {
                         <Text
                             style={{
                                 color: props.isBlackTheme ? Colors.white : Colors.black,
+                                fontSize: 10,
                             }}>
-                            23-11-2021
+                            {moment.utc(item.blockTime).format("DD-MM-YYYY hh:mm")}
                         </Text>
                     </View>
                 </View>
-                <TouchableOpacity onPress={props.hideShowTransactionDetailsModal}>
+                <TouchableOpacity onPress={props.hideShowTransactionDetailsModal} onPressOut={() => setSelectedTx(item)}>
                     <View
                         style={{
                             flexDirection: 'row',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            width: props.isBlackTheme ? '80%' : '90%',
+                            width: props.isBlackTheme ? '90%' : '100%',
                         }}>
                         <View>
                             <Text
                                 style={{
+                                    textAlign: 'right',
                                     color: props.isBlackTheme ? Colors.white : Colors.black,
                                 }}>
-                                -1.500 Ada
+                                {getSymbolFromTxType(item.type)}{item.amount.lovelace/1000000}
                             </Text>
                             <Text
                                 style={{
-                                    fontSize: 12,
+                                    fontSize: 8,
                                     textAlign: 'center',
                                     color: props.isBlackTheme ? Colors.white : Colors.black,
                                 }}>
@@ -524,6 +542,7 @@ const Wallet: FC<WalletProps> = (props) => {
                 visible={props.transactionDetailsModal}
                 hideModal={props.hideShowTransactionDetailsModal}
                 isBlackTheme={props.isBlackTheme}
+                data={selectedTx}
             />
             <ReceiveTokenModal
                 visible={props.receiveTokenModal}

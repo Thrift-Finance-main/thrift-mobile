@@ -4,14 +4,28 @@ import Colors from '../../constants/CustomColors';
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimensions';
 import Button from '../Common/Button';
 import Modal from 'react-native-modal'
+import {RECEIVE_TX, SEND_TX} from "../../lib/transactions";
 interface TransactionDetailsModalProps {
   visible: boolean,
   hideModal: () => void,
-  modalText: string
-  isBlackTheme: any
+  modalText: string,
+  isBlackTheme: any,
+  data: any
 }
 const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
 
+  console.log('data');
+  console.log(props.data);
+  const getSymbolFromTxType = (type:string) => {
+    switch (type) {
+      case RECEIVE_TX:
+        return '+'
+      case SEND_TX:
+        return '-'
+      default:
+        return ''
+    }
+  }
   return (
     <Modal
       style={styles.mainContainer}
@@ -46,7 +60,7 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
             >Amount</Text>
             <Text
               style={{ marginTop: heightPercentageToDP(0.5), color: props.isBlackTheme ? Colors.white : Colors.black }}
-            >-1.50000 Ada</Text>
+            >{props.data && getSymbolFromTxType(props.data.type)}{props.data && props.data.amount.lovelace/1000000}</Text>
           </View>
           <View
             style={{ paddingHorizontal: widthPercentageToDP(10), width: "100%", paddingVertical: heightPercentageToDP(1) }}

@@ -40,6 +40,11 @@ export const getTxInfo = async (txHash:string) => {
   if (!result || result.error) return null;
   return result;
 };
+export const getBlockInfo = async (blockHash:string) => {
+  const result = await fetchBlockfrost(`/blocks/${blockHash}`);
+  if (!result || result.error) return null;
+  return result;
+};
 
 export const submitTxBlockfrost = async (endpoint: string, data: any) => {
   console.log('submitTxBlockfrost');
