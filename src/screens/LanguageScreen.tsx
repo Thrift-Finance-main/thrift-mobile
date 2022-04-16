@@ -15,7 +15,7 @@ import {
 import i18next from "i18next";
 import {withTranslation} from "react-i18next";
 import {getKeyByValue} from "../utils";
-import {apiDb} from "../db/LocalDb";
+import {apiDb} from "../db/LiteDb";
 const LanguageScreen = ({ navigation }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
     const dispatch = useDispatch();

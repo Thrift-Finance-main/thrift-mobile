@@ -2,8 +2,7 @@ import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
 import ChangePassword from '../components/ChangePassword'
 import {decryptData, encryptData} from "../lib/cryptoLib";
-import {Alert} from "react-native";
-import {apiDb} from "../db/LocalDb";
+import {apiDb} from "../db/LiteDb";
 
 const ChangePasswordScreen = ({ navigation }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);

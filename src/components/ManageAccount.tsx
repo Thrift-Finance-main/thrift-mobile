@@ -10,7 +10,7 @@ import Key from "../assets/Key.svg";
 import User from "../assets/user.svg";
 import RemoveIcon from "../assets/remove.svg";
 import {useDispatch, useSelector} from "react-redux";
-import {apiDb} from "../db/LocalDb";
+import {apiDb} from "../db/LiteDb";
 import {addressSlice} from "../utils";
 import {setCurrentAccount} from "../store/Action";
 import CustomModal from "./PopUps/CustomModal";

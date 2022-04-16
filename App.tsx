@@ -4,7 +4,7 @@ import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
 import Reducers from './src/store/Reducers';
 import AppWrapper from "./src/AppWrapper";
-import {apiDb} from "./src/db/LocalDb";
+import {apiDb} from "./src/db/LiteDb";
 import {DEFAULT_CONFIG} from "./src/config/default";
 import {setCurrentAccount, setEntryRoute} from "./src/store/Action";
 import {ENTRY_WITCH_ROUTE} from "./src/config/routes";

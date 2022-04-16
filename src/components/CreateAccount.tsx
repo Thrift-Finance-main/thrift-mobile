@@ -8,10 +8,7 @@ import Back from '../../src/assets/back.svg';
 import DarkBack from '../../src/assets/DarkBack.svg';
 
 import InputField from './Common/InputField';
-import {useQuery} from "../db/models/Project";
-import {Account} from "../db/models/Account";
-import {useAsyncStorage} from "@react-native-async-storage/async-storage";
-import {apiDb} from "../db/LocalDb";
+
 interface CreateAccountProps {
     onContinuePress: (p: { passwd: string; name: string }) => void
     onBackIconPress: () => void

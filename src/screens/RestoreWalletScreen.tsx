@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import {useDispatch, useSelector} from 'react-redux';
 import RestoreWallet from '../components/RestoreWallet'
 import {createAccount} from "../lib/account";
-import {apiDb} from "../db/LocalDb";
+import {apiDb} from "../db/LiteDb";
 import {Alert} from "react-native";
 import {setCurrentAccount} from "../store/Action";
 

@@ -2,8 +2,7 @@ import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
 import CreatePin from '../components/CreatePin';
 import {sha256} from "../utils";
-import {apiDb} from "../db/LocalDb";
-import {Alert} from "react-native";
+import {apiDb} from "../db/LiteDb";
 
 const CreatePinScreen = ({ navigation, route }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);

@@ -1,23 +1,11 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import React, {FC, useEffect, useRef, useState} from 'react'
-import SplashScreen from 'react-native-splash-screen';
 import { useDispatch, useSelector } from 'react-redux';
-import Language from '../components/Language'
-import {setCurrentAccount, setTheme} from '../store/Action';
-import {getCurrentLang, getCurrentLanguage, LANGUAGES_LIST, LANGUAGES_NAMES, translate} from "../i18n";
-import i18next from "i18next";
+import Language from '../components/Language';
 import {withTranslation} from "react-i18next";
-import {delay, getKeyByValue} from "../utils";
 import {SafeAreaView} from "react-native-safe-area-context";
-import Colors from "../constants/CustomColors";
-import {StyleSheet, Text, View} from "react-native";
-import DropDownMenu from "../components/Common/DropDownMenu";
-import {heightPercentageToDP, widthPercentageToDP} from "../utils/dimensions";
-import Button from "../components/Common/Button";
-import LanguageModal from "../components/PopUps/LanguageModal";
 import {ENTRY_WITCH_ROUTE} from "../config/routes";
-import {apiDb} from "../db/LocalDb";
-import {fetchBlockfrost} from "../api/Blockfrost";
+import {apiDb} from "../db/LiteDb";
 
 interface RouteHandlerProps {
     navigate: (n:string) => void,
@@ -55,7 +43,7 @@ const MainScreen = ({ navigation }) => {
     // TODO: Move all useEffect to WalletScreen, MainScreen appear always
 
 
-    // apiDb.removeDb().then(r=>{});
+    //apiDb.removeDb().then(r=>{});
     return (
         <RouteHandler
             navigate ={(n:string) => navigateTo(n)}

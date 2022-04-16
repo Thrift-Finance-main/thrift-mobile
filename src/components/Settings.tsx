@@ -12,7 +12,7 @@ import DarkBack from '../assets//DarkBack.svg'
 import LanguageModal from './PopUps/LanguageModal'
 import PushNotificationModal from './PopUps/PushNotificationModal'
 import CurrencyConvertorModal from './PopUps/CurrencyConvertorModal'
-import {apiDb} from "../db/LocalDb";
+import {apiDb} from "../db/LiteDb";
 import {setCurrentAccount} from "../store/Action";
 import {changeLang, LANGUAGES_MODAL, LANGUAGES_NAMES_INVERT} from "../i18n";
 

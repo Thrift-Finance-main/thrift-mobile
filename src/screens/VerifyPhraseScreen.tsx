@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import VerifyPhrase from '../components/VerifyPhrase'
 import {createAccount} from "../lib/account";
 import {Alert} from "react-native";
-import {apiDb} from "../db/LocalDb";
+import {apiDb} from "../db/LiteDb";
 import {setCurrentAccount, setEntryRoute} from "../store/Action";
 import {ENTRY_WITCH_ROUTE} from "../config/routes";
 

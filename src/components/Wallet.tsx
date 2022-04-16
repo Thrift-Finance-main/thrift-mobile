@@ -18,7 +18,7 @@ import ThriftLogoWhite from "../assets/ThriftFinancelogo.svg";
 import ThriftLogo from "../assets/ThriftLogo.svg";
 import WalletIcon from "../assets/wallet.svg";
 import {fetchBlockfrost, getTxInfo, getTxUTxOs} from "../api/Blockfrost";
-import {apiDb} from "../db/LocalDb";
+import {apiDb} from "../db/LiteDb";
 import {setCurrentAccount} from "../store/Action";
 import {classifyTxs} from "../lib/transactions";
 
@@ -157,6 +157,37 @@ const Wallet: FC<WalletProps> = (props) => {
                 });
                 console.log('History');
                 console.log(classifiedTxsWithAddress[0].history);
+
+                const allTransactions = classifiedTxsWithAddress[0].history;
+
+                const currentTxs = await apiDb.getAccountTransactionsHashes(currentAccount.accountName);
+                console.log('currentTxs');
+                console.log(currentTxs);
+
+                allTransactions.map(async tx =>{
+                    console.log('tx');
+                    console.log(tx);
+                    if (!currentTxs.includes(tx.txHash)){
+                        currentTxs.push(tx.txHash);
+                    }
+                });
+                console.log('currentTxs2');
+                console.log(currentTxs);
+                // set reference to tx in account
+                await apiDb.setAccountTransactionsHashes(currentAccount.accountName, currentTxs);
+
+                // Save transactions
+                await Promise.all(
+                    allTransactions.map(async tx => {
+                        await apiDb.setAccountTransaction(currentAccount.accountName, tx);
+                    })
+                );
+
+
+                // Store Txs on Db and link to account
+
+
+
             } else {
                 console.log("Not current account in store");
             }
