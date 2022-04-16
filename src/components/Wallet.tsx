@@ -7,6 +7,7 @@ import Moon from '../assets/Moon.svg'
 import Scanner from '../assets/Scanner.svg'
 import Send from '../assets/Send.svg'
 import Receive from '../assets/Receive.svg'
+import AntDesignIcon from 'react-native-vector-icons/AntDesign'
 import CopySendBox from '../assets/CopySendBox.svg'
 import TransactionDetailsModal from './PopUps/TransactionDetailsModal'
 import EntypoIcon from 'react-native-vector-icons/Entypo'
@@ -20,7 +21,7 @@ import WalletIcon from "../assets/wallet.svg";
 import {fetchBlockfrost, getTxInfo, getTxUTxOs} from "../api/Blockfrost";
 import {apiDb} from "../db/LiteDb";
 import {setCurrentAccount} from "../store/Action";
-import {classifyTxs} from "../lib/transactions";
+import {classifyTxs, RECEIVE_TX, SEND_TX} from "../lib/transactions";
 import Ada from '../assets/Ada.svg'
 
 interface WalletProps {
@@ -44,6 +45,8 @@ const Wallet: FC<WalletProps> = (props) => {
 
     const [scanner, setScanner] = useState(false);
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
+    const [currentTxs, setCurrentTxs] = useState([]);
+
 
     const useIsMounted = () => {
         const isMounted = useRef(false);
@@ -61,8 +64,11 @@ const Wallet: FC<WalletProps> = (props) => {
 
         const fetchData = async () => {
             console.log('fetchData');
-            console.log('currentAccount');
-            console.log(currentAccount);
+
+            const currTxs = await apiDb.getTransactions(currentAccount.accountName, currentAccount.history);
+            setCurrentTxs(currTxs);
+            console.log('currTxs history');
+            console.log(currTxs);
             const saddress = currentAccount && currentAccount.rewardAddress;
             if (saddress) {
                 let endpoint = "accounts/" + saddress;
@@ -85,8 +91,6 @@ const Wallet: FC<WalletProps> = (props) => {
 
 
                 let currentAccountInLocal = await apiDb.getAccount(currentAccount.accountName);
-                console.log('currentAccountInLocal');
-                console.log(currentAccountInLocal);
                 currentAccountInLocal.balance = accountState.controlled_amount;
                 currentAccountInLocal.delegated = accountState.active;
                 currentAccountInLocal.activeEpoch = accountState.active_epoch;
@@ -121,8 +125,6 @@ const Wallet: FC<WalletProps> = (props) => {
                 );
 
                 let currentTxs = await apiDb.getAccountTransactionsHashes(currentAccount.accountName);
-                console.log('currentTxs');
-                console.log(currentTxs);
 
                 addressTxsList = addressTxsList.map(txAddr => {
                     txAddr.txs = txAddr.txs.filter(tx => !currentTxs.includes(tx.tx_hash));
@@ -130,9 +132,6 @@ const Wallet: FC<WalletProps> = (props) => {
                         return txAddr;
                     }
                 }).filter(e => e != undefined);
-
-                console.log('addressTxsList');
-                console.log(addressTxsList);
 
                 if (addressTxsList && addressTxsList.length){
 
@@ -276,7 +275,29 @@ const Wallet: FC<WalletProps> = (props) => {
     };
 
 
+    const getIconTxType = (type:string) => {
+        switch (type) {
+            case RECEIVE_TX:
+                return <AntDesignIcon name="arrowdown" color="green" size={22} />
+            case SEND_TX:
+                return <AntDesignIcon name="arrowup" color="red" size={22} />
+            default:
+                return <AntDesignIcon name="arrowdown" color="green" size={22} />
+        }
+    }
+    const getAddressToShow = (type:string) => {
+        switch (type) {
+            case RECEIVE_TX:
+                return <AntDesignIcon name="arrowdown" color="green" size={22} />
+            case SEND_TX:
+                return <AntDesignIcon name="arrowup" color="red" size={22} />
+            default:
+                return <AntDesignIcon name="arrowdown" color="green" size={22} />
+        }
+    }
     const renderItemTransaction = ({item, index}) => {
+        console.log('item');
+        console.log(item);
         return (
             <View
                 style={{
@@ -297,7 +318,7 @@ const Wallet: FC<WalletProps> = (props) => {
 
                             marginLeft: props.isBlackTheme ? widthPercentageToDP(3) : 0,
                         }}>
-                        {item.icon}
+                        {getIconTxType(item.type)}
                     </View>
 
                     <View style={{paddingHorizontal: widthPercentageToDP(2)}}>
@@ -306,7 +327,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                 color: props.isBlackTheme ? Colors.white : Colors.black,
                                 fontSize: 13,
                             }}>
-                            {item.title}
+                            addrlq95e.....addrlq95ead..
                         </Text>
                         <Text
                             style={{
@@ -351,8 +372,6 @@ const Wallet: FC<WalletProps> = (props) => {
         );
     };
 
-    console.log('currentAccount.assets');
-    console.log(currentAccount.assets);
     return (
         <SafeAreaView
             style={{
@@ -496,7 +515,7 @@ const Wallet: FC<WalletProps> = (props) => {
             ) : (
                 <FlatList
                     style={{marginTop: heightPercentageToDP(1)}}
-                    data={props.transactionList}
+                    data={currentTxs}
                     renderItem={renderItemTransaction}
                     keyExtractor={(item, index) => index.toString()}
                 />

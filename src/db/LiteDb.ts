@@ -116,7 +116,7 @@ class LiteDb implements Release {
         }
     }
     // Transactions
-    async getAccountTransaction(accountName:string, txHash:any) {
+    async getAccountTransaction(accountName:string, txHash:string) {
         try {
             if (accountName && accountName.length){
                 return await getObj(ACCOUNT_TABLE + ':'
@@ -135,6 +135,24 @@ class LiteDb implements Release {
             if (accountName && accountName.length){
                 let account = await getObj(ACCOUNT_TABLE + ':' + accountName);
                 return account.history
+            }
+        }  catch (e) {
+            return {
+                error: e
+            }
+        }
+    }
+    async getTransactions(accountName:string, txHashes:string[]) {
+        try {
+            if (accountName
+                && accountName.length
+                && txHashes
+                && txHashes.length){
+                return await Promise.all(
+                    txHashes.map(async txHash => {
+                        return await this.getAccountTransaction(accountName, txHash);
+                    })
+                );
             }
         }  catch (e) {
             return {
