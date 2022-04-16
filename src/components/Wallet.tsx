@@ -21,6 +21,7 @@ import {fetchBlockfrost, getTxInfo, getTxUTxOs} from "../api/Blockfrost";
 import {apiDb} from "../db/LiteDb";
 import {setCurrentAccount} from "../store/Action";
 import {classifyTxs} from "../lib/transactions";
+import Ada from '../assets/Ada.svg'
 
 interface WalletProps {
     List: any
@@ -225,7 +226,7 @@ const Wallet: FC<WalletProps> = (props) => {
                             width: widthPercentageToDP(12),
                             marginLeft: props.isBlackTheme ? widthPercentageToDP(3) : 0,
                         }}>
-                        {item.icon}
+                        {<Ada />}
                     </View>
 
                     <View style={{paddingHorizontal: widthPercentageToDP(5)}}>
@@ -234,7 +235,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                 color: props.isBlackTheme ? Colors.white : Colors.black,
                                 fontSize: 14,
                             }}>
-                            {item.title}
+                            {Buffer.from(item.asset_name,"hex").toString()}
                         </Text>
                         <View style={{flexDirection: 'row'}} >
                             <Text
@@ -246,11 +247,11 @@ const Wallet: FC<WalletProps> = (props) => {
                             </Text>
                             <Text
                                 style={{
-                                    color: item.raising.color,
+                                    color: 'green',
                                     fontSize: 11,
                                     marginLeft: widthPercentageToDP(5)
                                 }}>
-                                {item.raising.value}
+                                0%
                             </Text>
                         </View>
                     </View>
@@ -263,7 +264,7 @@ const Wallet: FC<WalletProps> = (props) => {
                             ? widthPercentageToDP(3.4)
                             : widthPercentageToDP(3.4),
                     }}>
-                    {item.counts}
+                    {item.metadata && item.metadata.decimals ? item.quantity/(Math.pow( 10,item.metadata.decimals))  : item.quantity}
                 </Text>
             </View>
         );
@@ -345,6 +346,8 @@ const Wallet: FC<WalletProps> = (props) => {
         );
     };
 
+    console.log('currentAccount.assets');
+    console.log(currentAccount.assets);
     return (
         <SafeAreaView
             style={{
@@ -481,7 +484,7 @@ const Wallet: FC<WalletProps> = (props) => {
             {props.showAssets ? (
                 <FlatList
                     style={{marginTop: heightPercentageToDP(1)}}
-                    data={props.List}
+                    data={currentAccount.assets}
                     renderItem={renderItemMenuList}
                     keyExtractor={(item, index) => index.toString()}
                 />
