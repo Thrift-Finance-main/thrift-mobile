@@ -49,6 +49,10 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
         const getAccounts = async () => {
             console.log('getAccounts in ManageAccount')
             const accs = await apiDb.getAllAccounts();
+            console.log(accs[0]);;
+            console.log('\n\n')
+            console.log(accs[1]);
+            console.log(accs.length);
             setAccounts(accs);
         }
 

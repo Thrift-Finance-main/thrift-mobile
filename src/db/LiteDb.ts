@@ -39,7 +39,7 @@ class LiteDb implements Release {
         let keys = await getAllKeys();
         if (keys){
             // filter account keys
-            keys = keys.filter(k => k.includes(ACCOUNT_TABLE));
+            keys = keys.filter(k => k.includes(ACCOUNT_TABLE) && !k.includes(TRANSACTION_DATA_TABLE));
             allAccounts = await getMultipleData(keys);
         }
         // console.log(JSON.parse(allAccounts));
