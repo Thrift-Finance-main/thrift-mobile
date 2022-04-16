@@ -131,7 +131,8 @@ const Wallet: FC<WalletProps> = (props) => {
                 let currentTxs = await apiDb.getAccountTransactionsHashes(currentAccount.accountName);
 
                 addressTxsList = addressTxsList.map(txAddr => {
-                    txAddr.txs = txAddr.txs.filter(tx => !currentTxs.includes(tx.tx_hash));
+                    //txAddr.txs = txAddr.txs.filter(tx => !currentTxs.includes(tx.tx_hash)); TODO:
+                    txAddr.txs = txAddr.txs.filter(tx => true);
                     if (txAddr.txs.length){
                         return txAddr;
                     }
@@ -316,16 +317,7 @@ const Wallet: FC<WalletProps> = (props) => {
                 return ''
         }
     }
-    const getAddressToShow = (item:string) => {
-        switch (item.type) {
-            case RECEIVE_TX:
-                return;
-            case SEND_TX:
-                return <AntDesignIcon name="arrowup" color="red" size={22} />
-            default:
-                return <AntDesignIcon name="arrowdown" color="green" size={22} />
-        }
-    }
+
     const renderItemTransaction = ({item, index}) => {
 
         if (item){
