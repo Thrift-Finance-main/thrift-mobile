@@ -71,6 +71,7 @@ const Wallet: FC<WalletProps> = (props) => {
                 endpoint =  "accounts/" + saddress + "/addresses";
                 const relatedAddresses = await fetchBlockfrost(endpoint);
 
+                /*
                 const accountHistory = await Promise.all(
                     relatedAddresses.map(async (a:any) => {
                         const response = await fetchBlockfrost(`addresses/${a.address}/total`);
@@ -79,6 +80,8 @@ const Wallet: FC<WalletProps> = (props) => {
                         }
                     })
                 );
+                 */
+
 
                 let currentAccountInLocal = await apiDb.getAccount(currentAccount.accountName);
                 console.log('currentAccountInLocal');
@@ -101,17 +104,10 @@ const Wallet: FC<WalletProps> = (props) => {
                     })
                 );
 
-
-                console.log('assetsWithDetails');
-                console.log(assetsWithDetails.length);
-
                 currentAccountInLocal.assets = assetsWithDetails;
                 await apiDb.updateAccount(currentAccountInLocal);
 
                 dispatch(setCurrentAccount(currentAccountInLocal));
-
-                console.log('accountHistory');
-                console.log(accountHistory[0]);
 
                 let addressTxsList = await Promise.all(
                     relatedAddresses.map(async addr =>{
@@ -124,15 +120,18 @@ const Wallet: FC<WalletProps> = (props) => {
                 );
 
                 let currentTxs = await apiDb.getAccountTransactionsHashes(currentAccount.accountName);
+                console.log('currentTxs');
+                console.log(currentTxs);
 
                 addressTxsList = addressTxsList.map(txAddr => {
-                    console.log('txAddr');
-                    console.log(txAddr);
                     txAddr.txs = txAddr.txs.filter(tx => !currentTxs.includes(tx.tx_hash));
                     if (txAddr.txs.length){
                         return txAddr;
                     }
-                });
+                }).filter(e => e != undefined);
+
+                console.log('addressTxsList');
+                console.log(addressTxsList);
 
                 if (addressTxsList && addressTxsList.length){
 
