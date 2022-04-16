@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useRef, useState} from 'react'
-import {View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity, Button, Dimensions} from 'react-native'
+import {View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Button, Dimensions} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
@@ -224,9 +224,14 @@ const Wallet: FC<WalletProps> = (props) => {
                     <View
                         style={{
                             width: widthPercentageToDP(12),
-                            marginLeft: props.isBlackTheme ? widthPercentageToDP(3) : 0,
+                            marginLeft: widthPercentageToDP(3),
                         }}>
-                        {<Ada />}
+                        {item.metadata && item.metadata.logo ?
+                            <Image
+                                source={{uri: `data:image/png;base64,${item.metadata.logo}`}}
+                                style={{width: 32, height: 32}}
+                            />
+                            : <Ada />}
                     </View>
 
                     <View style={{paddingHorizontal: widthPercentageToDP(5)}}>
