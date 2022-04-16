@@ -115,6 +115,21 @@ class LiteDb implements Release {
             }
         }
     }
+    // Transactions
+    async getAccountTransaction(accountName:string, txHash:any) {
+        try {
+            if (accountName && accountName.length){
+                return await getObj(ACCOUNT_TABLE + ':'
+                   + accountName + ':'
+                   + TRANSACTION_DATA_TABLE + ':'
+                   + txHash);
+            }
+        }  catch (e) {
+            return {
+                error: e
+            }
+        }
+    }
     async getAccountTransactionsHashes(accountName:string) {
         try {
             if (accountName && accountName.length){

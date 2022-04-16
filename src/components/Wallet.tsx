@@ -101,6 +101,7 @@ const Wallet: FC<WalletProps> = (props) => {
                     })
                 );
 
+
                 console.log('assetsWithDetails');
                 console.log(assetsWithDetails.length);
 
@@ -109,16 +110,10 @@ const Wallet: FC<WalletProps> = (props) => {
 
                 dispatch(setCurrentAccount(currentAccountInLocal));
 
-                const accountInLocal =  await apiDb.getAccount(currentAccountInLocal.accountName);
-
-                console.log('accountInLocal');
-                console.log(accountInLocal);
-
                 console.log('accountHistory');
                 console.log(accountHistory[0]);
 
-
-                const addressTxsList = await Promise.all(
+                let addressTxsList = await Promise.all(
                     relatedAddresses.map(async addr =>{
                         const response = await fetchBlockfrost(`addresses/${addr.address}/transactions`);
                         if (!response.error){
@@ -128,64 +123,66 @@ const Wallet: FC<WalletProps> = (props) => {
                     })
                 );
 
-                let addrsWithTxsList = [];
-                for (let addr in addressTxsList) {
-                    const r = await Promise.all(
-                        addressTxsList[addr].txs.map(async tx => {
+                let currentTxs = await apiDb.getAccountTransactionsHashes(currentAccount.accountName);
 
-                            // TODO: chek if tx already in local db, NOT query
-                            const txInfo = await getTxInfo(tx.tx_hash);
-                            const utxos = await getTxUTxOs(tx.tx_hash);
-                            if (!utxos.error){
-                                tx.utxos = utxos;
-                                tx.fees = txInfo.fees;
-                                tx.size = txInfo.size;
-                                tx.asset_mint_or_burn_count = txInfo.asset_mint_or_burn_count;
-                                tx.fromAddress = addressTxsList[addr].address;
-                                return tx;
-                            }
-                        })
-                    );
-
-                    addrsWithTxsList.push(r)
-                }
-
-                const allAddresses = [...currentAccount.externalPubAddress, ...currentAccount.externalPubAddress];
-                const classifiedTxsWithAddress = addrsWithTxsList.map(addrObj => {
-                    let cTxs = classifyTxs(addrObj, allAddresses);
-                    return {address: addrObj[0].fromAddress, history: cTxs };
-                });
-                console.log('History');
-                console.log(classifiedTxsWithAddress[0].history);
-
-                const allTransactions = classifiedTxsWithAddress[0].history;
-
-                const currentTxs = await apiDb.getAccountTransactionsHashes(currentAccount.accountName);
-                console.log('currentTxs');
-                console.log(currentTxs);
-
-                allTransactions.map(async tx =>{
-                    console.log('tx');
-                    console.log(tx);
-                    if (!currentTxs.includes(tx.txHash)){
-                        currentTxs.push(tx.txHash);
+                addressTxsList = addressTxsList.map(txAddr => {
+                    console.log('txAddr');
+                    console.log(txAddr);
+                    txAddr.txs = txAddr.txs.filter(tx => !currentTxs.includes(tx.tx_hash));
+                    if (txAddr.txs.length){
+                        return txAddr;
                     }
                 });
-                console.log('currentTxs2');
-                console.log(currentTxs);
-                // set reference to tx in account
-                await apiDb.setAccountTransactionsHashes(currentAccount.accountName, currentTxs);
 
-                // Save transactions
-                await Promise.all(
-                    allTransactions.map(async tx => {
-                        await apiDb.setAccountTransaction(currentAccount.accountName, tx);
-                    })
-                );
+                if (addressTxsList && addressTxsList.length){
 
+                    let addrsWithTxsList = [];
+                    for (let addr in addressTxsList) {
+                        if (addressTxsList[addr] && addressTxsList[addr].txs && addressTxsList[addr].txs.length){
+                            const r = await Promise.all(
+                                addressTxsList[addr].txs.map(async tx => {
 
-                // Store Txs on Db and link to account
+                                    // TODO: chek if tx already in local db, NOT query
+                                    const txInfo = await getTxInfo(tx.tx_hash);
+                                    const utxos = await getTxUTxOs(tx.tx_hash);
+                                    if (!utxos.error){
+                                        tx.utxos = utxos;
+                                        tx.fees = txInfo.fees;
+                                        tx.size = txInfo.size;
+                                        tx.asset_mint_or_burn_count = txInfo.asset_mint_or_burn_count;
+                                        tx.fromAddress = addressTxsList[addr].address;
+                                        return tx;
+                                    }
+                                })
+                            );
+                            addrsWithTxsList.push(r)
+                        }
+                    }
 
+                    const allAddresses = [...currentAccount.externalPubAddress, ...currentAccount.externalPubAddress];
+                    const allTransactions = [];
+                    addrsWithTxsList.map(addrObj => {
+                        let cTxs = classifyTxs(addrObj, allAddresses);
+                        allTransactions.push({address: addrObj[0].fromAddress, history: cTxs });
+                    });
+
+                    allTransactions.map(async tx =>{
+                        if (!currentTxs.includes(tx.txHash)){
+                            currentTxs.push(tx.txHash);
+                        }
+                    });
+                    // set hash references in account
+                    await apiDb.setAccountTransactionsHashes(currentAccount.accountName, currentTxs);
+
+                    // Save transactions
+                    await Promise.all(
+                        allTransactions.map(async tx => {
+                            await apiDb.setAccountTransaction(currentAccount.accountName, tx);
+                        })
+                    );
+                    const account = await apiDb.getAccount(currentAccount.accountName);
+                    dispatch(setCurrentAccount(account));
+                }
 
 
             } else {

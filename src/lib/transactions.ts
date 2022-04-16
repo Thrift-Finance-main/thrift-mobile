@@ -36,7 +36,6 @@ export const classifyTxs = (transactions, accountAddresses) => {
         const usedInOutputs = processedOut.usedAddresses;
 
 
-        let amount = 0;
         let amountList = [];
         switch (txType) {
             case SEND_TX:
@@ -44,16 +43,9 @@ export const classifyTxs = (transactions, accountAddresses) => {
                 console.log(usedInInputs);
                 break;
             case RECEIVE_TX:
-                console.log('usedInOutputs');
-                console.log(usedInOutputs);
                 usedInOutputs.map(uoutput => {
-                    console.log('uoutput.amount');
-                    console.log(uoutput.amount);
                     amountList = [...amountList,...uoutput.amount]
-                    // merge amount by uinput.amount[0].unit
-                    amount += parseInt(uoutput.amount[0].quantity);
                 });
-
                 break;
             default:
                 break;
