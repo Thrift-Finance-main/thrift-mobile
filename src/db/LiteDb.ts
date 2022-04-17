@@ -130,7 +130,7 @@ class LiteDb implements Release {
             }
         }
     }
-    async getAccountTransactionsHashes(accountName:string) {
+    async getAccountHistory(accountName:string) {
         try {
             if (accountName && accountName.length){
                 let account = await getObj(ACCOUNT_TABLE + ':' + accountName);
@@ -161,6 +161,19 @@ class LiteDb implements Release {
         }
     }
     async setAccountTransactionsHashes(accountName:string, history) {
+        try {
+            if (accountName && accountName.length){
+                let account = await getObj(ACCOUNT_TABLE + ':' + accountName);
+                account.history = history;
+                await storeObj(ACCOUNT_TABLE + ':' + accountName, account);
+            }
+        }  catch (e) {
+            return {
+                error: e
+            }
+        }
+    }
+    async setAccountHistory(accountName:string, history:any[]) {
         try {
             if (accountName && accountName.length){
                 let account = await getObj(ACCOUNT_TABLE + ':' + accountName);
