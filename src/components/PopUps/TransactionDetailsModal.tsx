@@ -15,7 +15,7 @@ interface TransactionDetailsModalProps {
 const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
 
   console.log('data');
-  console.log(props.data);
+  console.log(props.data && props.data);
   const getSymbolFromTxType = (type:string) => {
     switch (type) {
       case RECEIVE_TX:
@@ -60,7 +60,7 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
             >Amount</Text>
             <Text
               style={{ marginTop: heightPercentageToDP(0.5), color: props.isBlackTheme ? Colors.white : Colors.black }}
-            >{props.data && getSymbolFromTxType(props.data.type)}{props.data && props.data.amount.lovelace/1000000}</Text>
+            >{props.data && getSymbolFromTxType(props.data.type)}{props.data && props.data.amount && props.data.amount.lovelace/1000000}</Text>
           </View>
           <View
             style={{ paddingHorizontal: widthPercentageToDP(10), width: "100%", paddingVertical: heightPercentageToDP(1) }}

@@ -8,6 +8,7 @@ export const SELF_TX = 'SELF_TX';
 export const classifyTxs = async (transactions, accountAddresses) => {
 
     console.log('\n\nclassifyTxs');
+    let count = 0;
     const classifiedTxs = await Promise.all(
         transactions.map(async tx => {
             const block_time = tx.block_time;
@@ -25,8 +26,6 @@ export const classifyTxs = async (transactions, accountAddresses) => {
             console.log('\n----------------------------------');
             console.log('\nprocessedOut');
             const processedOut = processOutputs(outputs, accountAddresses);
-
-            console.log(processedOut);
 
             let txType = SELF_TX;
             if (!accInInputs && accInOutputs) {
@@ -48,6 +47,7 @@ export const classifyTxs = async (transactions, accountAddresses) => {
 
             switch (txType) {
                 case SEND_TX:
+                    console.log('SEND_TX');
                     let amountOutputList = [];
                     let amountInputList = [];
 
@@ -58,28 +58,33 @@ export const classifyTxs = async (transactions, accountAddresses) => {
                     otherInOutputs.map(uoutput => {
                         amountOutputList = [...amountOutputList, ...uoutput.amount]
                     });
+
                     const mergedInputsAmount = await mergeAmounts(amountInputList);
                     const mergedOutputsAmount = await mergeAmounts(amountOutputList);
 
-                    //const mergedDiff = await diffAmounts(mergedInputsAmount, mergedOutputsAmount);
-                    //console.log('mergedDiff');
-                    //onsole.log(mergedDiff);
+                    const mergedDiff = await diffAmounts(mergedInputsAmount, mergedOutputsAmount);
 
+                    console.log(count);
+                    count++;
                     return {
                         txHash,
                         blockTime: block_time,
                         inputs: processedIn,
                         outputs: processedOut,
-                        //amount: mergedDiff,
+                        amount: mergedDiff,
                         fees,
                         type: txType
                     }
+
                 case RECEIVE_TX:
+                    console.log('RECEIVE_TX');
                     let amountOutputs = [];
                     usedInOutputs.map(uoutput => {
                         amountOutputs = [...amountOutputs, ...uoutput.amount]
                     });
                     const mergedOutputs = await mergeAmounts(amountOutputs);
+                    console.log(count);
+                    count++;
                     return {
                         txHash,
                         blockTime: block_time,

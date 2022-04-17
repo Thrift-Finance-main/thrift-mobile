@@ -62,8 +62,8 @@ const Wallet: FC<WalletProps> = (props) => {
 
         const fetchData = async () => {
             console.log('fetchData');
-            console.log('currentAccount');
-            console.log(currentAccount);
+            console.log('currentAccount.history');
+            console.log(currentAccount.history);
 
             const saddress = currentAccount && currentAccount.rewardAddress;
             if (saddress) {
@@ -113,12 +113,17 @@ const Wallet: FC<WalletProps> = (props) => {
                 let addressTxsList = await Promise.all(
                     relatedAddresses.map(async addr =>{
                         const response = await fetchBlockfrost(`addresses/${addr.address}/transactions`);
+                        console.log('response');
+                        console.log(response);
                         if (!response.error){
                             addr.txs = response;
                             return addr;
                         }
                     })
                 );
+
+                console.log('addressTxsList num..');
+                console.log(addressTxsList.length);
 
                 let currentTxs = await apiDb.getAccountHistory(currentAccount.accountName);
 
@@ -127,8 +132,10 @@ const Wallet: FC<WalletProps> = (props) => {
                     if (tx){
                         allTxHashes.push(tx.txHash);
                     }
+                });
 
-                })
+                console.log('addressTxsList num0');
+                console.log(addressTxsList.length);
 
                 addressTxsList = addressTxsList.map(txAddr => {
                     //txAddr.txs = txAddr.txs.filter(tx => !allTxHashes.includes(tx.tx_hash));
@@ -138,8 +145,8 @@ const Wallet: FC<WalletProps> = (props) => {
                     }
                 }).filter(e => e != undefined);
 
-                console.log('addressTxsList4');
-                console.log(addressTxsList);
+                console.log('addressTxsList num1');
+                console.log(addressTxsList.length);
 
                 if (addressTxsList && addressTxsList.length){
 
@@ -173,6 +180,8 @@ const Wallet: FC<WalletProps> = (props) => {
                     const allAddresses = [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress];
                     const allTransactionsByAddr = [];
 
+                    console.log('addrsWithTxsList');
+                    console.log(addrsWithTxsList.length);
                     await Promise.all(
                         addrsWithTxsList.map(async addrObj => {
                             let cTxs = await classifyTxs(addrObj, allAddresses);
@@ -188,7 +197,8 @@ const Wallet: FC<WalletProps> = (props) => {
 
                     let mergedHistory = []; // All addresses
                     allTransactionsByAddr.map(async addr => {
-                        if (addr && addr.history !== undefined){
+                        addr.history = addr.history.filter(tx => tx !== undefined);
+                        if (addr && addr.history.length){
                             mergedHistory = [...mergedHistory, ...addr.history]
                         }
                     });
@@ -196,10 +206,15 @@ const Wallet: FC<WalletProps> = (props) => {
                     console.log('mergedHistory2');
                     console.log(mergedHistory);
 
+                    let accHistory = await apiDb.getAccountHistory(currentAccount.accountName);
+
+                    // Join current with new txs
+                    accHistory = [...accHistory, ...mergedHistory];
+
                     // TODO: store everything
                     if (mergedHistory.length) {
                         //await apiDb.setAccountTransactionsHashes(currentAccount.accountName, currentTxs);
-                        await apiDb.setAccountHistory(currentAccount.accountName, mergedHistory);
+                        await apiDb.setAccountHistory(currentAccount.accountName, accHistory);
 
                     }
 
@@ -376,7 +391,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                         textAlign: 'right',
                                         color: props.isBlackTheme ? Colors.white : Colors.black,
                                     }}>
-                                    {getSymbolFromTxType(item.type)}{item.amount.lovelace/1000000}
+                                    {getSymbolFromTxType(item.type)}{item.amount && item.amount.lovelace/1000000}
                                 </Text>
                                 <Text
                                     style={{
