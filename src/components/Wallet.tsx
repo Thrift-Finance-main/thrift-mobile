@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useRef, useState} from 'react'
-import {View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Button, Dimensions} from 'react-native'
+import {View, Text, StyleSheet, FlatList, Image, TouchableOpacity} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
@@ -8,15 +8,12 @@ import Scanner from '../assets/Scanner.svg'
 import Send from '../assets/Send.svg'
 import Receive from '../assets/Receive.svg'
 import AntDesignIcon from 'react-native-vector-icons/AntDesign'
-import CopySendBox from '../assets/CopySendBox.svg'
 import TransactionDetailsModal from './PopUps/TransactionDetailsModal'
 import EntypoIcon from 'react-native-vector-icons/Entypo'
 import ReceiveTokenModal from './PopUps/ReceiveTokenModal'
 import DarkTheme from '../assets/darkTheme.svg'
 import DarkScanner from '../assets/DarkScanner.svg'
 import {useDispatch, useSelector} from "react-redux";
-import ThriftLogoWhite from "../assets/ThriftFinancelogo.svg";
-import ThriftLogo from "../assets/ThriftLogo.svg";
 import WalletIcon from "../assets/wallet.svg";
 import {fetchBlockfrost, getBlockInfo, getTxInfo, getTxUTxOs} from "../api/Blockfrost";
 import {apiDb} from "../db/LiteDb";
@@ -46,7 +43,6 @@ const Wallet: FC<WalletProps> = (props) => {
 
     const [scanner, setScanner] = useState(false);
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
-    const [currentTxs, setCurrentTxs] = useState([]);
     const [selectedTx, setSelectedTx] = useState(undefined);
 
 
@@ -68,10 +64,6 @@ const Wallet: FC<WalletProps> = (props) => {
             console.log('fetchData');
             console.log('currentAccount');
             console.log(currentAccount);
-
-            const currTxs = await apiDb.getTransactions(currentAccount.accountName, currentAccount.history);
-            console.log('currTxs history');
-            console.log(currTxs);
 
             const saddress = currentAccount && currentAccount.rewardAddress;
             if (saddress) {
@@ -130,13 +122,24 @@ const Wallet: FC<WalletProps> = (props) => {
 
                 let currentTxs = await apiDb.getAccountHistory(currentAccount.accountName);
 
+                const allTxHashes = [];
+                currentTxs.map(tx => {
+                    if (tx){
+                        allTxHashes.push(tx.txHash);
+                    }
+
+                })
+
                 addressTxsList = addressTxsList.map(txAddr => {
-                    //txAddr.txs = txAddr.txs.filter(tx => !currentTxs.includes(tx.tx_hash)); TODO:
+                    //txAddr.txs = txAddr.txs.filter(tx => !allTxHashes.includes(tx.tx_hash));
                     txAddr.txs = txAddr.txs.filter(tx => true);
                     if (txAddr.txs.length){
                         return txAddr;
                     }
                 }).filter(e => e != undefined);
+
+                console.log('addressTxsList4');
+                console.log(addressTxsList);
 
                 if (addressTxsList && addressTxsList.length){
 
@@ -152,7 +155,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                     console.log('txInfo');
                                     console.log(txInfo);
                                     const utxos = await getTxUTxOs(tx.tx_hash);
-                                    const blockInfo = await getBlockInfo(tx.tx_hash);
+                                    // const blockInfo = await getBlockInfo(tx.tx_hash);
                                     if (!utxos.error){
                                         tx.utxos = utxos;
                                         tx.fees = txInfo.fees;
@@ -167,7 +170,7 @@ const Wallet: FC<WalletProps> = (props) => {
                         }
                     }
 
-                    const allAddresses = [...currentAccount.externalPubAddress, ...currentAccount.externalPubAddress];
+                    const allAddresses = [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress];
                     const allTransactionsByAddr = [];
 
                     await Promise.all(
@@ -176,7 +179,7 @@ const Wallet: FC<WalletProps> = (props) => {
                             if (cTxs !== undefined){
                                 allTransactionsByAddr.push({address: addrObj[0].fromAddress, history: cTxs });
                             }
-                        })
+                        }).filter(a => a !== undefined)
                     );
 
                     // set hash references in account
@@ -185,34 +188,21 @@ const Wallet: FC<WalletProps> = (props) => {
 
                     let mergedHistory = []; // All addresses
                     allTransactionsByAddr.map(async addr => {
-                        console.log('tx2');
-                        console.log(addr);
                         if (addr && addr.history !== undefined){
                             mergedHistory = [...mergedHistory, ...addr.history]
                         }
                     });
 
-                    console.log('mergedHistory');
+                    console.log('mergedHistory2');
                     console.log(mergedHistory);
 
                     // TODO: store everything
-                    //await apiDb.setAccountTransactionsHashes(currentAccount.accountName, currentTxs);
-                    await apiDb.setAccountHistory(currentAccount.accountName, mergedHistory);
+                    if (mergedHistory.length) {
+                        //await apiDb.setAccountTransactionsHashes(currentAccount.accountName, currentTxs);
+                        await apiDb.setAccountHistory(currentAccount.accountName, mergedHistory);
 
-                    // Save transactions
-                    /*
-                    await Promise.all(
-                        allTransactionsByAddr.map(async addr => {
-                            console.log('tx2');
-                            console.log(addr);
-                            if (addr && addr.history){
-                                addr.history.map(tx => {
-                                    apiDb.setAccountTransaction(currentAccount.accountName, tx).then(r=>{});
-                                })
-                            }
-                        })
-                    );currentTxs
-                     */
+                    }
+
                     const account = await apiDb.getAccount(currentAccount.accountName);
                     dispatch(setCurrentAccount(account));
                 }
@@ -331,11 +321,6 @@ const Wallet: FC<WalletProps> = (props) => {
     }
 
     const renderItemTransaction = ({item, index}) => {
-
-        console.log('renderItemTransaction');
-        console.log('item');
-        console.log(item);
-
         if(item){
             return (
                 <View

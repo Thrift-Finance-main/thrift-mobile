@@ -8,13 +8,6 @@ export const SELF_TX = 'SELF_TX';
 export const classifyTxs = async (transactions, accountAddresses) => {
 
     console.log('\n\nclassifyTxs');
-    subBigNum('500000', '100000').then(r => {
-    })
-    addBigNum('500000', '100000').then(r => {
-    })
-    divBigNum('500000', '100000').then(r => {
-    })
-
     const classifiedTxs = await Promise.all(
         transactions.map(async tx => {
             const block_time = tx.block_time;
@@ -26,8 +19,14 @@ export const classifyTxs = async (transactions, accountAddresses) => {
             const accInInputs = addressInCommon(inputs, accountAddresses);
             const accInOutputs = addressInCommon(outputs, accountAddresses);
 
+            console.log('\n----------------------------------');
+            console.log('\nprocessedIn');
             const processedIn = processInputs(inputs, accountAddresses);
-            const processedOut = processInputs(outputs, accountAddresses);
+            console.log('\n----------------------------------');
+            console.log('\nprocessedOut');
+            const processedOut = processOutputs(outputs, accountAddresses);
+
+            console.log(processedOut);
 
             let txType = SELF_TX;
             if (!accInInputs && accInOutputs) {
@@ -47,55 +46,40 @@ export const classifyTxs = async (transactions, accountAddresses) => {
             const usedInOutputs = processedOut.usedAddresses;
             const otherInOutputs = processedOut.otherAddresses;
 
-
-            let amountOutputList = [];
-            let amountInputList = [];
             switch (txType) {
                 case SEND_TX:
-                    console.log('processedIn');
-                    console.log(processedIn);
-                    console.log('processedOut');
-                    console.log(processedOut);
-                    console.log('usedInInputs2');
-                    console.log(usedInInputs);
-                    console.log('otherInOutputs2');
-                    console.log(otherInOutputs);
+                    let amountOutputList = [];
+                    let amountInputList = [];
 
                     usedInInputs.map(ioutput => {
                         amountInputList = [...amountInputList, ...ioutput.amount]
                     });
+
                     otherInOutputs.map(uoutput => {
                         amountOutputList = [...amountOutputList, ...uoutput.amount]
                     });
-
-
-
-
                     const mergedInputsAmount = await mergeAmounts(amountInputList);
-                    const aux = await mergeAmounts(amountOutputList);
                     const mergedOutputsAmount = await mergeAmounts(amountOutputList);
 
-                    console.log('amountInputList');
-                    console.log(amountInputList);
-                    console.log('mergedInputsAmount');
-                    console.log(mergedInputsAmount);
+                    //const mergedDiff = await diffAmounts(mergedInputsAmount, mergedOutputsAmount);
+                    //console.log('mergedDiff');
+                    //onsole.log(mergedDiff);
 
-                    console.log('amountOutputList');
-                    console.log(amountOutputList);
-                    console.log('mergedOutputsAmount');
-                    console.log(mergedOutputsAmount);
-
-                    const diff = await diffAmounts(mergedInputsAmount, mergedOutputsAmount);
-                    console.log('diff');
-                    console.log(diff);
-
-                    // inputs-output
-                    break;
+                    return {
+                        txHash,
+                        blockTime: block_time,
+                        inputs: processedIn,
+                        outputs: processedOut,
+                        //amount: mergedDiff,
+                        fees,
+                        type: txType
+                    }
                 case RECEIVE_TX:
+                    let amountOutputs = [];
                     usedInOutputs.map(uoutput => {
-                        amountOutputList = [...amountOutputList, ...uoutput.amount]
+                        amountOutputs = [...amountOutputs, ...uoutput.amount]
                     });
-                    const mergedOutputs = await mergeAmounts(amountOutputList);
+                    const mergedOutputs = await mergeAmounts(amountOutputs);
                     return {
                         txHash,
                         blockTime: block_time,
@@ -124,15 +108,20 @@ export const diffAmounts = async (amount1, amount2) => {
     console.log(amount1);
     console.log(amount2);
 
-    /*
     await Promise.all(
-        amount1.map(async amount => {
-            console.log('amount');
-            console.log(amount);
+        Object.keys(amount1).map(async unit => {
+            console.log('amount3333');
+            console.log(unit);
+            console.log(amount1[unit]);
+            if ((unit in amount2)){
+                amountDict[unit] =
+                    amountDict[unit] = await subBigNum(amount1[unit], amount2[unit],);
+
+            } else {
+                amountDict[unit] = amount1[unit];
+            }
         })
     );
-
-     */
 
     return amountDict;
 }
@@ -140,28 +129,15 @@ export const diffAmounts = async (amount1, amount2) => {
 export const mergeAmounts = async (amounts) => {
     let amountDict: { [unit: string]: number } = {};
 
-    console.log('\n\nmergeAmounts');
-    console.log(amounts);
-
     await Promise.all(
         amounts.map(async amount => {
-            console.log(amount);
-            console.log('amountDict[amount.unit]');
-            console.log(amountDict[amount.unit]);
             if (amountDict[amount.unit] === undefined) {
-                console.log('no exist')
                 amountDict[amount.unit] = amount.quantity;
-                console.log(amountDict[amount.unit]);
             } else {
-                console.log('lets sum')
                 amountDict[amount.unit] = await addBigNum(amountDict[amount.unit], amount.quantity);
-                console.log(amountDict[amount.unit]);
             }
         })
     );
-
-    console.log('amountDict\n\n');
-    console.log(amountDict);
 
     return amountDict;
 }
@@ -170,23 +146,57 @@ export const processInputs = (inputs, allAddresses) => {
     let usedAddresses: { amount: string; address: string; }[] = [];
     let otherAddresses: { amount: string; address: string; }[] = [];
 
+    /*
+    console.log("\n\n//////////////////////////////////////////////////");
+    console.log("processInputs");
+
+    console.log('allAddresses');
+    console.log(allAddresses);
+    console.log('inputs');
+    console.log(inputs);
+    console.log(inputs[0]);
+    console.log(inputs[1]);
+
+     */
+
     inputs.map(input => {
         const amount = input.amount;
         const address = input.address;
-        let inputFromAccount = false;
         let inputFromOther = false;
         allAddresses.map(addr => {
             if (addr.address === address){
-                inputFromAccount = true;
-            } else {
                 inputFromOther = true;
+            }
+        });
+
+        if (inputFromOther){
+            otherAddresses.push({amount, address});
+        }
+        else {
+            usedAddresses.push({amount, address});
+        }
+    });
+    return {usedAddresses, otherAddresses};
+}
+export const processOutputs = (outputs, allAddresses) => {
+    let usedAddresses: { amount: string; address: string; }[] = [];
+    let otherAddresses: { amount: string; address: string; }[] = [];
+
+    outputs.map(output => {
+        const amount = output.amount;
+        const address = output.address;
+        let inputFromAccount= false;
+        allAddresses.map(addr => {
+            // if the addr belongs to the user account
+            if (addr.address === address){
+                inputFromAccount = true;
             }
         });
 
         if (inputFromAccount){
             usedAddresses.push({amount, address});
         }
-        else if (inputFromOther){
+        else {
             otherAddresses.push({amount, address});
         }
     });
