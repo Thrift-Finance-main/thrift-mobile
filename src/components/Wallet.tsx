@@ -169,17 +169,19 @@ const Wallet: FC<WalletProps> = (props) => {
 
                     const allAddresses = [...currentAccount.externalPubAddress, ...currentAccount.externalPubAddress];
                     const allTransactionsByAddr = [];
-                    addrsWithTxsList.map(addrObj => {
-                        let cTxs = classifyTxs(addrObj, allAddresses);
-                        allTransactionsByAddr.push({address: addrObj[0].fromAddress, history: cTxs });
-                    });
+
+                    await Promise.all(
+                        addrsWithTxsList.map(async addrObj => {
+                            let cTxs = await classifyTxs(addrObj, allAddresses);
+                            allTransactionsByAddr.push({address: addrObj[0].fromAddress, history: cTxs });
+                        })
+                    );
                     console.log('allTransactions');
                     console.log(allTransactionsByAddr);
 
                     allTransactionsByAddr.map(async addr =>{
-
                         addr.history.map(tx => {
-                            if (!currentTxs.includes(tx.txHash)){
+                            if (tx && !currentTxs.includes(tx.txHash)){
                                 console.log(tx.txHash)
                                 currentTxs.push(tx.txHash);
                             }
@@ -195,10 +197,11 @@ const Wallet: FC<WalletProps> = (props) => {
                         allTransactionsByAddr.map(async addr => {
                             console.log('tx2');
                             console.log(addr);
-                            addr.history.map(tx => {
-                                apiDb.setAccountTransaction(currentAccount.accountName, tx).then(r=>{});
-                            })
-
+                            if (addr && addr.history){
+                                addr.history.map(tx => {
+                                    apiDb.setAccountTransaction(currentAccount.accountName, tx).then(r=>{});
+                                })
+                            }
                         })
                     );
                     const account = await apiDb.getAccount(currentAccount.accountName);

@@ -7,6 +7,7 @@ export const subBigNum = async (a:string, b:string) => {
     const bBig = await BigNum.from_str(b)
     const r = await aBig.checked_sub(bBig);
     console.log(await r.to_str());
+    return await r.to_str();
 }
 
 export const addBigNum = async (a:string, b:string) => {
@@ -15,6 +16,7 @@ export const addBigNum = async (a:string, b:string) => {
     const bBig = await BigNum.from_str(b)
     const r = await aBig.checked_add(bBig);
     console.log(await r.to_str());
+    return await r.to_str();
 }
 
 export const divBigNum = async (a:string, b:string) => {
@@ -23,4 +25,5 @@ export const divBigNum = async (a:string, b:string) => {
     const bBig = await BigNum.from_str(b)
     const r = await aBig.clamped_sub(bBig);
     console.log(await r.to_str());
+    return await r.to_str();
 }
