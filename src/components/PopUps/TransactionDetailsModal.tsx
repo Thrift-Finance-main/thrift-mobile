@@ -85,6 +85,17 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
             <Text
               style={{ color: Colors.authTitle }}
 
+            >Fee</Text>
+            <Text
+              style={{ marginTop: heightPercentageToDP(0.5), color: props.isBlackTheme ? Colors.white : Colors.black }}
+            >{props.data && props.data.amount && props.data.fees/1000000}</Text>
+          </View>
+          <View
+            style={{ paddingHorizontal: widthPercentageToDP(10), width: "100%", paddingVertical: heightPercentageToDP(1) }}
+          >
+            <Text
+              style={{ color: Colors.authTitle }}
+
             >From</Text>
             <Text
               style={{ marginTop: heightPercentageToDP(0.5), color: props.isBlackTheme ? Colors.white : Colors.black }}
