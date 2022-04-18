@@ -5,6 +5,7 @@ import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimension
 import Button from '../Common/Button';
 import Modal from 'react-native-modal'
 import {RECEIVE_TX, SEND_TX} from "../../lib/transactions";
+import {addressSlice} from "../../utils";
 interface TransactionDetailsModalProps {
   visible: boolean,
   hideModal: () => void,
@@ -14,8 +15,6 @@ interface TransactionDetailsModalProps {
 }
 const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
 
-  console.log('data');
-  console.log(props.data && props.data);
   const getSymbolFromTxType = (type:string) => {
     switch (type) {
       case RECEIVE_TX:
@@ -26,6 +25,24 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
         return ''
     }
   }
+
+  let inAddress = '';
+  let outAddress = '';
+  if (props.data && props.data.type){
+    console.log(props.data)
+    const inputUsedAddresses = props.data.inputs.usedAddresses;
+    const outputUsedAddresses = props.data.outputs.usedAddresses;
+    const inputOtherAddresses = props.data.inputs.otherAddresses;
+    const outputOtherAddresses = props.data.outputs.otherAddresses;
+    if (props.data.type === SEND_TX){
+      inAddress = inputUsedAddresses[0].address;
+      outAddress = outputOtherAddresses[0].address
+    } else {
+      inAddress = inputOtherAddresses[0].address;
+      outAddress = outputUsedAddresses[0].address
+    }
+  }
+
   return (
     <Modal
       style={styles.mainContainer}
@@ -72,7 +89,7 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
             <Text
               style={{ marginTop: heightPercentageToDP(0.5), color: props.isBlackTheme ? Colors.white : Colors.black }}
 
-            >addrlq95e.....addrlq95eaddrlq95eaddrlq95e</Text>
+            >{addressSlice(inAddress,20)}</Text>
           </View>
           <View
             style={{ paddingHorizontal: widthPercentageToDP(10), width: "100%", paddingVertical: heightPercentageToDP(1) }}
@@ -84,7 +101,7 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
             <Text
               style={{ marginTop: heightPercentageToDP(0.5), color: props.isBlackTheme ? Colors.white : Colors.black }}
 
-            >addrlq95e.....addrlq95eaddrlq95eaddrlq95e</Text>
+            >{addressSlice(outAddress,20)}</Text>
           </View>
           <View
             style={{ paddingHorizontal: widthPercentageToDP(10), width: "100%", paddingVertical: heightPercentageToDP(1) }}
@@ -108,7 +125,7 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
             <Text
               style={{ marginTop: heightPercentageToDP(0.5), color: props.isBlackTheme ? Colors.white : Colors.black }}
 
-            >addrlq95e.....addrlq95eaddrlq95eaddrlq95eeaddrlq95eeaddrlq95e</Text>
+            >{addressSlice(props.data && props.data.txHash ? props.data.txHash : '', 20)}</Text>
           </View>
           <View
             style={{ height: heightPercentageToDP(3) }}

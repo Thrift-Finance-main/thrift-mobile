@@ -21,6 +21,7 @@ import {setCurrentAccount} from "../store/Action";
 import {classifyTx, RECEIVE_TX, SEND_TX} from "../lib/transactions";
 import Ada from '../assets/Ada.svg'
 import moment from "moment";
+import {addressSlice} from "../utils";
 
 interface WalletProps {
     List: any
@@ -301,7 +302,17 @@ const Wallet: FC<WalletProps> = (props) => {
     }
 
     const renderItemTransaction = ({item, index}) => {
+
         if(item){
+            const inputOtherAddresses = item.inputs.otherAddresses;
+            const outputOtherAddresses = item.outputs.otherAddresses;
+            let showAddr = '';
+            if (item.type === SEND_TX){
+                showAddr = outputOtherAddresses[0].address;
+            } else {
+                showAddr = inputOtherAddresses[0].address;
+            }
+
             return (
                 <View
                     style={{
@@ -329,9 +340,9 @@ const Wallet: FC<WalletProps> = (props) => {
                             <Text
                                 style={{
                                     color: props.isBlackTheme ? Colors.white : Colors.black,
-                                    fontSize: 13,
+                                    fontSize: 11,
                                 }}>
-                                addrlq95e.....addrlq95ead..
+                                {addressSlice(showAddr,13)}
                             </Text>
                             <Text
                                 style={{
