@@ -128,11 +128,8 @@ const Wallet: FC<WalletProps> = (props) => {
                 });
 
                 uniqueArrayTxsList = uniqueArrayTxsList.map(txAddr => {
-                    //txAddr.txs = txAddr.txs.filter(tx => !allTxHashes.includes(tx.tx_hash));
-                    console.log(txAddr);
-                    console.log(txAddr);
-                    //const r = !allTxHashes.includes(txAddr.tx_hash);
-                    if (true){
+                    const r = !allTxHashes.includes(txAddr.tx_hash);
+                    if (r){
                         return txAddr;
                     }
                 }).filter(e => e != undefined);
@@ -177,11 +174,7 @@ const Wallet: FC<WalletProps> = (props) => {
 
                     let accHistory = await apiDb.getAccountHistory(currentAccount.accountName);
 
-                    console.log('mergedHistory');
-                    console.log(mergedHistory);
-                    // Join current with new txs
-                    accHistory = mergedHistory
-                    //accHistory = [...accHistory, ...mergedHistory];
+                    accHistory = [...accHistory, ...mergedHistory.reverse()];
 
                     // TODO: store everything
                     if (mergedHistory.length) {
@@ -363,7 +356,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                         textAlign: 'right',
                                         color: props.isBlackTheme ? Colors.white : Colors.black,
                                     }}>
-                                    {getSymbolFromTxType(item.type)}{item.amount && item.amount.lovelace/1000000}
+                                    {getSymbolFromTxType(item.type)}{item.amount && (item.amount.lovelace)/1000000}
                                 </Text>
                                 <Text
                                     style={{
@@ -532,7 +525,7 @@ const Wallet: FC<WalletProps> = (props) => {
             ) : (
                 <FlatList
                     style={{marginTop: heightPercentageToDP(1)}}
-                    data={currentAccount.history.reverse()}
+                    data={currentAccount.history}
                     renderItem={renderItemTransaction}
                     keyExtractor={(item, index) => index.toString()}
                 />
