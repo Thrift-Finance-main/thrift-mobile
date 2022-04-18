@@ -7,9 +7,6 @@ export const SELF_TX = 'SELF_TX';
 
 export const classifyTx = async (transaction, accountAddresses) => {
 
-    console.log('\nclassifyTx');
-    console.log(transaction);
-
     const block_time = transaction.block_time;
     const fees = transaction.fees;
     const txHash = transaction.tx_hash;
@@ -40,7 +37,6 @@ export const classifyTx = async (transaction, accountAddresses) => {
 
     switch (txType) {
         case SEND_TX:
-            console.log('SEND_TX');
             let amountOutputList = [];
             let amountInputList = [];
 
@@ -52,16 +48,7 @@ export const classifyTx = async (transaction, accountAddresses) => {
                 amountOutputList = [...amountOutputList, ...uoutput.amount]
             });
 
-            console.log('amountInputList');
-            console.log(amountInputList);
-            console.log('amountOutputList');
-            console.log(amountOutputList);
-
             const mergedOutputsAmount = await mergeAmounts(amountOutputList);
-
-            console.log('mergedOutputsAmount');
-            console.log(mergedOutputsAmount);
-
 
             return {
                 txHash,
@@ -74,7 +61,6 @@ export const classifyTx = async (transaction, accountAddresses) => {
             }
 
         case RECEIVE_TX:
-            console.log('RECEIVE_TX');
             let amountOutputs = [];
             usedInOutputs.map(uoutput => {
                 amountOutputs = [...amountOutputs, ...uoutput.amount]
@@ -90,7 +76,6 @@ export const classifyTx = async (transaction, accountAddresses) => {
                 type: txType
             }
         default:
-            console.log('SELF_TX');
             return {
                 txHash,
                 blockTime: block_time,
@@ -100,7 +85,6 @@ export const classifyTx = async (transaction, accountAddresses) => {
                 fees,
                 type: txType
             }
-            return;
     }
 };
 // amount1 - amount2

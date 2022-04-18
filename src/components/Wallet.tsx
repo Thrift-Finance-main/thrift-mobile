@@ -63,7 +63,6 @@ const Wallet: FC<WalletProps> = (props) => {
 
         const fetchData = async () => {
             console.log('fetchData');
-
             const saddress = currentAccount && currentAccount.rewardAddress;
             if (saddress) {
                 let endpoint = "accounts/" + saddress;
@@ -85,9 +84,11 @@ const Wallet: FC<WalletProps> = (props) => {
 
                 const assetsWithDetails = await Promise.all(
                     assetResponse.map(async(a) => {
-                        const response = await fetchBlockfrost(`assets/${a.unit}`);
-                        if (!response.error){
-                            return response;
+                        let asset = await fetchBlockfrost(`assets/${a.unit}`);
+                        asset.quantity = a.quantity;
+                        asset.unit = a.unit;
+                        if (!asset.error){
+                            return asset;
                         }
                     })
                 );
@@ -96,7 +97,6 @@ const Wallet: FC<WalletProps> = (props) => {
                 await apiDb.updateAccount(currentAccountInLocal);
 
                 dispatch(setCurrentAccount(currentAccountInLocal));
-
 
                 let addressTxsList = await Promise.all(
                     relatedAddresses.map(async addr =>{
@@ -108,7 +108,15 @@ const Wallet: FC<WalletProps> = (props) => {
                     })
                 );
 
-                let joinedTxsList = [];
+                let joinedTxsList:
+                {
+                    address: string,
+                    block_height: number,
+                    block_time: number,
+                    tx_hash: string,
+                    tx_index: number,
+
+                }[] = [];
                 addressTxsList.map(addr => {
                     addr.txs.map(tx => {
                         joinedTxsList.push({...tx, address: addr.address});
@@ -117,8 +125,7 @@ const Wallet: FC<WalletProps> = (props) => {
 
                 let uniqueArrayTxsList = joinedTxsList.filter((v,i,a)=>a.findIndex(v2=>(v2.tx_hash===v.tx_hash))===i)
 
-                console.log('\nuniqueArrayTxsList:');
-                console.log(uniqueArrayTxsList.length);
+
                 let currentTxs = await apiDb.getAccountHistory(currentAccount.accountName);
 
                 const allTxHashes:string[] = [];
@@ -134,8 +141,6 @@ const Wallet: FC<WalletProps> = (props) => {
                         return txAddr;
                     }
                 }).filter(e => e != undefined);
-
-                console.log('addressTxsList filtered: '+uniqueArrayTxsList.length);
 
                 if (uniqueArrayTxsList && uniqueArrayTxsList.length){
                     let addrsWithTxsList = [];
@@ -159,8 +164,6 @@ const Wallet: FC<WalletProps> = (props) => {
                     const allAddresses = [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress];
                     const allTransactionsByAddr = [];
 
-                    console.log('addrsWithTxsList');
-                    console.log(addrsWithTxsList.length);
                     await Promise.all(
                         addrsWithTxsList.map(async addrObj => {
                             let cTxs = await classifyTx(addrObj, allAddresses);
@@ -244,7 +247,8 @@ const Wallet: FC<WalletProps> = (props) => {
                                 color: props.isBlackTheme ? Colors.white : Colors.black,
                                 fontSize: 14,
                             }}>
-                            {Buffer.from(item.asset_name,"hex").toString()}
+                            {item.metadata.name}
+                            {/*Buffer.from(item.asset_name,"hex").toString()*/}
                         </Text>
                         <View style={{flexDirection: 'row'}} >
                             <Text
@@ -268,12 +272,13 @@ const Wallet: FC<WalletProps> = (props) => {
                 <Text
                     style={{
                         color: props.isBlackTheme ? Colors.white : Colors.black,
-                        fontSize: 11,
+                        fontSize: 16,
                         paddingHorizontal: props.isBlackTheme
                             ? widthPercentageToDP(3.4)
                             : widthPercentageToDP(3.4),
                     }}>
-                    {item.metadata && item.metadata.decimals ? item.quantity/(Math.pow( 10,item.metadata.decimals))  : item.quantity}
+                    {/*item.metadata && item.metadata.decimals ? item.quantity/(Math.pow( 10,item.metadata.decimals))  : item.quantity*/}
+                    { item.quantity}{' '}{item.metadata.ticker}
                 </Text>
             </View>
         );
