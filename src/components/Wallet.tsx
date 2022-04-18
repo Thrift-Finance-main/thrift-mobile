@@ -45,8 +45,16 @@ const Wallet: FC<WalletProps> = (props) => {
     const [scanner, setScanner] = useState(false);
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
     const [selectedTx, setSelectedTx] = useState(undefined);
+    const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
 
-
+        // https://www.iban.com/currency-codes
+        // https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+        // These options are needed to round to whole numbers if that's what you want.
+        //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+        //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+    });
     const useIsMounted = () => {
         const isMounted = useRef(false);
         // @ts-ignore
@@ -278,7 +286,7 @@ const Wallet: FC<WalletProps> = (props) => {
                             : widthPercentageToDP(3.4),
                     }}>
                     {/*item.metadata && item.metadata.decimals ? item.quantity/(Math.pow( 10,item.metadata.decimals))  : item.quantity*/}
-                    { item.quantity}{' '}{item.metadata.ticker}
+                    {formatter.format(item.quantity).substring(1)}{' '}{item.metadata.ticker}
                 </Text>
             </View>
         );
