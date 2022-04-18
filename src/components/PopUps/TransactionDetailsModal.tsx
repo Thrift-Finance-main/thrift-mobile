@@ -1,11 +1,12 @@
 import React, { FC } from 'react';
-import { View, Text, StyleSheet, Image, FlatList } from 'react-native';
+import {View, Text, StyleSheet, Image, FlatList, Linking} from 'react-native';
 import Colors from '../../constants/CustomColors';
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimensions';
 import Button from '../Common/Button';
 import Modal from 'react-native-modal'
 import {RECEIVE_TX, SEND_TX} from "../../lib/transactions";
 import {addressSlice} from "../../utils";
+import {EXPLORER_TX_URL_MAINNET, EXPLORER_TX_URL_TESTNET} from "../../constants/explorer";
 interface TransactionDetailsModalProps {
   visible: boolean,
   hideModal: () => void,
@@ -134,6 +135,7 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
 
             >Transaction Hash</Text>
             <Text
+                onPress={()=>{ Linking.openURL(props.data && props.data.txHash && EXPLORER_TX_URL_TESTNET+props.data.txHash)}}
               style={{ marginTop: heightPercentageToDP(0.5), color: props.isBlackTheme ? Colors.white : Colors.black }}
 
             >{addressSlice(props.data && props.data.txHash ? props.data.txHash : '', 20)}</Text>
