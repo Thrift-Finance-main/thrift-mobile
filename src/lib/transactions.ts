@@ -5,119 +5,111 @@ export const RECEIVE_TX = 'RECEIVE_TX';
 export const SEND_TX = 'SEND_TX';
 export const SELF_TX = 'SELF_TX';
 
-export const classifyTxs = async (transactions, accountAddresses) => {
+export const classifyTx = async (transaction, accountAddresses) => {
 
-    console.log('\n\nclassifyTxs');
-    let count = 0;
-    const classifiedTxs = await Promise.all(
-        transactions.map(async tx => {
-            const block_time = tx.block_time;
-            const fees = tx.fees;
-            const txHash = tx.tx_hash;
-            const inputs = tx.utxos.inputs;
-            const outputs = tx.utxos.outputs;
+    console.log('\nclassifyTx');
+    console.log(transaction);
 
-            const accInInputs = addressInCommon(inputs, accountAddresses);
-            const accInOutputs = addressInCommon(outputs, accountAddresses);
+    const block_time = transaction.block_time;
+    const fees = transaction.fees;
+    const txHash = transaction.tx_hash;
+    const inputs = transaction.utxos.inputs;
+    const outputs = transaction.utxos.outputs;
 
-            console.log('\n----------------------------------');
-            console.log('\nprocessedIn');
-            const processedIn = processInputs(inputs, accountAddresses);
-            console.log('\n----------------------------------');
-            console.log('\nprocessedOut');
-            const processedOut = processOutputs(outputs, accountAddresses);
+    const accInInputs = addressInCommon(inputs, accountAddresses);
+    const accInOutputs = addressInCommon(outputs, accountAddresses);
 
-            let txType = SELF_TX;
-            if (!accInInputs && accInOutputs) {
-                txType = RECEIVE_TX;
-            } else if (accInInputs && !accInOutputs) {
-                txType = SEND_TX;
-            } else if (accInInputs && accInOutputs) {
-                // Check if there are other address in inputs
-                const othersInInputs = containOtherAddresses(inputs, accountAddresses);
-                const othersInOutputs = containOtherAddresses(outputs, accountAddresses);
-                if (!othersInInputs && othersInOutputs) {
-                    txType = SEND_TX;
-                }
+    let txType = SELF_TX;
+    if (!accInInputs && accInOutputs) {
+        txType = RECEIVE_TX;
+    } else if (accInInputs && !accInOutputs) {
+        txType = SEND_TX;
+    } else if (accInInputs && accInOutputs) {
+        const othersInInputs = containOtherAddresses(inputs, accountAddresses);
+        if (!othersInInputs) {
+            txType = SEND_TX;
+        }
+    }
+
+    const processedIn = processInputs(inputs, accountAddresses);
+    const processedOut = processOutputs(outputs, accountAddresses);
+
+    const usedInInputs = processedIn.usedAddresses;
+    const usedInOutputs = processedOut.usedAddresses;
+    const otherInOutputs = processedOut.otherAddresses;
+
+    switch (txType) {
+        case SEND_TX:
+            console.log('SEND_TX');
+            let amountOutputList = [];
+            let amountInputList = [];
+
+            usedInInputs.map(ioutput => {
+                amountInputList = [...amountInputList, ...ioutput.amount]
+            });
+
+            otherInOutputs.map(uoutput => {
+                amountOutputList = [...amountOutputList, ...uoutput.amount]
+            });
+
+            console.log('amountInputList');
+            console.log(amountInputList);
+            console.log('amountOutputList');
+            console.log(amountOutputList);
+
+            const mergedOutputsAmount = await mergeAmounts(amountOutputList);
+
+            console.log('mergedOutputsAmount');
+            console.log(mergedOutputsAmount);
+
+
+            return {
+                txHash,
+                blockTime: block_time,
+                inputs: processedIn,
+                outputs: processedOut,
+                amount: mergedOutputsAmount,
+                fees,
+                type: txType
             }
 
-            const usedInInputs = processedIn.usedAddresses;
-            const usedInOutputs = processedOut.usedAddresses;
-            const otherInOutputs = processedOut.otherAddresses;
-
-            switch (txType) {
-                case SEND_TX:
-                    console.log('SEND_TX');
-                    let amountOutputList = [];
-                    let amountInputList = [];
-
-                    usedInInputs.map(ioutput => {
-                        amountInputList = [...amountInputList, ...ioutput.amount]
-                    });
-
-                    otherInOutputs.map(uoutput => {
-                        amountOutputList = [...amountOutputList, ...uoutput.amount]
-                    });
-
-                    const mergedInputsAmount = await mergeAmounts(amountInputList);
-                    const mergedOutputsAmount = await mergeAmounts(amountOutputList);
-
-                    const mergedDiff = await diffAmounts(mergedInputsAmount, mergedOutputsAmount);
-
-                    console.log(count);
-                    count++;
-                    return {
-                        txHash,
-                        blockTime: block_time,
-                        inputs: processedIn,
-                        outputs: processedOut,
-                        amount: mergedDiff,
-                        fees,
-                        type: txType
-                    }
-
-                case RECEIVE_TX:
-                    console.log('RECEIVE_TX');
-                    let amountOutputs = [];
-                    usedInOutputs.map(uoutput => {
-                        amountOutputs = [...amountOutputs, ...uoutput.amount]
-                    });
-                    const mergedOutputs = await mergeAmounts(amountOutputs);
-                    console.log(count);
-                    count++;
-                    return {
-                        txHash,
-                        blockTime: block_time,
-                        inputs: processedIn,
-                        outputs: processedOut,
-                        amount: mergedOutputs,
-                        fees,
-                        type: txType
-                    }
-                default:
-                    return;
+        case RECEIVE_TX:
+            console.log('RECEIVE_TX');
+            let amountOutputs = [];
+            usedInOutputs.map(uoutput => {
+                amountOutputs = [...amountOutputs, ...uoutput.amount]
+            });
+            const mergedOutputs = await mergeAmounts(amountOutputs);
+            return {
+                txHash,
+                blockTime: block_time,
+                inputs: processedIn,
+                outputs: processedOut,
+                amount: mergedOutputs,
+                fees,
+                type: txType
             }
-        })
-    );
-
-
-    return classifiedTxs;
+        default:
+            console.log('SELF_TX');
+            return {
+                txHash,
+                blockTime: block_time,
+                inputs: processedIn,
+                outputs: processedOut,
+                amount: {},
+                fees,
+                type: txType
+            }
+            return;
+    }
 };
 // amount1 - amount2
 // TODO: cardano-lib to .sub
 export const diffAmounts = async (amount1, amount2) => {
 
     let amountDict: { [unit: string]: number } = {};
-
-    console.log('diffAmounts');
-    console.log(amount1);
-    console.log(amount2);
-
     await Promise.all(
         Object.keys(amount1).map(async unit => {
-            console.log('amount3333');
-            console.log(unit);
-            console.log(amount1[unit]);
             if ((unit in amount2)){
                 amountDict[unit] =
                     amountDict[unit] = await subBigNum(amount1[unit], amount2[unit],);
@@ -150,35 +142,21 @@ export const mergeAmounts = async (amounts) => {
 export const processInputs = (inputs, allAddresses) => {
     let usedAddresses: { amount: string; address: string; }[] = [];
     let otherAddresses: { amount: string; address: string; }[] = [];
-
-    /*
-    console.log("\n\n//////////////////////////////////////////////////");
-    console.log("processInputs");
-
-    console.log('allAddresses');
-    console.log(allAddresses);
-    console.log('inputs');
-    console.log(inputs);
-    console.log(inputs[0]);
-    console.log(inputs[1]);
-
-     */
-
     inputs.map(input => {
         const amount = input.amount;
         const address = input.address;
-        let inputFromOther = false;
+        let inputFromAccount = false;
         allAddresses.map(addr => {
             if (addr.address === address){
-                inputFromOther = true;
+                inputFromAccount = true;
             }
         });
 
-        if (inputFromOther){
-            otherAddresses.push({amount, address});
+        if (inputFromAccount){
+            usedAddresses.push({amount, address});
         }
         else {
-            usedAddresses.push({amount, address});
+            otherAddresses.push({amount, address});
         }
     });
     return {usedAddresses, otherAddresses};
@@ -190,7 +168,7 @@ export const processOutputs = (outputs, allAddresses) => {
     outputs.map(output => {
         const amount = output.amount;
         const address = output.address;
-        let inputFromAccount= false;
+        let inputFromAccount = false;
         allAddresses.map(addr => {
             // if the addr belongs to the user account
             if (addr.address === address){
@@ -220,15 +198,39 @@ export const addressInCommon = (array1, array2) => {
     return found;
 }
 
-export const containOtherAddresses = (array1, array2) => {
-    const found = array1.some(r1 => {
-        let f = false;
-        array2.map(r2 => {
-            if (r2.address !== r1.address){
-                f = true;
-            }
-        })
-        return f;
+export const containOtherAddresses = (addressesToCheck, allAddresses) => {
+    const addressesFromOthers = addressesToCheck.filter(addr => {
+        return !allAddresses.some(a => a.address === addr.address)
     });
-    return found;
+
+    return addressesFromOthers.length > 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

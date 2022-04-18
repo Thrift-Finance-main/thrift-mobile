@@ -18,7 +18,7 @@ import WalletIcon from "../assets/wallet.svg";
 import {fetchBlockfrost, getBlockInfo, getTxInfo, getTxUTxOs} from "../api/Blockfrost";
 import {apiDb} from "../db/LiteDb";
 import {setCurrentAccount} from "../store/Action";
-import {classifyTxs, RECEIVE_TX, SEND_TX} from "../lib/transactions";
+import {classifyTx, RECEIVE_TX, SEND_TX} from "../lib/transactions";
 import Ada from '../assets/Ada.svg'
 import moment from "moment";
 
@@ -62,8 +62,6 @@ const Wallet: FC<WalletProps> = (props) => {
 
         const fetchData = async () => {
             console.log('fetchData');
-            console.log('currentAccount.history');
-            console.log(currentAccount.history);
 
             const saddress = currentAccount && currentAccount.rewardAddress;
             if (saddress) {
@@ -73,18 +71,6 @@ const Wallet: FC<WalletProps> = (props) => {
                 console.log(accountState);
                 endpoint =  "accounts/" + saddress + "/addresses";
                 const relatedAddresses = await fetchBlockfrost(endpoint);
-
-                /*
-                const accountHistory = await Promise.all(
-                    relatedAddresses.map(async (a:any) => {
-                        const response = await fetchBlockfrost(`addresses/${a.address}/total`);
-                        if (!response.error){
-                            return response;
-                        }
-                    })
-                );
-                 */
-
 
                 let currentAccountInLocal = await apiDb.getAccount(currentAccount.accountName);
                 currentAccountInLocal.balance = accountState.controlled_amount;
@@ -110,11 +96,10 @@ const Wallet: FC<WalletProps> = (props) => {
 
                 dispatch(setCurrentAccount(currentAccountInLocal));
 
+
                 let addressTxsList = await Promise.all(
                     relatedAddresses.map(async addr =>{
                         const response = await fetchBlockfrost(`addresses/${addr.address}/transactions`);
-                        console.log('response');
-                        console.log(response);
                         if (!response.error){
                             addr.txs = response;
                             return addr;
@@ -122,60 +107,56 @@ const Wallet: FC<WalletProps> = (props) => {
                     })
                 );
 
-                console.log('addressTxsList num..');
-                console.log(addressTxsList.length);
+                let joinedTxsList = [];
+                addressTxsList.map(addr => {
+                    addr.txs.map(tx => {
+                        joinedTxsList.push({...tx, address: addr.address});
+                    })
+                });
 
+                let uniqueArrayTxsList = joinedTxsList.filter((v,i,a)=>a.findIndex(v2=>(v2.tx_hash===v.tx_hash))===i)
+
+                console.log('\nuniqueArrayTxsList:');
+                console.log(uniqueArrayTxsList.length);
                 let currentTxs = await apiDb.getAccountHistory(currentAccount.accountName);
 
-                const allTxHashes = [];
+                const allTxHashes:string[] = [];
                 currentTxs.map(tx => {
                     if (tx){
                         allTxHashes.push(tx.txHash);
                     }
                 });
 
-                console.log('addressTxsList num0');
-                console.log(addressTxsList.length);
-
-                addressTxsList = addressTxsList.map(txAddr => {
+                uniqueArrayTxsList = uniqueArrayTxsList.map(txAddr => {
                     //txAddr.txs = txAddr.txs.filter(tx => !allTxHashes.includes(tx.tx_hash));
-                    txAddr.txs = txAddr.txs.filter(tx => true);
-                    if (txAddr.txs.length){
+                    console.log(txAddr);
+                    console.log(txAddr);
+                    //const r = !allTxHashes.includes(txAddr.tx_hash);
+                    if (true){
                         return txAddr;
                     }
                 }).filter(e => e != undefined);
 
-                console.log('addressTxsList num1');
-                console.log(addressTxsList.length);
+                console.log('addressTxsList filtered: '+uniqueArrayTxsList.length);
 
-                if (addressTxsList && addressTxsList.length){
-
+                if (uniqueArrayTxsList && uniqueArrayTxsList.length){
                     let addrsWithTxsList = [];
-                    for (let addr in addressTxsList) {
-                        if (addressTxsList[addr] && addressTxsList[addr].txs && addressTxsList[addr].txs.length){
-                            const r = await Promise.all(
-                                addressTxsList[addr].txs.map(async tx => {
-                                    console.log('tx');
-                                    console.log(tx);
-                                    // TODO: chek if tx already in local db, NOT query
-                                    const txInfo = await getTxInfo(tx.tx_hash);
-                                    console.log('txInfo');
-                                    console.log(txInfo);
-                                    const utxos = await getTxUTxOs(tx.tx_hash);
-                                    // const blockInfo = await getBlockInfo(tx.tx_hash);
-                                    if (!utxos.error){
-                                        tx.utxos = utxos;
-                                        tx.fees = txInfo.fees;
-                                        tx.size = txInfo.size;
-                                        tx.asset_mint_or_burn_count = txInfo.asset_mint_or_burn_count;
-                                        tx.fromAddress = addressTxsList[addr].address;
-                                        return tx;
-                                    }
-                                })
-                            );
-                            addrsWithTxsList.push(r)
-                        }
-                    }
+
+
+                    addrsWithTxsList = await Promise.all(
+                        uniqueArrayTxsList.map(async tx => {
+                            const txInfo = await getTxInfo(tx.tx_hash);
+                            const utxos = await getTxUTxOs(tx.tx_hash);
+                            // const blockInfo = await getBlockInfo(tx.tx_hash);
+                            if (!utxos.error){
+                                tx.utxos = utxos;
+                                tx.fees = txInfo.fees;
+                                tx.size = txInfo.size;
+                                tx.asset_mint_or_burn_count = txInfo.asset_mint_or_burn_count;
+                                return tx;
+                            }
+                        })
+                    );
 
                     const allAddresses = [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress];
                     const allTransactionsByAddr = [];
@@ -184,32 +165,23 @@ const Wallet: FC<WalletProps> = (props) => {
                     console.log(addrsWithTxsList.length);
                     await Promise.all(
                         addrsWithTxsList.map(async addrObj => {
-                            let cTxs = await classifyTxs(addrObj, allAddresses);
-                            if (cTxs !== undefined){
-                                allTransactionsByAddr.push({address: addrObj[0].fromAddress, history: cTxs });
-                            }
-                        }).filter(a => a !== undefined)
+                            let cTxs = await classifyTx(addrObj, allAddresses);
+                            allTransactionsByAddr.push({address: addrObj.address, history: cTxs });
+                        })
                     );
-
-                    // set hash references in account
-                    console.log('allTransactionsByAddr');
-                    console.log(allTransactionsByAddr);
 
                     let mergedHistory = []; // All addresses
                     allTransactionsByAddr.map(async addr => {
-                        addr.history = addr.history.filter(tx => tx !== undefined);
-                        if (addr && addr.history.length){
-                            mergedHistory = [...mergedHistory, ...addr.history]
-                        }
+                        mergedHistory.push(addr.history);
                     });
-
-                    console.log('mergedHistory2');
-                    console.log(mergedHistory);
 
                     let accHistory = await apiDb.getAccountHistory(currentAccount.accountName);
 
+                    console.log('mergedHistory');
+                    console.log(mergedHistory);
                     // Join current with new txs
-                    accHistory = [...accHistory, ...mergedHistory];
+                    accHistory = mergedHistory
+                    //accHistory = [...accHistory, ...mergedHistory];
 
                     // TODO: store everything
                     if (mergedHistory.length) {
@@ -560,7 +532,7 @@ const Wallet: FC<WalletProps> = (props) => {
             ) : (
                 <FlatList
                     style={{marginTop: heightPercentageToDP(1)}}
-                    data={currentAccount.history}
+                    data={currentAccount.history.reverse()}
                     renderItem={renderItemTransaction}
                     keyExtractor={(item, index) => index.toString()}
                 />
