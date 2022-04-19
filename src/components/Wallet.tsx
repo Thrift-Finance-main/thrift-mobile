@@ -225,9 +225,9 @@ const Wallet: FC<WalletProps> = (props) => {
                     backgroundColor: props.isBlackTheme
                         ? Colors.darkInput
                         : 'transparent',
-                    marginTop: heightPercentageToDP(2),
+                    marginTop: heightPercentageToDP(1),
                     borderRadius: 12,
-                    height: heightPercentageToDP(9),
+                    height: heightPercentageToDP(6),
                     //   paddingHorizontal: widthPercentageToDP(3),
                 }}>
                 <View
@@ -335,8 +335,8 @@ const Wallet: FC<WalletProps> = (props) => {
                         backgroundColor: props.isBlackTheme
                             ? Colors.darkInput
                             : 'transparent',
-                        height: heightPercentageToDP(9),
-                        marginTop: heightPercentageToDP(2),
+                        height: heightPercentageToDP(6),
+                        marginTop: heightPercentageToDP(1),
                         borderRadius: 12,
                     }}>
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
