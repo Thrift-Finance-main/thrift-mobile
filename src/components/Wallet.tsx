@@ -370,17 +370,16 @@ const Wallet: FC<WalletProps> = (props) => {
                         <View
                             style={{
                                 flexDirection: 'row',
-                                alignItems: 'center',
-                                justifyContent: 'center',
                                 width: props.isBlackTheme ? '90%' : '100%',
                             }}>
                             <View>
                                 <Text
                                     style={{
                                         textAlign: 'right',
+                                        fontSize: 16,
                                         color: props.isBlackTheme ? Colors.white : Colors.black,
                                     }}>
-                                    {getSymbolFromTxType(item.type)}{item.amount && (item.amount.lovelace)/1000000}
+                                    {getSymbolFromTxType(item.type)}{item.amount && formatter.format((item.amount.lovelace)/1000000).substring(1)}
                                 </Text>
                                 <Text
                                     style={{
@@ -535,7 +534,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                     : Colors.black
                                 : Colors.hintsColor,
                         }}>
-                        History
+                        Activity
                     </Text>
                 </TouchableOpacity>
             </View>
