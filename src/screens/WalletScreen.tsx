@@ -16,108 +16,6 @@ const WalletScreen = ({ navigation }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
 
-    const List = [
-        {
-            icon: <Dijed />,
-            title: 'Djed',
-            counts: '5, 625.01 Djed',
-            raising: {
-                value: '+0.5%',
-                color: 'green'
-            }
-        },
-        {
-            icon: <COTI />,
-            title: 'COTI',
-            counts: '12.27 COTI',
-            raising: {
-                value: '+10%',
-                color: 'green'
-            }
-        },
-        {
-            icon: <Ada />,
-            title: 'ADA',
-            counts: '721.01 ADA',
-            raising: {
-                value: '+15%',
-                color: 'green'
-            }
-        },
-        {
-            icon: <Dana />,
-            title: 'DANA',
-            counts: '52 DANA',
-            raising: {
-                value: '-3%',
-                color: 'red'
-            }
-        },
-        {
-            icon: <Ada />,
-            title: 'ADA',
-            counts: '12 ADA',
-            raising: {
-                value: '+0.5%',
-                color: 'green'
-            }
-        },
-        {
-            icon: <Dana />,
-            title: 'DANA',
-            counts: '52 DANA',
-            raising: {
-                value: '+0.5%',
-                color: 'green'
-            }
-        },
-        {
-            icon: <Dana />,
-            title: 'DANA',
-            counts: '52 DANA',
-            raising: {
-                value: '+0.5%',
-                color: 'green'
-            }
-        },
-        {
-            icon: <Ada />,
-            title: 'ADA',
-            counts: '52 ADA',
-            raising: {
-                value: '+0.5%',
-                color: 'green'
-            }
-        },
-        {
-            icon: <Dana />,
-            title: 'DANA',
-            counts: '52 DANA',
-            raising: {
-                value: '+0.5%',
-                color: 'green'
-            }
-        },
-    ];
-    const transactionList = [
-        {
-            icon: <AntDesignIcon name="arrowup" color="red" size={22} />,
-            title: 'addrlq95e.....addrlq95ead',
-        },
-        {
-            icon: <AntDesignIcon name="arrowdown" color="green" size={22} />,
-            title: 'addrlq95e.....addrlq95ead',
-        },{
-            icon: <AntDesignIcon name="arrowdown" color="green" size={22} />,
-            title: 'addrlq95e.....addrlq95ead',
-        },{
-            icon: <AntDesignIcon name="arrowdown" color="green" size={22} />,
-            title: 'addrlq95e.....addrlq95ead',
-        },{
-            icon: <AntDesignIcon name="arrowdown" color="green" size={22} />,
-            title: 'addrlq95e.....addrlq95ead',
-        },
-    ]
     const [receiveTokenModal, setReceiveTokenModal] = useState<boolean>(false)
     const [transactionDetailsModal, setTransactionDetailsModal] = useState<boolean>(false)
     const [showAssets, setShowAssets] = useState<boolean>(true)
@@ -158,13 +56,11 @@ const WalletScreen = ({ navigation }) => {
     };
     return (
         <Wallet
-            List={List}
             receiveTokenModal={receiveTokenModal}
             hideShowReceiveTokenModal={hideShowReceiveTokenModal}
             transactionDetailsModal={transactionDetailsModal}
             hideShowTransactionDetailsModal={hideShowTransactionDetailsModal}
             showCreateTokenScreen={showCreateTokenScreen}
-            transactionList={transactionList}
             showAssets={showAssets}
             onAssetsPress={onAssetsPress}
             showTransaction={showTransaction}

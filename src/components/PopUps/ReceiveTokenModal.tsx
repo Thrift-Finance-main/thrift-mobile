@@ -75,49 +75,50 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                       :
                       <View style={{}} >
 
-          <QRCodeScanner
-            cameraStyle={[styles.camerStyle]}
-            onRead={(text) => {setScanText(text)}}
-            showMarker={true}
-            // topViewStyle={{ marginTop: -heightPercentageToDP(2) }}
-            // bottomViewStyle={{ marginTop: heightPercentageToDP(6) }}
-            bottomContent={
-              <View
-                style={[styles.bottomContent]}
-              >
-                <Text style={{
-                  ...styles.buttonText, color: props.isBlackTheme ? Colors.white : Colors.black,
-                }}>Scan QR code to make transactions</Text>
+                      <QRCodeScanner
+                        cameraStyle={[styles.camerStyle]}
+                        onRead={(text) => {setScanText(text)}}
+                        showMarker={true}
+                        // topViewStyle={{ marginTop: -heightPercentageToDP(2) }}
+                        // bottomViewStyle={{ marginTop: heightPercentageToDP(6) }}
+                        bottomContent={
+                          <View
+                            style={[styles.bottomContent]}
+                          >
+                            <Text style={{
+                              ...styles.buttonText, color: props.isBlackTheme ? Colors.white : Colors.black,
+                            }}>Scan QR code to make transactions</Text>
 
 
-                <Text
-                  style={{
-                    marginTop: heightPercentageToDP(1.1), textAlign: "center", paddingHorizontal: widthPercentageToDP(10),
-                    color: props.isBlackTheme ? Colors.white : Colors.black,
-                  }}
+                            <Text
+                              style={{
+                                marginTop: heightPercentageToDP(1.1), textAlign: "center", paddingHorizontal: widthPercentageToDP(10),
+                                color: props.isBlackTheme ? Colors.white : Colors.black,
+                              }}
 
-                >
-                  result: {scanText}
-                </Text>
-                <TouchableOpacity
-                  //  onPress={props.onBackIconPress}
-                  style={{
-                    alignSelf: "center", marginTop: heightPercentageToDP(1),
-                    height: heightPercentageToDP(4.5),
-                    width: widthPercentageToDP(15),
-                    borderRadius: 5,
-                    backgroundColor: "blue",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Text
-                    style={{ textAlign: "center", color: Colors.white }}
-                  >Copy</Text>
+                            >
+                              result: {scanText}
+                            </Text>
+                            <TouchableOpacity
+                              //  onPress={props.onBackIconPress}
+                              style={{
+                                alignSelf: "center", marginTop: heightPercentageToDP(1),
+                                height: heightPercentageToDP(4.5),
+                                width: widthPercentageToDP(15),
+                                borderRadius: 5,
+                                backgroundColor: "blue",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Text
+                                onPress={() => Clipboard.setString('mail@mail.com')}
+                                style={{ textAlign: "center", color: Colors.white }}
+                              >Copy</Text>
 
-                </TouchableOpacity>
-              </View>
-            }
-          />
+                            </TouchableOpacity>
+                          </View>
+                        }
+                      />
 
           </View>
                       }
@@ -200,9 +201,10 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                     justifyContent: "center",
                     marginBottom: heightPercentageToDP(2)
                   }}
+                  onPress={() => Clipboard.setString(firstAddress)}
                 >
                   <Text
-                      onPress={() => Clipboard.setString(firstAddress)}
+
                     style={{ textAlign: "center", color: Colors.white }}
                   >Copy</Text>
 

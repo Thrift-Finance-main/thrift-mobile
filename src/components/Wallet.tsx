@@ -24,14 +24,12 @@ import moment from "moment";
 import {addressSlice} from "../utils";
 
 interface WalletProps {
-    List: any
     receiveTokenModal: boolean
     onContinuePress: (route: string, payload?:any) => void
     hideShowReceiveTokenModal: () => void
     transactionDetailsModal: boolean
     hideShowTransactionDetailsModal: () => void
     showCreateTokenScreen: () => void
-    transactionList: any
     showAssets: boolean
     showTransaction: boolean
     onAssetsPress: () => void

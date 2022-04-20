@@ -44,7 +44,6 @@ const CreatePinScreen = ({ navigation, route }) => {
                     console.log(r.error);
                 } else {
                     setVisible(true);
-                    navigation.navigate("DashboardTab");
                 }
             });
         }
