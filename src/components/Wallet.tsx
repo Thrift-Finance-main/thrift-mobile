@@ -129,24 +129,27 @@ const Wallet: FC<WalletProps> = (props) => {
                     })
                 });
 
-                let uniqueArrayTxsList = joinedTxsList.filter((v,i,a)=>a.findIndex(v2=>(v2.tx_hash===v.tx_hash))===i)
 
+
+                let uniqueArrayTxsList = joinedTxsList.filter((v,i,a)=>a.findIndex(v2=>(v2.tx_hash===v.tx_hash))===i)
 
                 let currentTxs = await apiDb.getAccountHistory(currentAccount.accountName);
 
                 const allTxHashes:string[] = [];
-                currentTxs.map(tx => {
-                    if (tx){
-                        allTxHashes.push(tx.txHash);
-                    }
-                });
 
-                uniqueArrayTxsList = uniqueArrayTxsList.map(txAddr => {
-                    const r = !allTxHashes.includes(txAddr.tx_hash);
-                    if (r){
-                        return txAddr;
-                    }
-                }).filter(e => e != undefined);
+                if (currentTxs){
+                    currentTxs.map(tx => {
+                        if (tx){
+                            allTxHashes.push(tx.txHash);
+                        }
+                    });
+                    uniqueArrayTxsList = uniqueArrayTxsList.map(txAddr => {
+                        const r = !allTxHashes.includes(txAddr.tx_hash);
+                        if (r){
+                            return txAddr;
+                        }
+                    }).filter(e => e != undefined);
+                }
 
                 if (uniqueArrayTxsList && uniqueArrayTxsList.length){
                     let addrsWithTxsList = [];
@@ -182,9 +185,15 @@ const Wallet: FC<WalletProps> = (props) => {
                         mergedHistory.push(addr.history);
                     });
 
-                    let accHistory = await apiDb.getAccountHistory(currentAccount.accountName);
 
-                    accHistory = [...accHistory, ...mergedHistory.reverse()];
+                    let accHistory = [];
+                    accHistory = await apiDb.getAccountHistory(currentAccount.accountName);
+
+                    if (accHistory){
+                        accHistory = [...accHistory, ...mergedHistory.reverse()];
+                    } else {
+                        accHistory = mergedHistory.reverse()
+                    }
 
                     // TODO: store everything
                     if (mergedHistory.length) {
@@ -192,6 +201,8 @@ const Wallet: FC<WalletProps> = (props) => {
                         await apiDb.setAccountHistory(currentAccount.accountName, accHistory);
 
                     }
+
+
 
                     const account = await apiDb.getAccount(currentAccount.accountName);
                     dispatch(setCurrentAccount(account));
@@ -253,7 +264,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                 color: props.isBlackTheme ? Colors.white : Colors.black,
                                 fontSize: 14,
                             }}>
-                            {item.metadata.name}
+                            {item && item.metadata && item.metadata.name}
                             {/*Buffer.from(item.asset_name,"hex").toString()*/}
                         </Text>
                         <View style={{flexDirection: 'row'}} >
@@ -284,7 +295,7 @@ const Wallet: FC<WalletProps> = (props) => {
                             : widthPercentageToDP(3.4),
                     }}>
                     {/*item.metadata && item.metadata.decimals ? item.quantity/(Math.pow( 10,item.metadata.decimals))  : item.quantity*/}
-                    {formatter.format(item.quantity).substring(1)}{' '}{item.metadata.ticker}
+                    {formatter.format(item && item.quantity).substring(1)}{' '}{item && item.metadata && item.metadata.ticker}
                 </Text>
             </View>
         );
@@ -321,7 +332,7 @@ const Wallet: FC<WalletProps> = (props) => {
             if (item.type === SEND_TX){
                 showAddr = outputOtherAddresses[0].address;
             } else {
-                showAddr = inputOtherAddresses[0].address;
+                showAddr = inputOtherAddresses && inputOtherAddresses.length ? inputOtherAddresses[0].address : 'none';
             }
 
             return (

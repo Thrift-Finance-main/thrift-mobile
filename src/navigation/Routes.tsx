@@ -30,6 +30,7 @@ import {ENTRY_WITCH_ROUTE} from "../db/tables";
 import MainScreen from "../screens/MainScreen";
 import ManageAccountScreen from "../screens/ManageAccountScreen";
 import LoadScreen from "../screens/LoadScreen";
+import SmartFiScreen2 from "../screens/SmartFiScreen2";
 
 const AuthenticationStack = createNativeStackNavigator();
 
@@ -51,7 +52,7 @@ const DashboardTab = () => {
         }}
         tabBar={props => <BottomTabBar {...props} />}>
         <Tab.Screen name="Wallet" component={WalletScreen} />
-        <Tab.Screen name="SmartFi" component={SmartFiScreen} />
+        <Tab.Screen name="SmartFi" component={SmartFiScreen2} />
         <Tab.Screen
           name="Settings"
           component={SettingsScreen}
