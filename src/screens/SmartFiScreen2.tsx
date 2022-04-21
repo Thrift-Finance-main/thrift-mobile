@@ -108,13 +108,6 @@ const SmartFiScreen2 = (props: any) => {
                 isBlackTheme ? Colors.blackTheme :
                     Colors.background,
         }}>
-            <StatusBar
-                hidden={false}
-                backgroundColor={isBlackTheme ? Colors.blackTheme :
-                    Colors.background}
-                translucent={false}
-                barStyle={isBlackTheme ? "dark-content" : "light-content"}
-            />
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={styles._header_tips_mian}>
                     <Text style={{...styles._tips_heading, color: isBlackTheme ? Colors.white : Colors.black}}>Tips & Tricks</Text>
@@ -162,10 +155,9 @@ const SmartFiScreen2 = (props: any) => {
                         onPress={() => setActiveTab('investment')}>
                         <Text
                             style={{...
-                                activeTab === 'investment'
-                                    ? styles._active_tab_text
-                                    : styles._tab_text,
-                                color: isBlackTheme ? Colors.white : Colors.black
+                                    activeTab === 'investment'
+                                        ? styles._active_tab_text
+                                        : styles._tab_text,
                             }}>
                             investment
                         </Text>
@@ -178,9 +170,8 @@ const SmartFiScreen2 = (props: any) => {
                                     activeTab === 'expenses'
                                         ? styles._active_tab_text
                                         : styles._tab_text,
-                                color: isBlackTheme ? Colors.white : Colors.black
                             }}
-                           >
+                        >
                             expenses
                         </Text>
                     </TouchableOpacity>
@@ -192,7 +183,6 @@ const SmartFiScreen2 = (props: any) => {
                                     activeTab === 'income'
                                         ? styles._active_tab_text
                                         : styles._tab_text,
-                                color: isBlackTheme ? Colors.white : Colors.black
                             }}
                         >
                             income
@@ -250,11 +240,11 @@ const SmartFiScreen2 = (props: any) => {
                     <View style={styles._new_worth_main}>
                         {activeTab === 'investment' && (
                             <>
-                                <Text style={styles._new_worth_heading}>Net Worth:</Text>
-                                <Text style={styles._new_worth_price}>$452</Text>
+                                <Text style={{...styles._new_worth_heading, color: isBlackTheme ? Colors.white : Colors.black}}>Net Worth:</Text>
+                                <Text style={{...styles._new_worth_price, color: isBlackTheme ? Colors.white : Colors.black}}>$452</Text>
                                 <View style={styles._new_worth_percentage_main}>
                                     <AntDesign name="caretup" size={16} color="green" />
-                                    <Text style={styles._new_worth_percentage}>15%</Text>
+                                    <Text style={{...styles._new_worth_percentage, color: isBlackTheme ? Colors.white : Colors.black}}>15%</Text>
                                 </View>
                             </>
                         )}
@@ -265,12 +255,16 @@ const SmartFiScreen2 = (props: any) => {
                         {activeTab === 'investment' && (
                             <>
                                 <View>
-                                    <Text style={styles._filter_heading}>
+                                    <Text
+                                        style={{...styles._filter_heading, color: isBlackTheme ? Colors.white : Colors.black}}
+                                    >
                                         {selectedFilter === 0 && "This Week"}
                                         {selectedFilter === 1 && "This Month"}
                                         {selectedFilter === 2 && "This Year"}
                                     </Text>
-                                    <Text style={styles._filter_percentage}>2.5%</Text>
+                                    <Text
+                                        style={{...styles._filter_percentage, color: isBlackTheme ? Colors.white : Colors.black}}
+                                    >2.5%</Text>
                                 </View>
                                 <View style={styles._filter_show_main}>
                                     {FilterData.map((v, i) => {
@@ -278,17 +272,20 @@ const SmartFiScreen2 = (props: any) => {
                                             <TouchableOpacity
                                                 key={i}
                                                 onPress={() => setSelectedFilter(i)}
+
                                                 style={
                                                     selectedFilter === i
                                                         ? styles._selected_filter
                                                         : styles._filter
                                                 }>
                                                 <Text
-                                                    style={
-                                                        selectedFilter === i
-                                                            ? styles._selected_filter_title
-                                                            : styles._filter_title
-                                                    }>
+                                                    style={{...
+                                                            selectedFilter === i
+                                                                ? styles._selected_filter_title
+                                                                : styles._filter_title,
+                                                        color: isBlackTheme && selectedFilter === i ? Colors.white : Colors.black
+                                                    }}
+                                                >
                                                     {v.title}
                                                 </Text>
                                             </TouchableOpacity>
@@ -307,8 +304,10 @@ const SmartFiScreen2 = (props: any) => {
                     <View style={styles._expenses_data_main}>
                         <View style={styles._summery_show_mian}>
                             <View>
-                                <Text style={styles._summery_heading}>Expenses Summary</Text>
-                                <Text style={styles._summery_date}>
+                                <Text style={{...styles._summery_heading, color: isBlackTheme ? Colors.white : Colors.black}}
+                                >Expenses Summary</Text>
+                                <Text style={{...styles._summery_date, color: isBlackTheme ? Colors.white : Colors.black}}
+                                >
                                     01 Mar 2021 - 16 mar 2021
                                 </Text>
                                 <View>
@@ -325,13 +324,13 @@ const SmartFiScreen2 = (props: any) => {
                                             styles._payment_btn,
                                             { backgroundColor: paymentValue.bgColor },
                                         ]}>
-                                        <Text>{paymentValue.title}</Text>
+                                        <Text style={{color: isBlackTheme ? Colors.white : Colors.black}}>{paymentValue.title}</Text>
                                     </TouchableOpacity>
                                 );
                             })}
                         </View>
                         <View style={styles._in_out_main}>
-                            <Text style={styles._in_out}>In & Out</Text>
+                            <Text style={{...styles._in_out, color: isBlackTheme ? Colors.white : Colors.black}}>In & Out</Text>
                             <View style={styles._expenses_data_icons_main}>
                                 <TouchableOpacity>
                                     <Feather name="arrow-down-circle" size={20} color="#4fac7a" />
@@ -352,15 +351,18 @@ const SmartFiScreen2 = (props: any) => {
                                             <AntDesign name="arrowdown" size={20} color="#4aa977" />
                                         )}
                                         <View style={styles._expenses_card_name_main}>
-                                            <Text style={styles._expenses_card_name}>
+                                            <Text style={{...styles._expenses_card_name, color: isBlackTheme ? Colors.white : Colors.black}}
+                                            >
                                                 {expensesValue.name}
                                             </Text>
                                         </View>
                                         <View>
-                                            <Text style={styles._expenses_card_heading}>
+                                            <Text style={{...styles._expenses_card_heading, color: isBlackTheme ? Colors.white : Colors.black}}
+                                            >
                                                 {expensesValue.heading}
                                             </Text>
-                                            <Text style={styles._expenses_card_date}>
+                                            <Text style={{...styles._expenses_card_date, color: isBlackTheme ? Colors.white : Colors.black}}
+                                            >
                                                 {expensesValue.date}
                                             </Text>
                                         </View>
@@ -387,21 +389,26 @@ const SmartFiScreen2 = (props: any) => {
                 )}
                 {activeTab === 'investment' && (
                     <>
-                        <Text style={styles._heading}>Start Target Goals</Text>
+                        <Text style={{...styles._heading, color: isBlackTheme ? Colors.white : Colors.black}}
+                        >Start Target Goals</Text>
                         <ImageBackground
                             source={require('../assets/images/smartFi/goals.png')}
                             style={styles._goals_image}>
                             <View style={styles._goals_data_main}>
-                                <Text style={styles._goals_heading}>Create a goal!</Text>
-                                <Text style={styles._goals_des}>
+                                <Text  style={{...styles._goals_heading, color: isBlackTheme ? Colors.white : Colors.black}}
+                                >Create a goal!</Text>
+                                <Text style={{...styles._goals_des, color: isBlackTheme ? Colors.white : Colors.black}}
+                                >
                                     Stay motivated and{'\n'}meet you futured{'\n'}goals
                                 </Text>
                                 <View style={styles._goals_btn_main}>
                                     <TouchableOpacity style={styles._goals_btn}>
-                                        <Text style={styles._goals_btn_text}>View Savings</Text>
+                                        <Text style={{...styles._goals_btn_text, color: isBlackTheme ? Colors.black : Colors.black}}
+                                        >View Savings</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity style={styles._goals_btn}>
-                                        <Text style={styles._goals_btn_text}>Create Target</Text>
+                                        <Text style={{...styles._goals_btn_text, color: isBlackTheme ? Colors.black : Colors.black}}
+                                        >Create Target</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -416,16 +423,19 @@ const SmartFiScreen2 = (props: any) => {
                             fill={90}
                             tintColor="#652ef5"
                             backgroundColor="#05050f">
-                            {fill => <Text style={styles._Show_progress}>32%</Text>}
+                            {fill => <Text style={{...styles._Show_progress, color: isBlackTheme ? Colors.white : Colors.black}}>32%</Text>}
                         </AnimatedCircularProgress>
 
                         <View style={styles._income_data_main}>
-                            <Text style={styles._toal_earning}>Total Earning</Text>
+                            <Text style={{...styles._toal_earning, color: isBlackTheme ? Colors.white : Colors.black}}
+                            >Total Earning</Text>
                             <View style={styles._total_earning_price_main}>
-                                <Text style={styles._total_earning_price}>$452</Text>
+                                <Text style={{...styles._total_earning_price, color: isBlackTheme ? Colors.white : Colors.black}}
+                                >$452</Text>
                                 <View style={styles._new_worth_percentage_main}>
                                     <AntDesign name="caretup" size={16} color="green" />
-                                    <Text style={styles._new_worth_percentage}>10%</Text>
+                                    <Text style={{...styles._new_worth_percentage, color: isBlackTheme ? Colors.white : Colors.black}}
+                                    >10%</Text>
                                 </View>
                             </View>
                         </View>
@@ -433,7 +443,7 @@ const SmartFiScreen2 = (props: any) => {
                 )}
                 {activeTab !== 'expenses' && (
                     <>
-                        <Text style={styles._heading}>My Goal Reminders</Text>
+                        <Text style={{...styles._heading, color: isBlackTheme ? Colors.white : Colors.black}}>My Goal Reminders</Text>
                         <ScrollView
                             horizontal={true}
                             showsHorizontalScrollIndicator={false}>
@@ -444,7 +454,7 @@ const SmartFiScreen2 = (props: any) => {
                                             source={sliderValue.imagePath}
                                             style={styles._slider2_image}>
                                             <View style={styles._slider2_data_main}>
-                                                <Text style={styles._slider2_title}>
+                                                <Text style={{...styles._slider2_title, color: isBlackTheme ? Colors.white : Colors.black}}>
                                                     {sliderValue.title}
                                                 </Text>
                                                 <View>
@@ -454,14 +464,18 @@ const SmartFiScreen2 = (props: any) => {
                                                                 styles._percentage_done,
                                                                 { width: sliderValue.per },
                                                             ]}>
-                                                            <Text style={styles._percentage_done_show}>
+                                                            <Text
+                                                                style={{...styles._percentage_done_show, color: isBlackTheme ? Colors.white : Colors.black}}
+                                                            >
                                                                 {sliderValue.per}
                                                             </Text>
                                                         </View>
                                                     </View>
-                                                    <Text style={styles._date}>31 Mar 2020</Text>
+                                                    <Text style={{...styles._date, color: isBlackTheme ? Colors.white : Colors.black}}
+                                                    >31 Mar 2020</Text>
                                                     <TouchableOpacity style={styles._add_funds_btn}>
-                                                        <Text style={styles._add_funds_btn_text}>
+                                                        <Text style={{...styles._add_funds_btn_text, color: isBlackTheme ? Colors.black : Colors.black}}
+                                                        >
                                                             Add funds
                                                         </Text>
                                                     </TouchableOpacity>
@@ -486,7 +500,8 @@ const SmartFiScreen2 = (props: any) => {
                 }}>
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
-                        <Text style={styles._model_heading}>Select Chart Style</Text>
+                        <Text style={{...styles._model_heading, color: isBlackTheme ? Colors.white : Colors.black}}
+                        >Select Chart Style</Text>
                         <TouchableOpacity
                             onPress={() => setSelectChart('Bar')}
                             style={styles._select_chart_btn}>
@@ -495,7 +510,8 @@ const SmartFiScreen2 = (props: any) => {
                                     <View style={styles._selected_radio_btn} />
                                 )}
                             </View>
-                            <Text style={styles._chart_title}>Bar Chart</Text>
+                            <Text style={{...styles._chart_title, color: isBlackTheme ? Colors.white : Colors.black}}
+                            >Bar Chart</Text>
                             <Entypo name="bar-graph" size={20} color="#000" />
                         </TouchableOpacity>
                         <TouchableOpacity
@@ -506,19 +522,19 @@ const SmartFiScreen2 = (props: any) => {
                                     <View style={styles._selected_radio_btn} />
                                 )}
                             </View>
-                            <Text style={styles._chart_title}>Pie Chart</Text>
+                            <Text style={{...styles._chart_title, color: isBlackTheme ? Colors.white : Colors.black}}>Pie Chart</Text>
                             <Entypo name="pie-chart" size={20} color="#000" />
                         </TouchableOpacity>
                         <View style={styles._model_btn_mian}>
                             <TouchableOpacity
                                 style={styles._model_cancel_btn}
                                 onPress={() => setModalVisible(!modalVisible)}>
-                                <Text style={styles._model_cancel_btn_text}>Cancel</Text>
+                                <Text style={{...styles._model_cancel_btn_text, color: isBlackTheme ? Colors.white : Colors.black}}>Cancel</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles._model_confirm_btn}
                                 onPress={() => { setChartType(selectChart); setModalVisible(!modalVisible) }}>
-                                <Text style={styles._model_confirm_btn_text}>Confirm</Text>
+                                <Text style={{...styles._model_confirm_btn_text, color: isBlackTheme ? Colors.white : Colors.black}}>Confirm</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -534,7 +550,6 @@ let styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     _header_tips_mian: {
-        backgroundColor: '#f8f8f8',
         marginTop: 20,
         paddingVertical: 10,
         flexDirection: 'row',
