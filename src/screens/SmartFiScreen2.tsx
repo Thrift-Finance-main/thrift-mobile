@@ -121,12 +121,12 @@ const SmartFiScreen2 = (props: any) => {
                             source={require('../assets/images/smartFi/slider2.png')}
                             style={styles._slider_image}>
                             <View style={styles._card_data_main}>
-                                <Text  style={{...styles._card_data, color: isBlackTheme ? Colors.white : Colors.black}}>
+                                <Text  style={{...styles._card_data, color: isBlackTheme ? Colors.white : Colors.white}}>
                                     Habits that will{'\n'}increase you{'\n'}savings!
                                 </Text>
                                 <View style={styles._card_time_main}>
                                     <AntDesign name="clockcircleo" size={16} color="#fff" />
-                                    <Text style={{...styles._card_time, color: isBlackTheme ? Colors.white : Colors.black}}>3 min read</Text>
+                                    <Text style={{...styles._card_time, color: isBlackTheme ? Colors.white : Colors.white}}>3 min read</Text>
                                 </View>
                             </View>
                         </ImageBackground>
@@ -136,12 +136,12 @@ const SmartFiScreen2 = (props: any) => {
                             source={require('../assets/images/smartFi/slider1.png')}
                             style={styles._slider_image}>
                             <View style={styles._card_data_main}>
-                                <Text style={{...styles._card_data, color: isBlackTheme ? Colors.white : Colors.black}}>
+                                <Text style={{...styles._card_data, color: isBlackTheme ? Colors.white : Colors.white}}>
                                     How much money{'\n'}should you{'\n'}set adide?
                                 </Text>
                                 <View style={styles._card_time_main}>
                                     <AntDesign name="clockcircleo" size={16} color="#fff" />
-                                    <Text style={{...styles._card_time, color: isBlackTheme ? Colors.white : Colors.black}}>3 min read</Text>
+                                    <Text style={{...styles._card_time, color: isBlackTheme ? Colors.white : Colors.white}}>3 min read</Text>
                                 </View>
                             </View>
                         </ImageBackground>
@@ -395,9 +395,9 @@ const SmartFiScreen2 = (props: any) => {
                             source={require('../assets/images/smartFi/goals.png')}
                             style={styles._goals_image}>
                             <View style={styles._goals_data_main}>
-                                <Text  style={{...styles._goals_heading, color: isBlackTheme ? Colors.white : Colors.black}}
+                                <Text  style={{...styles._goals_heading, color: isBlackTheme ? Colors.white : Colors.white}}
                                 >Create a goal!</Text>
-                                <Text style={{...styles._goals_des, color: isBlackTheme ? Colors.white : Colors.black}}
+                                <Text style={{...styles._goals_des, color: isBlackTheme ? Colors.white : Colors.white}}
                                 >
                                     Stay motivated and{'\n'}meet you futured{'\n'}goals
                                 </Text>
@@ -454,7 +454,7 @@ const SmartFiScreen2 = (props: any) => {
                                             source={sliderValue.imagePath}
                                             style={styles._slider2_image}>
                                             <View style={styles._slider2_data_main}>
-                                                <Text style={{...styles._slider2_title, color: isBlackTheme ? Colors.white : Colors.black}}>
+                                                <Text style={{...styles._slider2_title, color: isBlackTheme ? Colors.white : Colors.white}}>
                                                     {sliderValue.title}
                                                 </Text>
                                                 <View>
