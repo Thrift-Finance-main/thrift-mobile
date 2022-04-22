@@ -1,4 +1,4 @@
 module.exports = {
   root: true,
-  extends: ['airbnb', '@react-native-community'],
+  // extends: ['airbnb', '@react-native-community'],
 };

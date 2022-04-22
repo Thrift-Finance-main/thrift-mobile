@@ -1,8 +1,8 @@
-import {combineReducers} from "redux";
-import CounterReducer from "./CounterReducer";
+import {combineReducers} from 'redux';
+import AccountReducer from './account/AccountReducer';
 
 const reducers = combineReducers({
-    CounterReducer,
+  AccountReducer,
 });
 
 export default reducers;

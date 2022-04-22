@@ -17,10 +17,18 @@ target 'thriftMobile' do
 
   pod 'react-native-haskell-shelley', :path => '../node_modules/@emurgo/react-native-haskell-shelley'
 
+  pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
+
+  pod 'RealmJS', :path => '../node_modules/realm'
+
   target 'thriftMobileTests' do
     inherit! :complete
     # Pods for testing
   end
+
+  permissions_path = '../node_modules/react-native-permissions/ios'
+  pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways/Permission-LocationAlways.podspec"
+  pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse/Permission-LocationWhenInUse.podspec"
 
   # Enables Flipper.
   #
@@ -33,4 +41,3 @@ target 'thriftMobile' do
   end
 end
 
-pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'

@@ -8,9 +8,10 @@
 - [x] Add Redux for state management.
 - [x] Add Realm and models for data persistence.
 - [x] Add i18n for easy translations.
-- [ ] Add the styles Framework, template.
+- [ ] Add the front side.
 - [x] Testing Running on Android & iOS envs.
-- [ ] Compilation and getting executables for both platforms.
+- [x] Compilation and getting executables for Android.
+- [ ] Compilation and getting executables for iOS.
 
 ### Getting Started
 Install using yarn:
@@ -23,6 +24,7 @@ react-native link @emurgo/react-native-haskell-shelley
 Start the Metro Bundler:
 ```
 yarn start
+npx react-native start --reset-cache
 ```
 
 Build and start the app:
@@ -73,6 +75,7 @@ yarn ios
 
 Start an Android Simulator from:
 ```
+/Applications/Android\ Studio.app/Contents/MacOS/studio&
 Android Studio > Tools > AVD Manager > Run any device
 ```
 

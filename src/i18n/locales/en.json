@@ -1,5 +1,10 @@
 {
-  "title": "hello world1222",
+  "Common": {
+    "Continue": "Continue"
+  },
+  "LanguageScreen": {
+    "selectLanguage": "Select Language"
+  },
   "routes": {
     "mainHome": "MainHome",
     "home": "Home",

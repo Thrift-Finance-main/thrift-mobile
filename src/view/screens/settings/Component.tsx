@@ -9,7 +9,6 @@ import { BUTTON_DEFAULT } from '../../elements/buttons';
 import {useTranslation, withTranslation} from 'react-i18next';
 
 import { BottomTabNavigationProp, BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import realmDb from "../../../db/RealmConfig";
 
 export type RootTabParamList = {
     Home: {name:string} | undefined;
@@ -41,7 +40,7 @@ class Settings extends React.PureComponent<SettingsProps, SettingsState> {
 
   onChangeLang = async (lang: string) => {
     await i18next.changeLanguage(lang);
-    await realmDb.setLanguage(lang);
+    // await realmDb.setLanguage(lang);
 
     //this.props.navigation.navigate(translate(settingsName));
     /*

@@ -12,7 +12,6 @@ import {getCurrentLang, getRoute, translate} from '../../../i18n';
 // @ts-ignore
 
 import {IConfig} from '../../../db/model/appConfig';
-import realmDb from '../../../db/RealmConfig';
 
 const {UUID} = Realm.BSON;
 
@@ -52,14 +51,14 @@ class Home extends React.PureComponent<HomeProps, HomeState> {
       _id: '882dd631-bc6e-4e0e-a9e8-f07b685fec8c',
       name: 'Tim Doer.',
       currentAccount: 'Jaime',
+      pinhash: '',
       language: 'es',
       currentEndpoint: 'http://192.168.1.141:3101/graphql',
       version: '0.1.0',
     };
-    realmDb.setConfig(config).then(r => {});
-    const currLang = await realmDb.getLanguage();
-    console.log('currLang');
-    console.log(currLang);
+    // realmDb.setConfig(config).then(r => {});
+    // const currLang = await realmDb.getLanguage();
+
   }
 
   showPushScreen = () => {

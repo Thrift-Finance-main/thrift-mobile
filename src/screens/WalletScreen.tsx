@@ -1,0 +1,75 @@
+import React, { useEffect, useState } from 'react'
+import SplashScreen from 'react-native-splash-screen'
+import Wallet from '../components/Wallet';
+import Dijed from '../assets/Dijed.svg';
+import COTI from '../assets/Coti.svg';
+import Ada from '../assets/Ada.svg'
+import Dana from '../assets/Dana.svg'
+import AntDesignIcon from 'react-native-vector-icons/AntDesign'
+import { connect, useDispatch, useSelector } from 'react-redux';
+import { setTheme } from "../store/Action"
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Blockfrost, fetchBlockfrost} from "../api/Blockfrost";
+
+const WalletScreen = ({ navigation }) => {
+    const dispatch = useDispatch();
+    const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
+    const currentAccount = useSelector((state) => state.Reducers.currentAccount);
+
+    const [receiveTokenModal, setReceiveTokenModal] = useState<boolean>(false)
+    const [transactionDetailsModal, setTransactionDetailsModal] = useState<boolean>(false)
+    const [showAssets, setShowAssets] = useState<boolean>(true)
+    const [showTransaction, setShowTransaction] = useState<boolean>(false)
+
+    useEffect(() => {
+        SplashScreen.hide();
+    }, [])
+    const onContinuePress = (route:string) => {
+        console.log("onContinuePress WalletScreen, click walletIcon");
+        console.log(route);
+        navigation.navigate(route, {fromRoute: "DashboardTab"});
+    }
+
+    const hideShowReceiveTokenModal = () => {
+        setReceiveTokenModal(!receiveTokenModal)
+
+    }
+    const hideShowTransactionDetailsModal = () => {
+        setTransactionDetailsModal(!transactionDetailsModal)
+
+    }
+    const showCreateTokenScreen = () => {
+        navigation.navigate("CreateToken");
+    }
+    const onAssetsPress = () => {
+        setShowAssets(true)
+        setShowTransaction(false)
+    }
+    const onTransactionPress = () => {
+        setShowAssets(false)
+        setShowTransaction(true)
+    }
+
+    const onDarkThemePresss = async () => {
+        AsyncStorage.setItem('isBlackTheme', !isBlackTheme == true ? "0" : "1");
+        dispatch(setTheme(!isBlackTheme));
+    };
+    return (
+        <Wallet
+            receiveTokenModal={receiveTokenModal}
+            hideShowReceiveTokenModal={hideShowReceiveTokenModal}
+            transactionDetailsModal={transactionDetailsModal}
+            hideShowTransactionDetailsModal={hideShowTransactionDetailsModal}
+            showCreateTokenScreen={showCreateTokenScreen}
+            showAssets={showAssets}
+            onAssetsPress={onAssetsPress}
+            showTransaction={showTransaction}
+            onTransactionPress={onTransactionPress}
+            onDarkThemePresss={onDarkThemePresss}
+            isBlackTheme={isBlackTheme}
+            onContinuePress={(route:string) => onContinuePress(route)}
+        />
+    )
+}
+
+export default WalletScreen
