@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useRef, useState} from 'react'
-import {View, Text, StyleSheet, FlatList, Image, TouchableOpacity} from 'react-native'
+import {View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ScrollView} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
@@ -22,6 +22,19 @@ import {classifyTx, RECEIVE_TX, SEND_TX} from "../lib/transactions";
 import Ada from '../assets/Ada.svg'
 import moment from "moment";
 import {addressSlice} from "../utils";
+import {
+    Icon,
+    Dialog,
+    Picker,
+    Avatar,
+    Assets,
+    PanningProvider,
+    Typography,
+    PickerProps,
+    PickerModes,
+    DialogProps,
+    Button
+} from 'react-native-ui-lib';
 
 interface WalletProps {
     receiveTokenModal: boolean
@@ -322,6 +335,8 @@ const Wallet: FC<WalletProps> = (props) => {
                 return ''
         }
     }
+
+
 
     const renderItemTransaction = ({item, index}) => {
 

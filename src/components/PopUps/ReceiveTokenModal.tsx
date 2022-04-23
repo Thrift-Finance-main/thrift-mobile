@@ -1,5 +1,5 @@
 import React, {FC, useState} from 'react';
-import {View, Text, StyleSheet, Image, FlatList, Linking, TouchableOpacity, Alert} from 'react-native';
+import {View, Text, StyleSheet, Image, FlatList, Linking, TouchableOpacity, Alert, ScrollView} from 'react-native';
 import Colors from '../../constants/CustomColors';
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimensions';
 import QRCodeScanner from 'react-native-qrcode-scanner';
@@ -13,6 +13,8 @@ import {addressSlice} from "../../utils";
 import Clipboard from '@react-native-community/clipboard';
 import Scan from "../QrCodeCamera";
 import CameraQr from "../CameraQr";
+import {Dialog, DialogProps, PanningProvider, Picker, PickerProps} from "react-native-ui-lib";
+import WalletIcon from "../../assets/wallet.svg";
 
 interface ReceiveTokenModalProps {
   visible: boolean,
@@ -25,12 +27,56 @@ interface ReceiveTokenModalProps {
 const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
   const currentAccount = useSelector((state) => state.Reducers.currentAccount);
   const [scanText, setScanText] = useState('');
-
+  const [selectedAddress, setSelectedAddress] = useState('');
 
   const firstAddress = currentAccount
       && currentAccount.externalPubAddress
       && currentAccount.externalPubAddress.length
       && currentAccount.externalPubAddress[0].address || 'addr_empty';
+
+  const dialogHeader: DialogProps['renderPannableHeader'] = props => {
+    const {title} = props;
+    return (
+        <Text margin-15 text60>
+          {title}
+        </Text>
+    );
+  };
+
+  const renderDialog: PickerProps['renderCustomModal'] = modalProps => {
+    const {visible, children, toggleModal, onDone} = modalProps;
+
+    return (
+        <Dialog
+            visible={visible}
+            onDismiss={() => {
+              onDone();
+              toggleModal(false);
+            }}
+            width="100%"
+            height="45%"
+            bottom
+            useSafeArea
+            containerStyle={{backgroundColor: props.isBlackTheme ? Colors.black : Colors.white }}
+            renderPannableHeader={dialogHeader}
+            panDirection={PanningProvider.Directions.DOWN}
+            pannableHeaderProps={{}}
+        >
+          <ScrollView>
+            <Text style={{...styles.addressList, ...styles.addressListTitle}}>
+              Select Address
+            </Text>
+            <View
+                style={{
+                  borderBottomColor: 'grey',
+                  borderBottomWidth: 1,
+                }}
+            />
+            {children}
+          </ScrollView>
+        </Dialog>
+    );
+  };
 
   return (
     <Modal
@@ -133,6 +179,43 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                   }}
 
                 >{addressSlice(firstAddress, 18) || ''}</Text>
+
+                <Picker
+                    value={"spanish"}
+                    onChange={item => setSelectedAddress(item)}
+                    mode={Picker.modes.SINGLE}
+                    rightIconSource={WalletIcon}
+                    renderCustomModal={renderDialog}
+                >
+                  {currentAccount.externalPubAddress.map((addr,index) => (
+                      <Picker.Item
+                          key={addr+index}
+                          value={addr}
+                          label={''}
+                          labelStyle={styles.addressList}
+                          renderItem={(a, props) => {
+                            const address = a.address;
+                            return (
+                                <View
+                                    style={{
+                                      flex: 1,
+                                      height: 46
+                                    }}
+                                >
+                                  <View>
+                                    <Text style={
+                                      styles.addressList
+                                    }>
+                                      {addressSlice(address, 20)}
+                                    </Text>
+                                  </View>
+                                </View>
+                            );
+                          }}
+                      />
+                  ))}
+                </Picker>
+
                 <View style={{backgroundColor : Colors.white, elevation : 5, shadowColor : Colors.black, shadowOpacity : .1, shadowRadius : 5, shadowOffset : {height : .5, width : .5}, paddingVertical : heightPercentageToDP(2), flexDirection: 'row', marginHorizontal : widthPercentageToDP(5), paddingHorizontal : widthPercentageToDP(5), justifyContent: 'space-between', borderRadius : 5, marginVertical : heightPercentageToDP(3)}} >
                 <TouchableOpacity
                   //  onPress={props.onBackIconPress}
@@ -293,6 +376,14 @@ const styles = StyleSheet.create({
   bottomContent: {
     paddingHorizontal: widthPercentageToDP(2),
     marginTop: heightPercentageToDP(3)
+  },
+  addressList: {
+    textAlign: 'center',
+    marginTop: heightPercentageToDP(1.5)
+  },
+  addressListTitle: {
+    fontWeight: 'bold',
+    marginBottom: heightPercentageToDP(1.5)
   }
 
 });
