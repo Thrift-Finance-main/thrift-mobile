@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
   },
   bottomContent: {
     paddingHorizontal: widthPercentageToDP(2),
-    marginTop: heightPercentageToDP(3)
+    marginTop: heightPercentageToDP(1)
   },
   addressList: {
     textAlign: 'center',
