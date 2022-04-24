@@ -157,7 +157,12 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                         }
                         </View>
                       {!props.QRScanner ?
-                      <View style={{marginTop : heightPercentageToDP(3)}} >
+                      <View style={{
+                        marginTop : heightPercentageToDP(3),
+                        padding: 14,
+                        backgroundColor: 'white',
+                        borderRadius: 10
+                      }} >
                         <QRCode
                             value={selectedAddress}
                             size={200}
