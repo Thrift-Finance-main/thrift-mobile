@@ -161,7 +161,8 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                         marginTop : heightPercentageToDP(3),
                         padding: 14,
                         backgroundColor: 'white',
-                        borderRadius: 10
+                        borderRadius: 10,
+                        minHeight: 240
                       }} >
                         <QRCode
                             value={selectedAddress}
