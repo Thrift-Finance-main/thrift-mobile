@@ -323,3 +323,5 @@ Pods/*
 
 # Jest
 .jest/
+
+java_pid*
