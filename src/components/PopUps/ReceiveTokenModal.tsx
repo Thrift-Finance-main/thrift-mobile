@@ -18,6 +18,7 @@ import WalletIcon from "../../assets/wallet.svg";
 import swapIcon from "../../assets/swapIcon.png";
 import {apiDb} from "../../db/LiteDb";
 import {setCurrentAccount} from "../../store/Action";
+import QRCode from 'react-native-qrcode-generator';
 
 interface ReceiveTokenModalProps {
   visible: boolean,
@@ -36,53 +37,45 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
 
   const selectedAddress = currentAccount.selectedAddress;
   let addrs = currentAccount.externalPubAddress.filter(addr => addr.address === selectedAddress);
-  console.log('addrs');
-  console.log(addrs);
+
   let relatedTags = addrs[0].tags;
   relatedTags = relatedTags.map(tag => {
     return {label: tag}
   })
-  console.log('relatedTags');
-  console.log(relatedTags);
 
   const updateSelectedAddress = async addr => {
     if (addr && addr.address) {
-      console.log('addr');
-      console.log(addr);
       await apiDb.setAccountSelectedAddress(currentAccount.accountName, addr.address);
       const acc = await apiDb.getAccount(currentAccount.accountName);
       dispatch(setCurrentAccount(acc));
     }
   };
   const onCreateTag = (value: string) => {
-    console.log('\n\ngg');
-    console.log(value);
     apiDb.getAccountTagsByAddress(currentAccount.accountName, selectedAddress).then(tags => {
-      let updatedTags = [];
-      if (tags && tags.length){
-        updatedTags.push(value)
-      } else {
-        updatedTags = [value];
-      }
-      console.log('updatedTags');
-      console.log(updatedTags);
+      let updatedTags = [...tags, value];
       apiDb.setAccountTagsByAddress(currentAccount.accountName, selectedAddress, updatedTags).then(r=>{
         apiDb.getAccount(currentAccount.accountName).then(acc => {
-          console.log('account from local');
-
-          let addrs = acc.externalPubAddress.filter(addr => {
-
-            return addr.address === selectedAddress
-          });
-          console.log('addr2222');
-          console.log(addrs);
-
           dispatch(setCurrentAccount(acc));
         });
       });
     })
     return {label: value};
   }
+  const onTagPress = (tagIndex: number, markedTagIndex: number) => {
+    if (markedTagIndex !== undefined){
+      apiDb.getAccountTagsByAddress(currentAccount.accountName, selectedAddress).then(tags => {
+        let updatedTags = tags.filter((tag, index)=> index !== markedTagIndex );
+        apiDb.setAccountTagsByAddress(currentAccount.accountName, selectedAddress, updatedTags).then(r=>{
+          apiDb.getAccount(currentAccount.accountName).then(acc => {
+            dispatch(setCurrentAccount(acc));
+          });
+        });
+      })
+    }
+
+
+    customChipsInput.current?.markTagIndex(tagIndex === markedTagIndex ? undefined : tagIndex);
+  };
   const dialogHeader: DialogProps['renderPannableHeader'] = props => {
     const {title} = props;
     return (
@@ -165,7 +158,11 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                         </View>
                       {!props.QRScanner ?
                       <View style={{marginTop : heightPercentageToDP(3)}} >
-                      <QRImage/>
+                        <QRCode
+                            value={selectedAddress}
+                            size={200}
+                            bgColor='black'
+                            fgColor='white'/>
                       </View>
                       :
                       <View style={{}} >
@@ -310,9 +307,10 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                     ref={customChipsInput}
                     containerStyle={{}}
                     placeholder="Enter Tags"
-                    chips={relatedTags.length ? relatedTags : [{label: 'house'}] }
+                    chips={relatedTags}
                     inputStyle={styles.customInput}
                     onCreateTag={(w) => onCreateTag(w)}
+                    onTagPress={onTagPress}
                 />
 
 
