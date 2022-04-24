@@ -138,11 +138,13 @@ const Wallet: FC<WalletProps> = (props) => {
                 }[] = [];
                 addressTxsList.map(addr => {
                     addr.txs.map(tx => {
+                        console.log('block_time');
+                        console.log(typeof tx.block_time);
+                        console.log(tx.block_time);
+                        tx.block_time = parseInt(tx.block_time.toString()+'000'); // TODO: hot fix
                         joinedTxsList.push({...tx, address: addr.address});
                     })
                 });
-
-
 
                 let uniqueArrayTxsList = joinedTxsList.filter((v,i,a)=>a.findIndex(v2=>(v2.tx_hash===v.tx_hash))===i)
 
@@ -203,10 +205,14 @@ const Wallet: FC<WalletProps> = (props) => {
                     accHistory = await apiDb.getAccountHistory(currentAccount.accountName);
 
                     if (accHistory){
-                        accHistory = [...accHistory, ...mergedHistory.reverse()];
+                        accHistory = [...accHistory, ...mergedHistory];
                     } else {
-                        accHistory = mergedHistory.reverse()
+                        accHistory = mergedHistory
                     }
+
+                    accHistory = accHistory.sort((a, b) => (a.blockTime < b.blockTime) ? 1 : -1);
+                    console.log('accHistory');
+                    console.log(accHistory);
 
                     // TODO: store everything
                     if (mergedHistory.length) {
@@ -214,8 +220,6 @@ const Wallet: FC<WalletProps> = (props) => {
                         await apiDb.setAccountHistory(currentAccount.accountName, accHistory);
 
                     }
-
-
 
                     const account = await apiDb.getAccount(currentAccount.accountName);
                     dispatch(setCurrentAccount(account));
@@ -386,7 +390,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                     color: props.isBlackTheme ? Colors.white : Colors.black,
                                     fontSize: 10,
                                 }}>
-                                {moment.utc(item.blockTime).format("DD-MM-YYYY hh:mm")}
+                                {moment.utc(item.blockTime).format("DD-MM-YYYY hh:mm a")}
                             </Text>
                         </View>
                     </View>
