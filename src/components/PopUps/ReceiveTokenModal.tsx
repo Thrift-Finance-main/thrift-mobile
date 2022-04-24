@@ -8,13 +8,15 @@ import ThriftLogo from '../../assets/ThriftLogo.svg'
 import ThriftLogoWhite from '../../assets/ThriftFinancelogo.svg'
 import QRImage from '../../assets/QRImage.svg';
 import Icon from 'react-native-vector-icons/MaterialIcons'
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {addressSlice} from "../../utils";
 import Clipboard from '@react-native-community/clipboard';
 import Scan from "../QrCodeCamera";
 import CameraQr from "../CameraQr";
 import {Dialog, DialogProps, PanningProvider, Picker, PickerProps} from "react-native-ui-lib";
 import WalletIcon from "../../assets/wallet.svg";
+import {apiDb} from "../../db/LiteDb";
+import {setCurrentAccount} from "../../store/Action";
 
 interface ReceiveTokenModalProps {
   visible: boolean,
@@ -25,19 +27,26 @@ interface ReceiveTokenModalProps {
   QRScanner : boolean
 }
 const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
+  const dispatch = useDispatch();
   const currentAccount = useSelector((state) => state.Reducers.currentAccount);
   const [scanText, setScanText] = useState('');
-  const [selectedAddress, setSelectedAddress] = useState('');
+  const [selectedAddress, setSelectedAddress] = useState(undefined);
 
-  const firstAddress = currentAccount
-      && currentAccount.externalPubAddress
-      && currentAccount.externalPubAddress.length
-      && currentAccount.externalPubAddress[0].address || 'addr_empty';
+  const firstAddress = currentAccount.selectedAddress;
 
+  const updateSelectedAddress = async addr => {
+    if (addr && addr.address) {
+      console.log('addr');
+      console.log(addr);
+      await apiDb.setAccountSelectedAddress(currentAccount.accountName, addr.address);
+      const acc = await apiDb.getAccount(currentAccount.accountName);
+      dispatch(setCurrentAccount(acc));
+    }
+  };
   const dialogHeader: DialogProps['renderPannableHeader'] = props => {
     const {title} = props;
     return (
-        <Text margin-15 text60>
+        <Text margin-15>
           {title}
         </Text>
     );
@@ -170,22 +179,63 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                       }
                       {
                         !props.QRScanner &&
-<View
+            <View
                 style={styles.bottomContent}
-              ><Text
-                  style={{
-                    marginTop: heightPercentageToDP(1.5), textAlign: "center", paddingHorizontal: widthPercentageToDP(10),
-                    color: props.isBlackTheme ? Colors.white : Colors.black,
-                  }}
+              >
+              <View style={{flexDirection : 'row', paddingHorizontal : widthPercentageToDP(20), justifyContent : 'center'}} >
+                <TouchableOpacity
+                    //  onPress={props.onBackIconPress}
+                    style={{
+                      alignSelf: "center", marginTop: heightPercentageToDP(1),
+                      height: heightPercentageToDP(4.5),
+                      width: widthPercentageToDP(15),
+                      borderRadius: 5,
+                      backgroundColor: Colors.color2,
+                      justifyContent: "center",
+                      marginBottom: heightPercentageToDP(2)
+                    }}
+                    onPress={() => Clipboard.setString(firstAddress)}
+                >
+                  <Text
 
-                >{addressSlice(firstAddress, 18) || ''}</Text>
+                      style={{ textAlign: "center", color: Colors.white }}
+                  >Copy</Text>
 
-                <Picker
-                    value={"spanish"}
-                    onChange={item => setSelectedAddress(item)}
+                </TouchableOpacity>
+                <View style={{width : widthPercentageToDP(10)}} />
+                <TouchableOpacity
+                    //  onPress={props.onBackIconPress}
+                    style={{
+                      alignSelf: "center", marginTop: heightPercentageToDP(1),
+                      height: heightPercentageToDP(4.5),
+                      width: widthPercentageToDP(15),
+                      borderRadius: 5,
+                      backgroundColor: Colors.color7,
+                      justifyContent: "center",
+                      marginBottom: heightPercentageToDP(2),
+                      borderColor: Colors.color5,
+                      borderWidth: 1
+                    }}
+                >
+                  <Text
+                      style={{ textAlign: "center", color: Colors.color5 }}
+                  >Share</Text>
+
+                </TouchableOpacity>
+              </View>
+
+              <View style={{flexDirection : 'row', paddingHorizontal : widthPercentageToDP(20), justifyContent : 'center'}} >
+
+              </View>
+              <Picker
+                    placeholder={addressSlice(firstAddress, 18) || ''}
+                    onChange={item => {
+                      updateSelectedAddress(item)
+                    }}
                     mode={Picker.modes.SINGLE}
                     rightIconSource={WalletIcon}
                     renderCustomModal={renderDialog}
+                    style={{color: 'black', fontSize: 14, textAlign: 'center'}}
                 >
                   {currentAccount.externalPubAddress.map((addr,index) => (
                       <Picker.Item
@@ -206,7 +256,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                                     <Text style={
                                       styles.addressList
                                     }>
-                                      {addressSlice(address, 20)}
+                                      {index}.{' '}{addressSlice(address, 20)}
                                     </Text>
                                   </View>
                                 </View>
@@ -215,104 +265,8 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                       />
                   ))}
                 </Picker>
+              <Text>Hello</Text>
 
-                <View style={{backgroundColor : Colors.white, elevation : 5, shadowColor : Colors.black, shadowOpacity : .1, shadowRadius : 5, shadowOffset : {height : .5, width : .5}, paddingVertical : heightPercentageToDP(2), flexDirection: 'row', marginHorizontal : widthPercentageToDP(5), paddingHorizontal : widthPercentageToDP(5), justifyContent: 'space-between', borderRadius : 5, marginVertical : heightPercentageToDP(3)}} >
-                <TouchableOpacity
-                  //  onPress={props.onBackIconPress}
-                  style={{
-                    alignSelf: "center",
-                    paddingVertical : heightPercentageToDP(1),
-                    paddingHorizontal : widthPercentageToDP(2),
-                    borderRadius: 5,
-                    backgroundColor: Colors.color2,
-                    justifyContent: "center",
-                    flexDirection : 'row',
-                    alignItems: 'center'
-                  }}
-                >
-                  <Text
-                    style={{ textAlign: "center", color: Colors.white }}
-                  >House rent</Text>
-                  <Icon name={'close'} size={15} color={Colors.white} style={{marginLeft: widthPercentageToDP(3)}} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  //  onPress={props.onBackIconPress}
-                  style={{
-                    alignSelf: "center",
-                    paddingVertical : heightPercentageToDP(1),
-                    paddingHorizontal : widthPercentageToDP(2),
-                    borderRadius: 5,
-                    backgroundColor: Colors.color2,
-                    justifyContent: "center",
-                    flexDirection : 'row',
-                    alignItems: 'center'
-                  }}
-                >
-                  <Text
-                    style={{ textAlign: "center", color: Colors.white }}
-                  >Tution</Text>
-                  <Icon name={'close'} size={15} color={Colors.white} style={{marginLeft: widthPercentageToDP(3)}} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  //  onPress={props.onBackIconPress}
-                  style={{
-                    alignSelf: "center",
-                    paddingVertical : heightPercentageToDP(1),
-                    paddingHorizontal : widthPercentageToDP(2),
-                    borderRadius: 5,
-                    backgroundColor: Colors.color2,
-                    justifyContent: "center",
-                    flexDirection : 'row',
-                    alignItems: 'center'
-                  }}
-                >
-                  <Text
-                    style={{ textAlign: "center", color: Colors.white }}
-                  >Tag</Text>
-                  <Icon name={'close'} size={15} color={Colors.white} style={{marginLeft: widthPercentageToDP(3)}} />
-                </TouchableOpacity>
-                </View>
-                <View style={{flexDirection : 'row', paddingHorizontal : widthPercentageToDP(20), justifyContent : 'center'}} >
-                <TouchableOpacity
-                  //  onPress={props.onBackIconPress}
-                  style={{
-                    alignSelf: "center", marginTop: heightPercentageToDP(1),
-                    height: heightPercentageToDP(4.5),
-                    width: widthPercentageToDP(15),
-                    borderRadius: 5,
-                    backgroundColor: Colors.color2,
-                    justifyContent: "center",
-                    marginBottom: heightPercentageToDP(2)
-                  }}
-                  onPress={() => Clipboard.setString(firstAddress)}
-                >
-                  <Text
-
-                    style={{ textAlign: "center", color: Colors.white }}
-                  >Copy</Text>
-
-                </TouchableOpacity>
-                <View style={{width : widthPercentageToDP(10)}} />
-                <TouchableOpacity
-                  //  onPress={props.onBackIconPress}
-                  style={{
-                    alignSelf: "center", marginTop: heightPercentageToDP(1),
-                    height: heightPercentageToDP(4.5),
-                    width: widthPercentageToDP(15),
-                    borderRadius: 5,
-                    backgroundColor: Colors.color7,
-                    justifyContent: "center",
-                    marginBottom: heightPercentageToDP(2),
-                    borderColor: Colors.color5,
-                    borderWidth: 1
-                  }}
-                >
-                  <Text
-                    style={{ textAlign: "center", color: Colors.color5 }}
-                  >Share</Text>
-
-                </TouchableOpacity>
-                </View>
                 <View
                   style={{ height: heightPercentageToDP(2) }}
                 />

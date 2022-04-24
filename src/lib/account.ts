@@ -231,6 +231,7 @@ export const createAccount = async (
     publicKeyHex,
     encryptedPublicKeyHex,
     rewardAddress,
+    selectedAddress: externalPubAddress[0].address,
     internalPubAddress,
     externalPubAddress,
     delegated: false,

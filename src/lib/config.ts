@@ -32,7 +32,7 @@ export const DERIVE_PUROPOSE = 1852;
 export const DERIVE_COIN_TYPE = 1815;
 
 export const BASE_ADDRESS_INDEX = 0;
-export const TOTAL_ADDRESS_INDEX = 50;
+export const TOTAL_ADDRESS_INDEX = 12;
 export const IDENTITY_ADDRESS_INDEX = 1;
 
 export const MAX_VALUE_BYTES = 5000;

@@ -186,6 +186,19 @@ class LiteDb implements Release {
             }
         }
     }
+    async setAccountSelectedAddress(accountName:string, address:string) {
+        try {
+            if (accountName && accountName.length){
+                let account = await getObj(ACCOUNT_TABLE + ':' + accountName);
+                account.selectedAddress = address;
+                await storeObj(ACCOUNT_TABLE + ':' + accountName, account);
+            }
+        }  catch (e) {
+            return {
+                error: e
+            }
+        }
+    }
     // Language
     async setCurrentLanguage(language:string) {
         try {
