@@ -20,3 +20,14 @@ export const getCurrentBalanceForAddress = async (
   console.log(result);
   return result;
 };
+
+
+export const getPrices = async (currency:string) => {
+
+  let result = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=${currency}`
+  );
+  if (!result || result.error) return null;
+  result = result.json()
+  return result
+};

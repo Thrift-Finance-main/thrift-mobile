@@ -35,6 +35,7 @@ import {
     DialogProps,
     Button
 } from 'react-native-ui-lib';
+import {getPrices} from "../api";
 
 interface WalletProps {
     receiveTokenModal: boolean
@@ -54,6 +55,7 @@ const Wallet: FC<WalletProps> = (props) => {
     const dispatch = useDispatch();
 
     const [scanner, setScanner] = useState(false);
+    const [currentPrice, setCurrentPrice] = useState(false);
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
     const [selectedTx, setSelectedTx] = useState(undefined);
     const formatter = new Intl.NumberFormat('en-US', {
@@ -116,6 +118,9 @@ const Wallet: FC<WalletProps> = (props) => {
                 await apiDb.updateAccount(currentAccountInLocal);
 
                 dispatch(setCurrentAccount(currentAccountInLocal));
+
+                let prices = await getPrices('usd');
+                setCurrentPrice(prices.cardano);
 
                 let addressTxsList = await Promise.all(
                     relatedAddresses.map(async addr =>{
@@ -483,7 +488,7 @@ const Wallet: FC<WalletProps> = (props) => {
                     <Text style={styles.delegated}>{currentAccount.delegated ? 'Delegated' : 'Undelegated'}</Text>
                 </View>
                 <Text style={styles.adaText}>{currentAccount.balance ? currentAccount.balance/1000000 : 0} Ada</Text>
-                <Text style={styles.accountName}>{currentAccount.accountName}</Text>
+                <Text style={styles.price}>${currentAccount.balance && currentPrice.usd ? ((currentAccount.balance/1000000)*currentPrice.usd).toFixed(2) : 0.00}</Text>
                 <View style={styles.sendReceiveContainer}>
                     <View style={{justifyContent: 'center', alignItems: 'center'}}>
                         <TouchableOpacity
@@ -675,6 +680,12 @@ const styles = StyleSheet.create({
     },
     listContainer: {
        maxHeight: 300
-    }
+    },
+    price: {
+        opacity: 0.8,
+        textAlign: 'center',
+        color: Colors.white,
+        fontSize: 10,
+    },
 });
 export default Wallet;
