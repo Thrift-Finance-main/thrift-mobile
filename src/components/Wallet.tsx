@@ -141,7 +141,7 @@ const Wallet: FC<WalletProps> = (props) => {
                         console.log('block_time');
                         console.log(typeof tx.block_time);
                         console.log(tx.block_time);
-                        tx.block_time = parseInt(tx.block_time.toString()+'000'); // TODO: hot fix
+                        tx.block_time = tx.block_time*1000; // TODO: hot fix, from Moment unix
                         joinedTxsList.push({...tx, address: addr.address});
                     })
                 });
@@ -390,7 +390,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                     color: props.isBlackTheme ? Colors.white : Colors.black,
                                     fontSize: 10,
                                 }}>
-                                {moment.utc(item.blockTime).format("DD-MM-YYYY hh:mm a")}
+                                {moment(item.blockTime).format("DD-MM-YYYY hh:mm")}
                             </Text>
                         </View>
                     </View>
