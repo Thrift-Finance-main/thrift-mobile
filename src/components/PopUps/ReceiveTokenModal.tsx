@@ -13,8 +13,9 @@ import {addressSlice} from "../../utils";
 import Clipboard from '@react-native-community/clipboard';
 import Scan from "../QrCodeCamera";
 import CameraQr from "../CameraQr";
-import {Dialog, DialogProps, PanningProvider, Picker, PickerProps} from "react-native-ui-lib";
+import {ChipsInput, Dialog, DialogProps, PanningProvider, Picker, PickerProps, Typography} from "react-native-ui-lib";
 import WalletIcon from "../../assets/wallet.svg";
+import swapIcon from "../../assets/swapIcon.png";
 import {apiDb} from "../../db/LiteDb";
 import {setCurrentAccount} from "../../store/Action";
 
@@ -30,9 +31,19 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
   const dispatch = useDispatch();
   const currentAccount = useSelector((state) => state.Reducers.currentAccount);
   const [scanText, setScanText] = useState('');
-  const [selectedAddress, setSelectedAddress] = useState(undefined);
+  // @ts-ignore
+  const customChipsInput = React.createRef<ChipsInput>();
 
-  const firstAddress = currentAccount.selectedAddress;
+  const selectedAddress = currentAccount.selectedAddress;
+  let addrs = currentAccount.externalPubAddress.filter(addr => addr.address === selectedAddress);
+  console.log('addrs');
+  console.log(addrs);
+  let relatedTags = addrs[0].tags;
+  relatedTags = relatedTags.map(tag => {
+    return {label: tag}
+  })
+  console.log('relatedTags');
+  console.log(relatedTags);
 
   const updateSelectedAddress = async addr => {
     if (addr && addr.address) {
@@ -43,6 +54,35 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
       dispatch(setCurrentAccount(acc));
     }
   };
+  const onCreateTag = (value: string) => {
+    console.log('\n\ngg');
+    console.log(value);
+    apiDb.getAccountTagsByAddress(currentAccount.accountName, selectedAddress).then(tags => {
+      let updatedTags = [];
+      if (tags && tags.length){
+        updatedTags.push(value)
+      } else {
+        updatedTags = [value];
+      }
+      console.log('updatedTags');
+      console.log(updatedTags);
+      apiDb.setAccountTagsByAddress(currentAccount.accountName, selectedAddress, updatedTags).then(r=>{
+        apiDb.getAccount(currentAccount.accountName).then(acc => {
+          console.log('account from local');
+
+          let addrs = acc.externalPubAddress.filter(addr => {
+
+            return addr.address === selectedAddress
+          });
+          console.log('addr2222');
+          console.log(addrs);
+
+          dispatch(setCurrentAccount(acc));
+        });
+      });
+    })
+    return {label: value};
+  }
   const dialogHeader: DialogProps['renderPannableHeader'] = props => {
     const {title} = props;
     return (
@@ -194,7 +234,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                       justifyContent: "center",
                       marginBottom: heightPercentageToDP(2)
                     }}
-                    onPress={() => Clipboard.setString(firstAddress)}
+                    onPress={() => Clipboard.setString(selectedAddress)}
                 >
                   <Text
 
@@ -228,12 +268,12 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
 
               </View>
               <Picker
-                    placeholder={addressSlice(firstAddress, 18) || ''}
+                    placeholder={addressSlice(selectedAddress, 18) || ''}
                     onChange={item => {
-                      updateSelectedAddress(item)
+                      updateSelectedAddress(item).then(r => {})
                     }}
                     mode={Picker.modes.SINGLE}
-                    rightIconSource={WalletIcon}
+                    rightIconSource={swapIcon}
                     renderCustomModal={renderDialog}
                     style={{color: 'black', fontSize: 14, textAlign: 'center'}}
                 >
@@ -253,9 +293,10 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                                     }}
                                 >
                                   <View>
-                                    <Text style={
-                                      styles.addressList
-                                    }>
+                                    <Text style={{
+                                      ...styles.addressList,
+                                      fontWeight: (address === selectedAddress ? 'bold' : '')
+                                    }}>
                                       {index}.{' '}{addressSlice(address, 20)}
                                     </Text>
                                   </View>
@@ -265,9 +306,17 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                       />
                   ))}
                 </Picker>
-              <Text>Hello</Text>
+                <ChipsInput
+                    ref={customChipsInput}
+                    containerStyle={{}}
+                    placeholder="Enter Tags"
+                    chips={relatedTags.length ? relatedTags : [{label: 'house'}] }
+                    inputStyle={styles.customInput}
+                    onCreateTag={(w) => onCreateTag(w)}
+                />
 
-                <View
+
+              <View
                   style={{ height: heightPercentageToDP(2) }}
                 />
               </View>
@@ -338,7 +387,11 @@ const styles = StyleSheet.create({
   addressListTitle: {
     fontWeight: 'bold',
     marginBottom: heightPercentageToDP(1.5)
-  }
+  },
+  customInput: {
+    ...Typography.text60,
+    color: Colors.blue30
+  },
 
 });
 

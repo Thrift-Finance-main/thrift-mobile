@@ -199,6 +199,49 @@ class LiteDb implements Release {
             }
         }
     }
+    async getAccountTagsByAddress(accountName:string, address:string ) {
+        try {
+            if (accountName && accountName.length){
+                const acc = await getObj(ACCOUNT_TABLE + ':' + accountName);
+                const addresses = acc.externalPubAddress;
+                let tags: any[] = [];
+                addresses.map(addr => {
+                    if (addr.address === address){
+                        tags = addr.tags;
+                    }
+                });
+                return tags;
+            }
+        }  catch (e) {
+            return {
+                error: e
+            }
+        }
+    }
+    async setAccountTagsByAddress(accountName:string, address:string, tags:string[]) {
+
+        try {
+            if (accountName && accountName.length){
+                let acc = await getObj(ACCOUNT_TABLE + ':' + accountName);
+                let addresses = acc.externalPubAddress;
+                addresses = addresses.map(addr => {
+                    if (addr.address === address){
+                        console.log('address fouund, add tags');
+                        console.log(tags)
+                        addr.tags = tags;
+                        console.log(addr)
+                    }
+                    return addr;
+                });
+                acc.externalPubAddress = addresses;
+                await storeObj(ACCOUNT_TABLE + ':' + accountName, acc);
+            }
+        }  catch (e) {
+            return {
+                error: e
+            }
+        }
+    }
     // Language
     async setCurrentLanguage(language:string) {
         try {
