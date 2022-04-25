@@ -13,7 +13,16 @@ import {addressSlice} from "../../utils";
 import Clipboard from '@react-native-community/clipboard';
 import Scan from "../QrCodeCamera";
 import CameraQr from "../CameraQr";
-import {ChipsInput, Dialog, DialogProps, PanningProvider, Picker, PickerProps, Typography} from "react-native-ui-lib";
+import {
+  Chip,
+  ChipsInput,
+  Dialog,
+  DialogProps,
+  PanningProvider,
+  Picker,
+  PickerProps,
+  Typography
+} from "react-native-ui-lib";
 import WalletIcon from "../../assets/wallet.svg";
 import swapIcon from "../../assets/swapIcon.png";
 import {apiDb} from "../../db/LiteDb";
@@ -288,22 +297,30 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                           labelStyle={styles.addressList}
                           renderItem={(a, props) => {
                             const address = a.address;
+                            console.log('a');
+                            console.log(a);
                             return (
-                                <View
-                                    style={{
-                                      flex: 1,
-                                      height: 46
-                                    }}
-                                >
-                                  <View>
+                                  <View style={{
+                                    flex: 1,
+                                    height: 46
+                                  }}>
+
                                     <Text style={{
                                       ...styles.addressList,
                                       fontWeight: (address === selectedAddress ? 'bold' : '')
                                     }}>
-                                      {index}.{' '}{addressSlice(address, 20)}
+
+                                      {addressSlice(address, 20)}
+                                    </Text>
+                                    <Text style={{
+                                      ...styles.addressListTags,
+                                      fontWeight: (address === selectedAddress ? 'bold' : '')
+                                    }}>
+                                      {a.tags.map(tag => {
+                                        return '#'+tag+' '
+                                      })}
                                     </Text>
                                   </View>
-                                </View>
                             );
                           }}
                       />
@@ -386,11 +403,18 @@ const styles = StyleSheet.create({
   },
   addressList: {
     textAlign: 'center',
-    marginTop: heightPercentageToDP(1.5)
+    fontSize: 12,
+    marginTop: heightPercentageToDP(1),
+    fontStyle: "italic",
+  },
+  addressListTags: {
+    textAlign: 'center',
+    opacity: 0.8,
+    marginBottom: heightPercentageToDP(2)
   },
   addressListTitle: {
     fontWeight: 'bold',
-    marginBottom: heightPercentageToDP(1.5)
+    marginBottom: heightPercentageToDP(1)
   },
   customInput: {
     ...Typography.text60,

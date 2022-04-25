@@ -216,8 +216,6 @@ const Wallet: FC<WalletProps> = (props) => {
                     }
 
                     accHistory = accHistory.sort((a, b) => (a.blockTime < b.blockTime) ? 1 : -1);
-                    console.log('accHistory');
-                    console.log(accHistory);
 
                     // TODO: store everything
                     if (mergedHistory.length) {
