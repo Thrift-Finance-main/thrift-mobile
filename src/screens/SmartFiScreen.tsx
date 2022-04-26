@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
-import SmartFi from '../components/SmartFi'
+import SmartFi from "../components/SmartFi";
 const SmartFiScreen = ({ navigation }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
 

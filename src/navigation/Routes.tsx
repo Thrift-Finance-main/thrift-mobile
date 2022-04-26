@@ -52,7 +52,7 @@ const DashboardTab = () => {
         }}
         tabBar={props => <BottomTabBar {...props} />}>
         <Tab.Screen name="Wallet" component={WalletScreen} />
-        <Tab.Screen name="SmartFi" component={SmartFiScreen2} />
+        <Tab.Screen name="SmartFi" component={SmartFiScreen} />
         <Tab.Screen
           name="Settings"
           component={SettingsScreen}
