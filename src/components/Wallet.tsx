@@ -17,7 +17,7 @@ import {useDispatch, useSelector} from "react-redux";
 import WalletIcon from "../assets/wallet.svg";
 import {fetchBlockfrost, getBlockInfo, getTxInfo, getTxUTxOs} from "../api/Blockfrost";
 import {apiDb} from "../db/LiteDb";
-import {setCurrentAccount} from "../store/Action";
+import {setCurrentAccount, setCurrentPrice} from "../store/Action";
 import {classifyTx, RECEIVE_TX, SEND_TX} from "../lib/transactions";
 import Ada from '../assets/Ada.svg'
 import moment from "moment";
@@ -47,7 +47,7 @@ const Wallet: FC<WalletProps> = (props) => {
     const dispatch = useDispatch();
 
     const [scanner, setScanner] = useState(false);
-    const [currentPrice, setCurrentPrice] = useState(false);
+    const [currPrice, setCurrPrice] = useState(false);
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
     const [selectedTx, setSelectedTx] = useState(undefined);
     const formatter = new Intl.NumberFormat('en-US', {
@@ -112,7 +112,8 @@ const Wallet: FC<WalletProps> = (props) => {
                 dispatch(setCurrentAccount(currentAccountInLocal));
 
                 let prices = await getPrices('usd');
-                setCurrentPrice(prices.cardano);
+                setCurrPrice(prices.cardano);
+                dispatch(setCurrentPrice(prices.cardano));
 
                 let addressTxsList = await Promise.all(
                     relatedAddresses.map(async addr =>{
@@ -478,7 +479,7 @@ const Wallet: FC<WalletProps> = (props) => {
                     <Text style={styles.delegated}>{currentAccount.delegated ? 'Delegated' : 'Undelegated'}</Text>
                 </View>
                 <Text style={styles.adaText}>{currentAccount.balance ? currentAccount.balance/1000000 : 0} Ada</Text>
-                <Text style={styles.price}>${currentAccount.balance && currentPrice.usd ? ((currentAccount.balance/1000000)*currentPrice.usd).toFixed(2) : 0.00}</Text>
+                <Text style={styles.price}>${currentAccount.balance && currPrice.usd ? ((currentAccount.balance/1000000)*currPrice.usd).toFixed(2) : 0.00}</Text>
                 <View style={styles.sendReceiveContainer}>
                     <View style={{justifyContent: 'center', alignItems: 'center'}}>
                         <TouchableOpacity

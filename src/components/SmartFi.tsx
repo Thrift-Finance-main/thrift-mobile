@@ -39,21 +39,13 @@ const SmartFi = (props: any) => {
 
     const isBlackTheme = useSelector(state => state.Reducers.isBlackTheme);
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
+    const currentPrice = useSelector((state) => state.Reducers.currentPrice);
+    console.log('currentPrice');
+    console.log(currentPrice);
 
     useEffect(() => {
         SplashScreen.hide();
-        checkTheme();
     }, []);
-    const checkTheme = async () => {
-        let isBlackTheme = await AsyncStorage.getItem('isBlackTheme');
-        console.log('shhshs', isBlackTheme);
-
-        if (isBlackTheme == null) {
-            dispatch(setTheme(false));
-        } else {
-            dispatch(setTheme(isBlackTheme == '0' ? true : false));
-        }
-    };
 
     let [activeTab, setActiveTab] = useState('investment');
     let [selectedFilter, setSelectedFilter] = useState(0);

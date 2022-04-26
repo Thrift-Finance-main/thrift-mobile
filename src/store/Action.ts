@@ -1,4 +1,4 @@
-import {ISBLACKTHEME, SET_CURRENT_ACCOUNT, SET_ENTRY_ROUTE} from './ActionTypes';
+import {ISBLACKTHEME, SET_CURRENT_ACCOUNT, SET_CURRENT_PRICE, SET_ENTRY_ROUTE} from './ActionTypes';
 
 export const setTheme = (isBlackTheme: any) => {
   return {
@@ -18,5 +18,12 @@ export const setEntryRoute = (entryRoute: any) => {
   return {
     type: SET_ENTRY_ROUTE,
     entryRoute,
+  };
+};
+
+export const setCurrentPrice= (currentPrice: any) => {
+  return {
+    type: SET_CURRENT_PRICE,
+    currentPrice,
   };
 };
