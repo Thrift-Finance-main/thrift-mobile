@@ -38,17 +38,9 @@ import {
 import {getPrices} from "../api";
 
 interface WalletProps {
-    receiveTokenModal: boolean
-    onContinuePress: (route: string, payload?:any) => void
-    hideShowReceiveTokenModal: () => void
-    transactionDetailsModal: boolean
-    hideShowTransactionDetailsModal: () => void
-    showCreateTokenScreen: () => void
-    showAssets: boolean
-    showTransaction: boolean
-    onAssetsPress: () => void
-    onTransactionPress: () => void
-    onDarkThemePresss: () => void
+    onSavingsPress: () => void
+    onBackIconPress: () => void
+    onCreateTargetPress: () => void
     isBlackTheme: any
 }
 const Wallet: FC<WalletProps> = (props) => {

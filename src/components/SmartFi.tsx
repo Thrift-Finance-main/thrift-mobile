@@ -19,9 +19,27 @@ import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import Entypo from 'react-native-vector-icons/dist/Entypo';
 
 const screens = Dimensions.get('window');
+
+interface SmartFiProps {
+    receiveTokenModal: boolean
+    onContinuePress: (route: string, payload?:any) => void
+    hideShowReceiveTokenModal: () => void
+    transactionDetailsModal: boolean
+    hideShowTransactionDetailsModal: () => void
+    showCreateTokenScreen: () => void
+    showAssets: boolean
+    showTransaction: boolean
+    onAssetsPress: () => void
+    onTransactionPress: () => void
+    onDarkThemePresss: () => void
+    isBlackTheme: any
+}
 const SmartFi = (props: any) => {
-    const isBlackTheme = useSelector(state => state.Reducers.isBlackTheme);
     const dispatch = useDispatch();
+
+    const isBlackTheme = useSelector(state => state.Reducers.isBlackTheme);
+    const currentAccount = useSelector((state) => state.Reducers.currentAccount);
+
     useEffect(() => {
         SplashScreen.hide();
         checkTheme();
