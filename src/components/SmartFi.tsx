@@ -43,6 +43,15 @@ const SmartFi = (props: any) => {
     console.log('currentPrice');
     console.log(currentPrice);
 
+    const assets = currentAccount.assets;
+    console.log('assets');
+    console.log(assets[0].metadata.ticker);
+    console.log(assets[0].quantity);
+
+    const assetsChart = currentAccount.assets.map(asset => {
+        return asset
+    });
+
     useEffect(() => {
         SplashScreen.hide();
     }, []);
@@ -92,23 +101,23 @@ const SmartFi = (props: any) => {
     ];
     let PaymentButton = [
         {
-            title: 'Rent Payment',
+            label: 'Ada',
             bgColor: '#f86f34',
         },
         {
-            title: 'Entertainment',
+            label: 'Entertainment',
             bgColor: '#005cee',
         },
         {
-            title: 'Untility',
+            label: 'Untility',
             bgColor: '#ffb731',
         },
         {
-            title: 'Tuition',
+            label: 'Tuition',
             bgColor: '#f563bb',
         },
         {
-            title: 'Groceries',
+            label: 'Groceries',
             bgColor: '#1ed37c',
         },
     ];
@@ -250,7 +259,7 @@ const SmartFi = (props: any) => {
                     <View style={styles._new_worth_main}>
                         {activeTab === 'investment' && (
                             <>
-                                <Text style={{...styles._new_worth_heading, color: isBlackTheme ? Colors.white : Colors.black}}>Net Worth:</Text>
+                                <Text style={{...styles._new_worth_heading, color: isBlackTheme ? Colors.white : Colors.black}}>Portafolio:</Text>
                                 <Text style={{...styles._new_worth_price, color: isBlackTheme ? Colors.white : Colors.black}}>$452</Text>
                                 <View style={styles._new_worth_percentage_main}>
                                     <AntDesign name="caretup" size={16} color="green" />
@@ -260,6 +269,27 @@ const SmartFi = (props: any) => {
                         )}
                     </View>
                 )}
+                {activeTab === 'investment' && (<>
+                    <View>
+                        <ExpensesChart />
+                    </View>
+                    <View style={styles._payment_btn_main}>
+                        {PaymentButton.map((paymentValue, paymenetIndex) => {
+                            return (
+                                <TouchableOpacity
+                                    key={paymenetIndex}
+                                    style={[
+                                        styles._payment_btn,
+                                        { backgroundColor: paymentValue.bgColor },
+                                    ]}>
+                                    <Text style={{color: isBlackTheme ? Colors.white : Colors.black}}>{paymentValue.label}</Text>
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </View>
+                </>)
+                }
+
                 {chartType === 'Bar' && (
                     <View style={styles._filter_main}>
                         {activeTab === 'investment' && (
@@ -312,33 +342,7 @@ const SmartFi = (props: any) => {
                 )}
                 {activeTab === 'expenses' && (
                     <View style={styles._expenses_data_main}>
-                        <View style={styles._summery_show_mian}>
-                            <View>
-                                <Text style={{...styles._summery_heading, color: isBlackTheme ? Colors.white : Colors.black}}
-                                >Expenses Summary</Text>
-                                <Text style={{...styles._summery_date, color: isBlackTheme ? Colors.white : Colors.black}}
-                                >
-                                    01 Mar 2021 - 16 mar 2021
-                                </Text>
-                                <View>
-                                    <ExpensesChart />
-                                </View>
-                            </View>
-                        </View>
-                        <View style={styles._payment_btn_main}>
-                            {PaymentButton.map((paymentValue, paymenetIndex) => {
-                                return (
-                                    <TouchableOpacity
-                                        key={paymenetIndex}
-                                        style={[
-                                            styles._payment_btn,
-                                            { backgroundColor: paymentValue.bgColor },
-                                        ]}>
-                                        <Text style={{color: isBlackTheme ? Colors.white : Colors.black}}>{paymentValue.title}</Text>
-                                    </TouchableOpacity>
-                                );
-                            })}
-                        </View>
+
                         <View style={styles._in_out_main}>
                             <Text style={{...styles._in_out, color: isBlackTheme ? Colors.white : Colors.black}}>In & Out</Text>
                             <View style={styles._expenses_data_icons_main}>

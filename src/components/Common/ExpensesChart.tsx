@@ -22,7 +22,7 @@ class ExpensesChart extends React.PureComponent {
         const { labelWidth, selectedSlice } = this.state;
         const { label, value } = selectedSlice;
         const keys = ['google', 'facebook', 'linkedin', 'youtube', 'Twitter'];
-        const values = [15, 25, 35, 45, 55];
+        const values = [10, 25, 15, 25, 25];
         const colors = ['#f86f34', '#005cee', '#ffb731', '#f563bb', '#1ed37c']
         const data = keys.map((key, index) => {
             return {
