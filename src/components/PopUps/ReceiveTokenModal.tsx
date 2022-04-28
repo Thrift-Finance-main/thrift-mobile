@@ -297,8 +297,6 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                           labelStyle={styles.addressList}
                           renderItem={(a, props) => {
                             const address = a.address;
-                            console.log('a');
-                            console.log(a);
                             return (
                                   <View style={{
                                     flex: 1,

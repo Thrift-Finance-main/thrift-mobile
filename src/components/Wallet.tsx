@@ -80,10 +80,16 @@ const Wallet: FC<WalletProps> = (props) => {
             if (saddress) {
                 let endpoint = "accounts/" + saddress;
                 const accountState = await fetchBlockfrost(endpoint);
+                if (accountState.error){
+                    return;
+                }
                 console.log('accountState');
                 console.log(accountState);
                 endpoint =  "accounts/" + saddress + "/addresses";
                 const relatedAddresses = await fetchBlockfrost(endpoint);
+                if (relatedAddresses.error){
+                    return;
+                }
 
                 let currentAccountInLocal = await apiDb.getAccount(currentAccount.accountName);
                 currentAccountInLocal.balance = accountState.controlled_amount;
@@ -94,6 +100,9 @@ const Wallet: FC<WalletProps> = (props) => {
                 currentAccountInLocal.withdrawableAmount = accountState.withdrawable_amount;
 
                 const assetResponse = await fetchBlockfrost(endpoint+'/assets');
+                if (assetResponse.error){
+                    return;
+                }
 
                 const assetsWithDetails = await Promise.all(
                     assetResponse.map(async(a) => {

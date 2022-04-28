@@ -43,14 +43,13 @@ const SmartFi = (props: any) => {
     console.log('currentPrice');
     console.log(currentPrice);
 
-    const assets = currentAccount.assets;
+    //const assets = currentAccount.assets;
     console.log('assets');
-    console.log(assets[0].metadata.ticker);
-    console.log(assets[0].quantity);
-
+    /*
     const assetsChart = currentAccount.assets.map(asset => {
         return asset
     });
+    */
 
     useEffect(() => {
         SplashScreen.hide();
