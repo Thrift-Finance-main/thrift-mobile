@@ -47,12 +47,8 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
 
     useEffect(() =>{
         const getAccounts = async () => {
-            console.log('getAccounts in ManageAccount')
             const accs = await apiDb.getAllAccounts();
-            console.log(accs[0]);;
-            console.log('\n\n')
-            console.log(accs[1]);
-            console.log(accs.length);
+
             setAccounts(accs);
         }
 
@@ -64,7 +60,7 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
         }
     }, []);
 
-    const onSelectAccount = (account:IAccount) => {
+    const onSelectAccount = (account) => {
         apiDb.setCurrentAccount(account.accountName).then(r => {
             dispatch(setCurrentAccount(account));
             setCurrentAccountName(account.accountName);

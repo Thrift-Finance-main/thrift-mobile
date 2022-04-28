@@ -437,7 +437,6 @@ const Wallet: FC<WalletProps> = (props) => {
         }
     };
 
-
     return (
         <SafeAreaView
             style={{
@@ -574,14 +573,14 @@ const Wallet: FC<WalletProps> = (props) => {
             {props.showAssets ? (
                 <FlatList
                     style={{marginTop: heightPercentageToDP(1)}}
-                    data={currentAccount.assets}
+                    data={currentAccount && currentAccount.assets || []}
                     renderItem={renderItemMenuList}
                     keyExtractor={(item, index) => index.toString()}
                 />
             ) : (
                 <FlatList
                     style={{marginTop: heightPercentageToDP(1)}}
-                    data={currentAccount.history}
+                    data={currentAccount && currentAccount.history || []}
                     renderItem={renderItemTransaction}
                     keyExtractor={(item, index) => index.toString()}
                 />
