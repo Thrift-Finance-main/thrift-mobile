@@ -30,6 +30,28 @@ export const fetchBlockfrost = async (endpoint: string) => {
 
 }
 
+export const getProtocolParams = async () => {
+  const latest_block = await fetchBlockfrost('/blocks/latest');
+  const p = await fetchBlockfrost(`/epochs/${latest_block.epoch}/parameters`);
+
+  console.log('getProtocolParams');
+  console.log(p);
+  return {
+    linearFee: {
+      minFeeA: p.min_fee_a.toString(),
+      minFeeB: p.min_fee_b.toString(),
+    },
+    minUtxo: '1000000', //p.min_utxo, minUTxOValue protocol paramter has been removed since Alonzo HF. Calulation of minADA works differently now, but 1 minADA still sufficient for now
+    poolDeposit: p.pool_deposit,
+    keyDeposit: p.key_deposit,
+    coinsPerUtxoWord: p.coins_per_utxo_word,
+    maxValSize: p.max_val_size,
+    priceMem: p.price_mem,
+    priceStep: p.price_step,
+    maxTxSize: p.max_tx_size,
+    slot: latest_block.slot
+  };
+};
 export const getTxUTxOs = async (txHash:string) => {
   const result = await fetchBlockfrost(`/txs/${txHash}/utxos`);
   if (!result || result.error) return null;
@@ -44,6 +66,17 @@ export const getBlockInfo = async (blockHash:string) => {
   const result = await fetchBlockfrost(`/blocks/${blockHash}`);
   if (!result || result.error) return null;
   return result;
+};
+export const getTransactions = async (address:string, paginate = 1, count = 10) => {
+  const result = await fetchBlockfrost(
+      `/addresses/${address}/transactions?page=${paginate}&order=desc&count=${count}`
+  );
+  if (!result || result.error) return [];
+  return result.map((tx) => ({
+    txHash: tx.tx_hash,
+    txIndex: tx.tx_index,
+    blockHeight: tx.block_height,
+  }));
 };
 
 export const submitTxBlockfrost = async (endpoint: string, data: any) => {

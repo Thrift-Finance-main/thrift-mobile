@@ -1,6 +1,7 @@
 import {CONFIG} from "./account";
 import {addBigNum, divBigNum, subBigNum} from "./utils";
 import {apiDb} from "../db/LiteDb";
+import {getProtocolParams} from "../api/Blockfrost";
 export const RECEIVE_TX = 'RECEIVE_TX';
 export const SEND_TX = 'SEND_TX';
 export const SELF_TX = 'SELF_TX';
@@ -122,7 +123,6 @@ export const mergeAmounts = async (amounts) => {
 
     return amountDict;
 }
-
 export const processInputs = (inputs, allAddresses) => {
     let usedAddresses: { amount: string; address: string; }[] = [];
     let otherAddresses: { amount: string; address: string; }[] = [];
@@ -181,7 +181,6 @@ export const addressInCommon = (array1, array2) => {
     });
     return found;
 }
-
 export const containOtherAddresses = (addressesToCheck, allAddresses) => {
     const addressesFromOthers = addressesToCheck.filter(addr => {
         return !allAddresses.some(a => a.address === addr.address)
@@ -190,7 +189,20 @@ export const containOtherAddresses = (addressesToCheck, allAddresses) => {
     return addressesFromOthers.length > 0;
 }
 
+export const buildTransaction = async (
+    currentAccount: any,
+    toAddress: string,
+    parameters: any,
+    assets: any[],
+    encryptedHex: string | null = null,
+    password: string | null = null,
+) => {
 
+    const pParams = await getProtocolParams();
+    console.log('pParams');
+    console.log(pParams);
+
+}
 
 
 

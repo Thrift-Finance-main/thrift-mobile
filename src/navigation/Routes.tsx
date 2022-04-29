@@ -22,7 +22,7 @@ import ShowQRCodeScreen from '../screens/ShowQRCodeScreen';
 import BottomTabBar from './BottomTabBar';
 import SecurityScreen from '../screens/SecurityScreen';
 import ChangePasswordScreen from '../screens/ChangePasswordScreen';
-import CreateTokenScreen from '../screens/CreateTokenScreen';
+import SendScreen from '../screens/SendScreen';
 import ThumbPrintScreen from '../screens/ThumbPrintScreen';
 import CreateTargetScreen from '../screens/CreateTargetScreen';
 import SavingsScreen from '../screens/SavingsScreen';
@@ -30,7 +30,6 @@ import {ENTRY_WITCH_ROUTE} from "../db/tables";
 import MainScreen from "../screens/MainScreen";
 import ManageAccountScreen from "../screens/ManageAccountScreen";
 import LoadScreen from "../screens/LoadScreen";
-import SmartFiScreen2 from "../screens/SmartFiScreen2";
 
 const AuthenticationStack = createNativeStackNavigator();
 
@@ -112,7 +111,7 @@ export const AuthenticationStackNavigation = () => {
       />
       <AuthenticationStack.Screen
         name="CreateToken"
-        component={CreateTokenScreen}
+        component={SendScreen}
       />
       <AuthenticationStack.Screen
         name="ThumbPrint"

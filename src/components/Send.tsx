@@ -15,7 +15,7 @@ interface CreateTokenProps {
     isBlackTheme: any
     address?: string
 }
-const CreateToken: FC<CreateTokenProps> = (props) => {
+const Send: FC<CreateTokenProps> = (props) => {
     return (
         <SafeAreaView style={{
             ...styles.mainContainer, backgroundColor:
@@ -140,4 +140,4 @@ const styles = StyleSheet.create({
     }
 
 })
-export default CreateToken;
+export default Send;

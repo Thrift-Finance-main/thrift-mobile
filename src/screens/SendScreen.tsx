@@ -1,8 +1,8 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
-import CreateToken from '../components/CreateToken'
+import Send from '../components/Send'
 
-const CreateTokenScreen = ({ navigation, route }) => {
+const SendScreen = ({ navigation, route }) => {
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
 
     console.log('data CreateTokenScreen');
@@ -16,7 +16,7 @@ const CreateTokenScreen = ({ navigation, route }) => {
     }
 
     return (
-        <CreateToken
+        <Send
             // onContinuePress={onContinuePress}
             onBackIconPress={onBackIconPress}
             isBlackTheme={isBlackTheme}
@@ -26,4 +26,4 @@ const CreateTokenScreen = ({ navigation, route }) => {
     )
 }
 
-export default CreateTokenScreen
+export default SendScreen
