@@ -2,14 +2,13 @@ import React, {FC, useState} from 'react'
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
 import Button from './Common/Button'
 import Back from '../assets/back.svg'
 import InputField from './Common/InputField'
 import DarkBack from '../assets//DarkBack.svg'
 import {useSelector} from "react-redux";
-import {Dialog, DialogProps, PanningProvider, Picker, PickerProps, TextField} from "react-native-ui-lib";
+import {Colors, Dialog, DialogProps, PanningProvider, Picker, PickerProps, TextField} from "react-native-ui-lib";
 import swapIcon from "../assets/plus.png";
 import removeIcon from "../assets/remove.png";
 import pasteIcon from "../assets/paste.png";
@@ -25,7 +24,7 @@ interface CreateTokenProps {
 }
 const Send: FC<CreateTokenProps> = (props) => {
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
-    const [assets, setAssets] = useState(currentAccount.assets);
+    const [assets, setAssets] = useState(currentAccount.assets || []);
     const [selectedAssets, setSelectedAssets] = useState([]);
     const [toAddress, setToAddress] = useState('addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u');
     const [amount, setAmount] = useState('0');
@@ -182,9 +181,9 @@ const Send: FC<CreateTokenProps> = (props) => {
                             mode={Picker.modes.SINGLE}
                             rightIconSource={swapIcon}
                             renderCustomModal={renderDialog}
-                            style={{color: 'black', fontSize: 14, textAlign: 'center'}}
+                            style={{color: 'black', fontSize: 14, textAlign: 'center', marginLeft: 28}}
                         >
-                            {assets.map((asset,index) => (
+                            {assets && assets.length ? assets.map((asset,index) => (
                                 <Picker.Item
                                     key={asset+index}
                                     value={asset}
@@ -215,7 +214,8 @@ const Send: FC<CreateTokenProps> = (props) => {
                                         );
                                     }}
                                 />
-                            ))}
+                            ))
+                            : null}
                         </Picker>
                     </View>
                     <View
@@ -245,7 +245,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                                     iconSource: removeIcon,
                                                     onPress: () => removeSelectedAssets(asset),
                                                     accessibilityLabel: 'TextField Info',
-                                                    iconColor: Colors.red30
+                                                    iconColor: Colors.red10
                                                 }}
                                             />
 
