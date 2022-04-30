@@ -193,14 +193,15 @@ export const buildTransaction = async (
     currentAccount: any,
     toAddress: string,
     parameters: any,
+    amount: string,
     assets: any[],
     encryptedHex: string | null = null,
     password: string | null = null,
 ) => {
 
-    const pParams = await getProtocolParams();
     console.log('pParams');
-    console.log(pParams);
+    console.log(parameters);
+    console.log(currentAccount.selectedAddress);
 
 }
 

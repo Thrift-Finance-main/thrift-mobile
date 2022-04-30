@@ -34,8 +34,6 @@ export const getProtocolParams = async () => {
   const latest_block = await fetchBlockfrost('/blocks/latest');
   const p = await fetchBlockfrost(`/epochs/${latest_block.epoch}/parameters`);
 
-  console.log('getProtocolParams');
-  console.log(p);
   return {
     linearFee: {
       minFeeA: p.min_fee_a.toString(),

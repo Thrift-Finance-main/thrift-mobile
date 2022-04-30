@@ -1,6 +1,7 @@
 import React, {FC, useState} from 'react'
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
 import Button from './Common/Button'
@@ -11,6 +12,9 @@ import {useSelector} from "react-redux";
 import {Dialog, DialogProps, PanningProvider, Picker, PickerProps, TextField} from "react-native-ui-lib";
 import swapIcon from "../assets/plus.png";
 import removeIcon from "../assets/remove.png";
+import pasteIcon from "../assets/paste.png";
+import {buildTransaction} from "../lib/transactions";
+import {getProtocolParams, getTxInfo} from "../api/Blockfrost";
 
 interface CreateTokenProps {
     // onContinuePress: () => void
@@ -23,12 +27,14 @@ const Send: FC<CreateTokenProps> = (props) => {
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
     const [assets, setAssets] = useState(currentAccount.assets);
     const [selectedAssets, setSelectedAssets] = useState([]);
-    const [toAddress, setToAddress] = useState('');
-    const [amount, setAmount] = useState('');
+    const [toAddress, setToAddress] = useState('addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u');
+    const [amount, setAmount] = useState('0');
 
+    const sendTransaction = async () => {
+        const protocolParameters =  await getProtocolParams();
+        await buildTransaction(currentAccount,toAddress,protocolParameters,amount,selectedAssets);
+    };
     const updateSelectedAssets = async asset => {
-        console.log('updateSelectedAssets');
-        console.log(asset);
         let updatedAssets = assets.filter(a => a.asset_name !== asset.asset_name);
         setAssets(updatedAssets);
         let selecAssets = selectedAssets;
@@ -36,14 +42,20 @@ const Send: FC<CreateTokenProps> = (props) => {
     };
 
     const removeSelectedAssets = async asset => {
-        console.log('updateSelectedAssets');
-        console.log(asset);
         let updatedSelectedAssets = selectedAssets.filter(a => a.asset_name !== asset.asset_name);
         setSelectedAssets(updatedSelectedAssets);
         let aa = assets;
         aa.push(asset);
         setAssets(aa);
     };
+
+    const fetchCopiedText = async () => {
+        const text = await Clipboard.getString();
+        console.log('text');
+        console.log(text);
+        setToAddress(text);
+    };
+
 
     const renderDialog: PickerProps['renderCustomModal'] = modalProps => {
         const {visible, children, toggleModal, onDone} = modalProps;
@@ -111,6 +123,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                             ...styles.fromAccount, color: props.isBlackTheme ? Colors.white :
                                 Colors.black,
                         }}
+                        onPress={() => setAmount((currentAccount.balance/1000000).toString())}
                     >From {currentAccount.accountName} {currentAccount.balance ? currentAccount.balance/1000000 : 0} Ada</Text>
                     <Text
                         style={{
@@ -118,12 +131,23 @@ const Send: FC<CreateTokenProps> = (props) => {
                                 Colors.black,
                         }}
                     >Send to</Text>
-                    <InputField
-                        value={props.address || ''}
-                        placeHolder="Address"
-                        backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
-                        placeholderTextColor={props.isBlackTheme ? Colors.lightWhite : Colors.black}
+                    <TextField
+                        text70
+                        containerStyle={{marginBottom: 1, marginLeft: 12}}
+                        style={{textAlign: 'center', marginLeft: 20}}
+                        value={toAddress || null}
+                        placeholder={"Address"}
                         onChangeText={(text) =>{setToAddress(text)}}
+                        useBottomErrors
+                        validate={['required', (n) => { return n > 0 }]}
+                        errorMessage={"Not enough funds"}
+                        selectTextOnFocus={true}
+                        rightButtonProps={{
+                            iconSource: pasteIcon,
+                            onPress: () => fetchCopiedText(),
+                            accessibilityLabel: 'TextField Info',
+                            iconColor: Colors.black
+                        }}
                     />
                     <Text
                         style={{
@@ -131,63 +155,69 @@ const Send: FC<CreateTokenProps> = (props) => {
                                 Colors.black,
                         }}
                     >Amount</Text>
-
-                    <InputField
-                        placeHolder="0*00000"
-                        backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
-                        placeholderTextColor={props.isBlackTheme ? Colors.lightWhite : Colors.black}
+                    <TextField
+                        text70
+                        containerStyle={{marginBottom: 1, marginLeft: 12}}
+                        style={{textAlign: 'center'}}
+                        value={amount || null}
+                        placeholder={'Amount'}
                         onChangeText={(text) =>{setAmount(text)}}
+                        useBottomErrors
+                        validate={['required', (n) => { return n > 0 }]}
+                        errorMessage={"Not enough funds"}
                     />
-
-
                     <Text
                         style={{
                             ...styles.filedHeader, color: props.isBlackTheme ? Colors.white :
                                 Colors.black,
                         }}                    >Assets</Text>
-                    <Picker
-                        placeholder={'Add Asset'}
-                        onChange={item => {
-                            updateSelectedAssets(item).then(r => {})
-                        }}
-                        mode={Picker.modes.SINGLE}
-                        rightIconSource={swapIcon}
-                        renderCustomModal={renderDialog}
-                        style={{color: 'black', fontSize: 14, textAlign: 'center'}}
+                    <View
+                        style={{marginBottom: 1, marginLeft: 12}}
                     >
-                        {assets.map((asset,index) => (
-                            <Picker.Item
-                                key={asset+index}
-                                value={asset}
-                                label={''}
-                                labelStyle={styles.addressList}
-                                renderItem={(a, props) => {
-                                    const assetName = asset.asset_name;
-                                    console.log('a');
-                                    console.log(a);
-                                    return (
-                                        <View style={{
-                                            flex: 1,
-                                            height: 46
-                                        }}>
-
-                                            <Text style={{
-                                                ...styles.addressList,
+                        <Picker
+                            placeholder={'Add Asset'}
+                            onChange={item => {
+                                updateSelectedAssets(item).then(r => {})
+                            }}
+                            mode={Picker.modes.SINGLE}
+                            rightIconSource={swapIcon}
+                            renderCustomModal={renderDialog}
+                            style={{color: 'black', fontSize: 14, textAlign: 'center'}}
+                        >
+                            {assets.map((asset,index) => (
+                                <Picker.Item
+                                    key={asset+index}
+                                    value={asset}
+                                    label={''}
+                                    labelStyle={styles.addressList}
+                                    renderItem={(a, props) => {
+                                        const assetName = asset.asset_name;
+                                        console.log('a');
+                                        console.log(a);
+                                        return (
+                                            <View style={{
+                                                flex: 1,
+                                                height: 46
                                             }}>
 
-                                                {Buffer.from(assetName, 'hex').toString()}
-                                            </Text>
-                                            <Text style={{
-                                                ...styles.addressListTags,
-                                            }}>
-                                                {asset.quantity}
-                                            </Text>
-                                        </View>
-                                    );
-                                }}
-                            />
-                        ))}
-                    </Picker>
+                                                <Text style={{
+                                                    ...styles.addressList,
+                                                }}>
+
+                                                    {Buffer.from(assetName, 'hex').toString()}
+                                                </Text>
+                                                <Text style={{
+                                                    ...styles.addressListTags,
+                                                }}>
+                                                    {asset.quantity}
+                                                </Text>
+                                            </View>
+                                        );
+                                    }}
+                                />
+                            ))}
+                        </Picker>
+                    </View>
                     <View
                         style={{ flexDirection: "row", justifyContent: "space-between", paddingHorizontal: widthPercentageToDP(3), paddingVertical: heightPercentageToDP(2) }}
                     >
@@ -229,7 +259,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                     <Button
                         backgroundColor={Colors.primaryButton}
                         buttonTitle={"Transfer"}
-                        onPress={props.onBackIconPress}
+                        onPress={() => sendTransaction()}
                         titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
 
                     />
