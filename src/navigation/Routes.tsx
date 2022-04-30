@@ -11,7 +11,6 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import CreateAccountScreen from '../screens/CreateAccountScreen';
 import TermsScreen from '../screens/TermsScreen';
 import CopyPhraseScreen from '../screens/CopyPhraseScreen';
-
 import WalletScreen from '../screens/WalletScreen';
 import SmartFiScreen from '../screens/SmartFiScreen';
 import SettingsScreen from '../screens/SettingsScreen';
@@ -26,7 +25,6 @@ import SendScreen from '../screens/SendScreen';
 import ThumbPrintScreen from '../screens/ThumbPrintScreen';
 import CreateTargetScreen from '../screens/CreateTargetScreen';
 import SavingsScreen from '../screens/SavingsScreen';
-import {ENTRY_WITCH_ROUTE} from "../db/tables";
 import MainScreen from "../screens/MainScreen";
 import ManageAccountScreen from "../screens/ManageAccountScreen";
 import LoadScreen from "../screens/LoadScreen";
