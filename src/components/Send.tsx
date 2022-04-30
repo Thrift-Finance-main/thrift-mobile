@@ -13,7 +13,7 @@ import swapIcon from "../assets/plus.png";
 import removeIcon from "../assets/remove.png";
 import pasteIcon from "../assets/paste.png";
 import {buildTransaction} from "../lib/transactions";
-import {getProtocolParams, getTxInfo} from "../api/Blockfrost";
+import {fetchBlockfrost, getProtocolParams, getTxInfo} from "../api/Blockfrost";
 
 interface CreateTokenProps {
     // onContinuePress: () => void
@@ -31,7 +31,21 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     const sendTransaction = async () => {
         const protocolParameters =  await getProtocolParams();
-        await buildTransaction(currentAccount,toAddress,protocolParameters,amount,selectedAssets);
+        let endpoint = "accounts/" + currentAccount.rewardAddress;
+        let accountState = await fetchBlockfrost(endpoint);
+        console.log('accountState');
+        console.log(accountState);
+        endpoint = endpoint + "/addresses";
+        const relatedAddresses = await fetchBlockfrost(endpoint);
+
+        if (relatedAddresses.error){
+            return;
+        }
+        const assetResponse = await fetchBlockfrost(endpoint+'/assets');
+        console.log('assetResponse');
+        console.log(assetResponse);
+        accountState.assets = assetResponse;
+        await buildTransaction(currentAccount, accountState, toAddress, protocolParameters, amount, selectedAssets);
     };
     const updateSelectedAssets = async asset => {
         let updatedAssets = assets.filter(a => a.asset_name !== asset.asset_name);

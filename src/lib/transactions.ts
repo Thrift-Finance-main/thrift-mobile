@@ -1,7 +1,7 @@
 import {CONFIG} from "./account";
 import {addBigNum, divBigNum, subBigNum} from "./utils";
 import {apiDb} from "../db/LiteDb";
-import {getProtocolParams} from "../api/Blockfrost";
+import {getProtocolParams, IAccountState} from "../api/Blockfrost";
 export const RECEIVE_TX = 'RECEIVE_TX';
 export const SEND_TX = 'SEND_TX';
 export const SELF_TX = 'SELF_TX';
@@ -191,6 +191,7 @@ export const containOtherAddresses = (addressesToCheck, allAddresses) => {
 
 export const buildTransaction = async (
     currentAccount: any,
+    accountState: any,
     toAddress: string,
     parameters: any,
     amount: string,
@@ -201,6 +202,8 @@ export const buildTransaction = async (
 
     console.log('pParams');
     console.log(parameters);
+    console.log('accountState');
+    console.log(accountState);
     console.log(currentAccount.selectedAddress);
 
 }

@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/prefer-default-export,import/extensions,import/no-unresolved
 import {BLOCKFROST_API, BLOCKFROST_URL_TESTNET} from '../../config';
+import {IAccountState} from "../lib/transactions";
 
 
 /*
@@ -10,7 +11,18 @@ fetch(
   .then((res) => res.json())
   .then((res) => res.cardano[currency])
 * */
-export const fetchBlockfrost = async (endpoint: string) => {
+export interface IAccountState {
+  active: boolean;
+  active_epoch: any;
+  controlled_amount: string;
+  pool_id: string;
+  reserves_sum: string;
+  rewards_sum: string;
+  stake_address: string;
+  withdrawable_amount: string;
+  withdrawals_sum: boolean;
+}
+export const fetchBlockfrost = async (endpoint: string): Promise<IAccountState> => {
   try {
     // console.log('\n\nfetchBlockfrost');
     const address = BLOCKFROST_URL_TESTNET + `${endpoint}`;
