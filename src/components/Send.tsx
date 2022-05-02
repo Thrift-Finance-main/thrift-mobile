@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react'
+import React, {FC, useEffect, useRef, useState} from 'react'
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,8 +12,11 @@ import {Colors, Dialog, DialogProps, PanningProvider, Picker, PickerProps, TextF
 import swapIcon from "../assets/plus.png";
 import removeIcon from "../assets/remove.png";
 import pasteIcon from "../assets/paste.png";
-import {buildTransaction} from "../lib/transactions";
-import {fetchBlockfrost, getProtocolParams, getTxInfo} from "../api/Blockfrost";
+import {buildTransaction, classifyTx} from "../lib/transactions";
+import {fetchBlockfrost, getProtocolParams, getTxInfo, getTxUTxOs, getTxUTxOsByAddress} from "../api/Blockfrost";
+import {apiDb} from "../db/LiteDb";
+import {setCurrentAccount, setCurrentPrice} from "../store/Action";
+import {getPrices} from "../api";
 
 interface CreateTokenProps {
     // onContinuePress: () => void
@@ -26,26 +29,74 @@ const Send: FC<CreateTokenProps> = (props) => {
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
     const [assets, setAssets] = useState(currentAccount.assets || []);
     const [selectedAssets, setSelectedAssets] = useState([]);
+    const [accountState, setAccountState] = useState({});
+    const [utxos, setUtxos] = useState([]);
+    const [selectedUtxos, setSelectedUtxos] = useState([]);
     const [toAddress, setToAddress] = useState('addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u');
     const [amount, setAmount] = useState('0');
 
+    const useIsMounted = () => {
+        const isMounted = useRef(false);
+        // @ts-ignore
+        useEffect(() => {
+            isMounted.current = true;
+            return () => (isMounted.current = false);
+        }, []);
+        return isMounted;
+    };
+
+    const isMounted = useIsMounted();
+
+    useEffect(() =>{
+
+        const fetchData = async () => {
+            console.log('fetchData');
+            let endpoint = "accounts/" + currentAccount.rewardAddress;
+            let accountState = await fetchBlockfrost(endpoint);
+            console.log('accountState');
+            console.log(accountState);
+            setAccountState(accountState);
+            endpoint = endpoint + "/addresses";
+            const relatedAddresses = await fetchBlockfrost(endpoint);
+            console.log('relatedAddresses');
+            console.log(relatedAddresses);
+            if (relatedAddresses.error){
+                return;
+            }
+            const utxos = await Promise.all(
+                relatedAddresses.map(async a => {
+                    const utxos = await getTxUTxOsByAddress(a.address);
+                    if (utxos && !utxos.error){
+                        a.utxos = utxos;
+                        return a;
+                    }
+                })
+            );
+            setUtxos(utxos);
+        }
+
+        if (isMounted.current) {
+            // call the function
+            fetchData()
+                // make sure to catch any error
+                .catch(console.error);
+        }
+
+    }, [currentAccount.accountName]);
+
     const sendTransaction = async () => {
         const protocolParameters =  await getProtocolParams();
-        let endpoint = "accounts/" + currentAccount.rewardAddress;
-        let accountState = await fetchBlockfrost(endpoint);
-        console.log('accountState');
-        console.log(accountState);
-        endpoint = endpoint + "/addresses";
-        const relatedAddresses = await fetchBlockfrost(endpoint);
 
-        if (relatedAddresses.error){
-            return;
-        }
-        const assetResponse = await fetchBlockfrost(endpoint+'/assets');
-        console.log('assetResponse');
-        console.log(assetResponse);
-        accountState.assets = assetResponse;
-        await buildTransaction(currentAccount, accountState, toAddress, protocolParameters, amount, selectedAssets);
+
+        console.log('utxos');
+        console.log(utxos);
+
+        const outputs = [{
+            address: toAddress,
+            amount,
+            assets: selectedAssets
+        }]
+        await buildTransaction(currentAccount, accountState, selectedUtxos, outputs, protocolParameters);
     };
     const updateSelectedAssets = async asset => {
         let updatedAssets = assets.filter(a => a.asset_name !== asset.asset_name);

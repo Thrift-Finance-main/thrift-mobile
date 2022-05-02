@@ -67,6 +67,11 @@ export const getTxUTxOs = async (txHash:string) => {
   if (!result || result.error) return null;
   return result;
 };
+export const getTxUTxOsByAddress = async (address:string) => {
+  const result = await fetchBlockfrost(`/addresses/${address}/utxos`);
+  if (!result || result.error) return null;
+  return result;
+};
 export const getTxInfo = async (txHash:string) => {
   const result = await fetchBlockfrost(`/txs/${txHash}`);
   if (!result || result.error) return null;

@@ -194,10 +194,9 @@ export const containOtherAddresses = (addressesToCheck, allAddresses) => {
 export const buildTransaction = async (
     currentAccount: any,
     accountState: any,
-    toAddress: string,
+    utxos: any[],
+    outputs: any[],
     parameters: any,
-    amount: string,
-    assets: any[],
     password: string | null = null,
 ) => {
 
@@ -222,11 +221,17 @@ export const buildTransaction = async (
 
     console.log('txBuilder');
     const txBuilder = await getTransactionBuilder(parameters);
+    const txBuilderDraft = await getTransactionBuilder(parameters);
 
     console.log(txBuilder);
+    console.log(txBuilderDraft);
+
+    // coinSelection
+    // utxos, outputs
+    // in Send view, select tags(addresses) from where get the utxos,
 }
 
-export const getTransactionBuilder = async (protocolParams): TransactionBuilder => {
+export const getTransactionBuilder = async (protocolParams): Promise<TransactionBuilder> => {
 
     // console.log(getTransactionBuilder)
     return await TransactionBuilder.new(
