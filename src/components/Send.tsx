@@ -115,12 +115,15 @@ const Send: FC<CreateTokenProps> = (props) => {
             });
         });
 
+        const filterAssets = selectedAssets.filter(asset => asset.quantityToSend && asset.quantityToSend.length > 0 && parseInt(asset.quantityToSend) > 0);
         const outputs = [{
             address: toAddress,
-            amount,
-            assets: selectedAssets
+            assets: [...filterAssets, {unit: 'lovelace', quantityToSend: amount}]
         }];
-        await buildTransaction(currentAccount, accountState, filterUtxos, outputs, protocolParameters);
+        const tx = await buildTransaction(currentAccount, accountState, filterUtxos, outputs, protocolParameters);
+        if (tx && tx.error){
+            console.log(tx.error);
+        }
     };
 
     const updateSelectedAssets = async asset => {
@@ -128,6 +131,19 @@ const Send: FC<CreateTokenProps> = (props) => {
         setAssets(updatedAssets);
         let selecAssets = selectedAssets;
         selecAssets.push(asset);
+        setSelectedAssets(selecAssets);
+    };
+    const updateQuantityFromSelectedAsset = async (unit, quantity) => {
+        let selecAssets = selectedAssets;
+        selecAssets.map(a => {
+            if (a.asset_name === unit.assetName && a.unit === unit.unit){
+                a.quantityToSend = quantity;
+            }
+            return a;
+        });
+        console.log('selecAssets');
+        console.log(selecAssets);
+        setSelectedAssets(selecAssets);
     };
 
     const removeSelectedAssets = async asset => {
@@ -381,7 +397,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                                 containerStyle={{width: 128}}
                                                 floatingPlaceholder
                                                 placeholder={Buffer.from(asset.asset_name, 'hex').toString()}
-                                                onChangeText={(text) => console.log(text)}
+                                                onChangeText={(text) => updateQuantityFromSelectedAsset({assetName: asset.asset_name, unit: asset.unit}, text)}
                                                 helperText="this is an helper text"
                                                 rightButtonProps={{
                                                     iconSource: removeIcon,

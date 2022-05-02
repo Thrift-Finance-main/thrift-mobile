@@ -1,7 +1,7 @@
 import {CONFIG} from "./account";
 import {addBigNum, divBigNum, subBigNum} from "./utils";
 import {apiDb} from "../db/LiteDb";
-import {getProtocolParams, IAccountState} from "../api/Blockfrost";
+import {getProtocolParams, getTxUTxOsByAddress, IAccountState} from "../api/Blockfrost";
 import {decryptData} from "./cryptoLib";
 import {BigNum, Bip32PrivateKey, LinearFee, TransactionBuilder} from "@emurgo/react-native-haskell-shelley";
 export const RECEIVE_TX = 'RECEIVE_TX';
@@ -90,8 +90,6 @@ export const classifyTx = async (transaction, accountAddresses) => {
             }
     }
 };
-// amount1 - amount2
-// TODO: cardano-lib to .sub
 export const diffAmounts = async (amount1, amount2) => {
 
     let amountDict: { [unit: string]: number } = {};
@@ -109,7 +107,6 @@ export const diffAmounts = async (amount1, amount2) => {
 
     return amountDict;
 }
-
 export const mergeAmounts = async (amounts) => {
     let amountDict: { [unit: string]: number } = {};
 
@@ -202,8 +199,7 @@ export const buildTransaction = async (
 
     console.log('pParams');
     console.log(parameters);
-    console.log('utxos');
-    console.log(utxos);
+
     console.log('accountState');
     console.log(accountState);
     console.log('currentAccount.selectedAddress');
@@ -229,9 +225,75 @@ export const buildTransaction = async (
     console.log(txBuilder);
     console.log(txBuilderDraft);
 
-    // coinSelection
-    // utxos, outputs
-    // in Send view, select tags(addresses) from where get the utxos,
+    const mergedAssetsFromUtxos = await mergeAssetsFromUtxos(utxos);
+    console.log('mergedAssetsFromUtxos');
+    console.log(mergedAssetsFromUtxos);
+    console.log('outputs');
+    console.log(outputs[0]);
+    const mergedAssetsFromOutputs = await mergeAssetsFromOutputs(outputs);
+    console.log('mergedAssetsFromOutputs');
+    console.log(mergedAssetsFromOutputs);
+    const outputsAreValid = validOutputs(mergedAssetsFromUtxos,mergedAssetsFromOutputs);
+    console.log('outputsAreValid');
+    console.log(outputsAreValid);
+    if (!outputsAreValid) {
+        return {
+            error: 'Not enough assets in selected tags'
+        }
+    }
+}
+export const mergeAssetsFromUtxos = async (utxos) => {
+    console.log('utxos');
+    console.log(utxos); //  [{"address": {"address": "addr_test1qp699gyph5gj8c4whp62048z7w7kte2w5ghkpl36wwh5z84t9gat4d3njffvnlde55dwtqyev48z8ywwqask7rsmwd9s0pxmc2", "index": 0, "network": "0", "reference": "", "tags": [Array]}, "utxos": [[Object]]}]
+    let assets: { [unit: string]: string } = {};
+    await Promise.all(
+        utxos.map(utxo => {
+            console.log('utxo');
+            console.log(utxo); //  {"address": {"address": "addr_test1qp699gyph5gj8c4whp62048z7w7kte2w5ghkpl36wwh5z84t9gat4d3njffvnlde55dwtqyev48z8ywwqask7rsmwd9s0pxmc2", "index": 0, "network": "0", "reference": "", "tags": ["Main"]}, "utxos": [{"amount": [Array], "block": "ab69e2a0c1b8089875439210130bd60327738e1a8ef3fb36dfe05f8d018783c0", "data_hash": null, "output_index": 0, "tx_hash": "69d72b7e73b03c9dcd3f8ce6b185bdab8f85c5d989dffed51edc3f3c482beef0", "tx_index": 0}]}
+            utxo.utxos.map(async u => {
+                console.log('u');
+                console.log(u.amount); //  [{"quantity": "3000000", "unit": "lovelace"}, {"quantity": "900", "unit": "3fb0efd17304d74896130d9ea419a9883a2ef3c8bf9f9e39478dc21074574d54"}]
+                await Promise.all(
+                    u.amount.map(async a => {
+                        console.log('a');
+                        console.log(a);
+                        if (assets[a.unit] === undefined) {
+                            assets[a.unit] = a.quantity;
+                        } else {
+                            assets[a.unit] = await addBigNum(assets[a.unit], a.quantity);
+                        }
+                    })
+                );
+            });
+        })
+    );
+
+    return assets;
+}
+export const mergeAssetsFromOutputs = async (outputs: {address:string, assets:any[]}[]) => {
+    let assets: { [unit: string]: string } = {};
+    await Promise.all(
+        outputs.map(output => {output.assets.map(async a => {
+                if (assets[a.unit] === undefined) {
+                    assets[a.unit] = a.quantityToSend;
+                } else {
+                    assets[a.unit] = await addBigNum(assets[a.unit], a.quantityToSend);
+                }
+            });
+        })
+    );
+
+    return assets;
+}
+export const validOutputs = (mergedAssetsFromUtxos, mergedAssetsFromOutputs ) => {
+    for (let key in mergedAssetsFromOutputs) {
+        // check if the property/key is defined in the object itself, not in parent
+        if (!(mergedAssetsFromUtxos.hasOwnProperty(key)
+            && parseInt(mergedAssetsFromUtxos[key]) >= parseInt(mergedAssetsFromOutputs[key]))) {
+           return false;
+        }
+    }
+    return true;
 }
 
 export const getTransactionBuilder = async (protocolParams): Promise<TransactionBuilder> => {
