@@ -1,22 +1,18 @@
 import React, {FC, useEffect, useRef, useState} from 'react'
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {heightPercentageToDP, widthPercentageToDP} from '../utils/dimensions'
 import Button from './Common/Button'
 import Back from '../assets/back.svg'
-import InputField from './Common/InputField'
 import DarkBack from '../assets//DarkBack.svg'
 import {useSelector} from "react-redux";
-import {Chip, Colors, Dialog, DialogProps, PanningProvider, Picker, PickerProps, TextField} from "react-native-ui-lib";
+import {Chip, Colors, Dialog, PanningProvider, Picker, PickerProps, TextField} from "react-native-ui-lib";
 import swapIcon from "../assets/plus.png";
 import removeIcon from "../assets/remove.png";
 import pasteIcon from "../assets/paste.png";
-import {buildTransaction, classifyTx} from "../lib/transactions";
-import {fetchBlockfrost, getProtocolParams, getTxInfo, getTxUTxOs, getTxUTxOsByAddress} from "../api/Blockfrost";
-import {apiDb} from "../db/LiteDb";
-import {setCurrentAccount, setCurrentPrice} from "../store/Action";
-import {getPrices} from "../api";
+import {buildTransaction} from "../lib/transactions";
+import {fetchBlockfrost, getProtocolParams, getTxUTxOsByAddress} from "../api/Blockfrost";
 
 interface CreateTokenProps {
     // onContinuePress: () => void
@@ -32,7 +28,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [accountState, setAccountState] = useState({});
     const [utxos, setUtxos] = useState([]);
     const [availableTags, setAvailableTags] = useState([]);
-    const [selectedTags, setSelectedTags] = useState([]);
+    const [selectedTags, setSelectedTags] = useState(currentAccount.selectedAddress.tags);
     const [toAddress, setToAddress] = useState('addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u');
     const [amount, setAmount] = useState('0');
 
@@ -76,15 +72,15 @@ const Send: FC<CreateTokenProps> = (props) => {
                 })
             );
             let tags = new Set();
-            utxos.map(utxo => {
+            const updatedUtxos = utxos.map(utxo => {
                 const data = getAddrData(utxo.address, currentAccount.externalPubAddress);
                 if (data){
                     data.tags.map(tag => tags.add(tag));
                     utxo.address = data;
                     return utxo;
                 }
-            });
-            setUtxos(utxos);
+            }).filter(r => r !== undefined);
+            setUtxos(updatedUtxos);
             console.log('AvailableTags');
             console.log(tags);
             setAvailableTags(Array.from(tags));
@@ -112,13 +108,19 @@ const Send: FC<CreateTokenProps> = (props) => {
     }
     const sendTransaction = async () => {
         const protocolParameters =  await getProtocolParams();
+        // filter utxos
+        const filterUtxos = utxos.filter((utxo) =>{
+            return utxo.address.tags.some(tag => {
+                return selectedTags.includes(tag)
+            });
+        });
 
         const outputs = [{
             address: toAddress,
             amount,
             assets: selectedAssets
-        }]
-        await buildTransaction(currentAccount, accountState, utxos, outputs, protocolParameters);
+        }];
+        await buildTransaction(currentAccount, accountState, filterUtxos, outputs, protocolParameters);
     };
 
     const updateSelectedAssets = async asset => {
@@ -156,7 +158,6 @@ const Send: FC<CreateTokenProps> = (props) => {
         } else {
             setSelectedTags([]);
         }
-
     };
 
     const renderDialog: PickerProps['renderCustomModal'] = modalProps => {
