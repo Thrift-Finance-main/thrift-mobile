@@ -31,7 +31,8 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [selectedAssets, setSelectedAssets] = useState([]);
     const [accountState, setAccountState] = useState({});
     const [utxos, setUtxos] = useState([]);
-    const [selectedUtxos, setSelectedUtxos] = useState([]);
+    const [availableTags, setAvailableTags] = useState([]);
+    const [selectedTags, setSelectedTags] = useState([]);
     const [toAddress, setToAddress] = useState('addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u');
     const [amount, setAmount] = useState('0');
 
@@ -72,12 +73,19 @@ const Send: FC<CreateTokenProps> = (props) => {
                     }
                 })
             );
+            let tags = new Set();
             utxos.map(utxo => {
-                const data = getAddrData(utxo.address, currentAccount.externalPubAddress)
-                utxo.address = data;
-                return utxo;
+                const data = getAddrData(utxo.address, currentAccount.externalPubAddress);
+                if (data){
+                    data.tags.map(tag => tags.add(tag));
+                    utxo.address = data;
+                    return utxo;
+                }
             });
             setUtxos(utxos);
+            console.log('AvailableTags');
+            console.log(tags);
+            setAvailableTags(tags);
 
             // Get/show tags based on addresses in utxos array
             // Select tags from where get the ada and assets,
@@ -131,6 +139,14 @@ const Send: FC<CreateTokenProps> = (props) => {
         setToAddress(text);
     };
 
+    const onSelectTag = async (tag) => {
+        if (selectedTags.includes(tag)){
+            setSelectedTags(selectedTags.filter(t => t !== tag));
+        } else {
+            setSelectedTags([...selectedTags, tag])
+        }
+
+    };
 
     const renderDialog: PickerProps['renderCustomModal'] = modalProps => {
         const {visible, children, toggleModal, onDone} = modalProps;
@@ -207,23 +223,38 @@ const Send: FC<CreateTokenProps> = (props) => {
                             style={{flexDirection:'row', flexWrap:'wrap', marginTop: 8, marginLeft: 12}}
                         >
                             <Chip
-                                label={'Chip'}
-                                onPress={() => console.log('onPress')}
-                                containerStyle={{marginRight: 4}}
+                                key={'all'}
+                                label={'All'}
+                                onPress={() => onSelectTag('all')}
+                                containerStyle={{
+                                    marginRight: 4,
+                                    borderWidth: 1,
+                                    borderColor: 'gray'
+                                }}
                                 badgeProps={{
                                     label: '4',
-                                    backgroundColor: 'red'
+                                    backgroundColor: '#603EDA'
                                 }}
                             />
-                            <Chip
-                                label={'Chip'}
-                                onPress={() => console.log('onPress')}
+                            {
+                               Array.from(availableTags).map((tag,index) => {
+                                   return <Chip
+                                       key={tag+index}
+                                       label={tag}
+                                       onPress={() => onSelectTag(tag)}
+                                       containerStyle={{
+                                           marginRight: 4,
+                                           borderWidth: selectedTags.includes(tag) ? 2 : 1,
+                                           borderColor: selectedTags.includes(tag) ? '#F338C2' : 'black'
+                                       }}
+                                       badgeProps={{
+                                           label: '4',
+                                           backgroundColor: '#603EDA'
+                                       }}
+                                   />
+                               })
 
-                                badgeProps={{
-                                    label: '4',
-                                    backgroundColor: 'red'
-                                }}
-                            />
+                            }
                         </View>
 
                     </View>
