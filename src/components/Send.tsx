@@ -29,10 +29,18 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [utxos, setUtxos] = useState([]);
     const [availableTags, setAvailableTags] = useState([]);
     const [selectedTags, setSelectedTags] = useState(currentAccount.selectedAddress.tags);
+    const [selectAll, setSelectAll] = useState(false);
     const [toAddress, setToAddress] = useState('addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u');
     const [amount, setAmount] = useState('0');
 
-    const totalTags = availableTags.length || '0';
+    let totalUtxos = 0
+    utxos.map(utxo => {
+        if (utxo.utxos && utxo.utxos.length){
+            totalUtxos++;
+        }
+    })
+
+
 
     const useIsMounted = () => {
         const isMounted = useRef(false);
@@ -77,7 +85,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             const updatedUtxos = utxos.map(utxo => {
                 console.log('utxo.address');
                 console.log(utxo.address);
-                const data = getAddrData(utxo.address, currentAccount.externalPubAddress);
+                const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
                 console.log('data');
                 console.log(data);
                 if (data){
@@ -119,11 +127,14 @@ const Send: FC<CreateTokenProps> = (props) => {
     const sendTransaction = async () => {
         const protocolParameters =  await getProtocolParams();
         // filter utxos
-        const filterUtxos = utxos.filter((utxo) =>{
-            return utxo.address.tags.some(tag => {
-                return selectedTags.includes(tag)
+        let filterUtxos = utxos;
+        if (!selectAll){
+            filterUtxos = utxos.filter((utxo) =>{
+                return utxo.tags.some(tag => {
+                    return selectedTags.includes(tag)
+                });
             });
-        });
+        }
 
         const filterAssets = selectedAssets.filter(asset => asset.quantityToSend && asset.quantityToSend.length > 0 && parseInt(asset.quantityToSend) > 0);
         const outputs = [{
@@ -151,8 +162,6 @@ const Send: FC<CreateTokenProps> = (props) => {
             }
             return a;
         });
-        console.log('selecAssets');
-        console.log(selecAssets);
         setSelectedAssets(selecAssets);
     };
 
@@ -181,8 +190,10 @@ const Send: FC<CreateTokenProps> = (props) => {
         const nAvailableTags = availableTags.length;
         if (selectedTags.length < nAvailableTags){
             setSelectedTags(availableTags);
+            setSelectAll(true);
         } else {
             setSelectedTags([]);
+            setSelectAll(false);
         }
     };
 
@@ -270,7 +281,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                     borderColor: 'gray'
                                 }}
                                 badgeProps={{
-                                    label: availableTags.length,
+                                    label: totalUtxos,
                                     backgroundColor: '#603EDA'
                                 }}
                             />
@@ -359,8 +370,6 @@ const Send: FC<CreateTokenProps> = (props) => {
                                     labelStyle={styles.addressList}
                                     renderItem={(a, props) => {
                                         const assetName = asset.asset_name;
-                                        console.log('a');
-                                        console.log(a);
                                         return (
                                             <View style={{
                                                 flex: 1,
@@ -401,7 +410,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                         selectedAssets.length ?
                             selectedAssets.map(asset => {
                                 return <View
-                                        style={{ flexDirection: "row", paddingHorizontal: widthPercentageToDP(3)}}
+                                        style={{flexDirection:'row', flexWrap:'wrap', paddingHorizontal: widthPercentageToDP(3)}}
                                         >
                                             <TextField
                                                 containerStyle={{width: 128}}
@@ -422,16 +431,19 @@ const Send: FC<CreateTokenProps> = (props) => {
                             : null
                     }
                     <View
-                        style={{ height: heightPercentageToDP(7) }}
+                        style={{ height: heightPercentageToDP(7)}}
                     />
-                    <Button
-                        backgroundColor={"#F338C2"}
-                        buttonTitle={"Transfer"}
-                        onPress={() => sendTransaction()}
-                        titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
+                        <Button
+                            backgroundColor={"#F338C2"}
+                            buttonTitle={"Transfer"}
+                            onPress={() => sendTransaction()}
+                            titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
 
+                        />
+                    </View>
+                    <View
+                        style={{height: heightPercentageToDP(4)}}
                     />
-                </View>
             </ScrollView>
         </SafeAreaView>
     )
