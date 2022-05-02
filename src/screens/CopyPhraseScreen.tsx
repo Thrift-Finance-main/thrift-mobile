@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import CopyPhrase from '../components/CopyPhrase'
-import Clipboard from '@react-native-community/clipboard';
+//import Clipboard from '@react-native-community/clipboard';
 import { useSelector } from 'react-redux';
 import {createAccount, generateAdaMnemonic} from "../lib/account";
 import { Toast } from 'react-native-ui-lib';
@@ -29,7 +29,7 @@ const CopyPhraseScreen = ({ navigation, route }) => {
 
     const onCopyPress = (data:string) => {
         setCopyNotification(true)
-        Clipboard.setString(data);
+        //Clipboard.setString(data);
         setTimeout(() => {
             setCopyNotification(false)
             navigation.navigate("VerifyPhrase")

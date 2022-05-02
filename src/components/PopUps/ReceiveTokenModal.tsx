@@ -11,7 +11,7 @@ import QRImage from '../../assets/QRImage.svg';
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import {useDispatch, useSelector} from "react-redux";
 import {addressSlice} from "../../utils";
-import Clipboard from '@react-native-community/clipboard';
+//import Clipboard from '@react-native-community/clipboard';
 import Scan from "../QrCodeCamera";
 import CameraQr from "../CameraQr";
 import {
@@ -215,7 +215,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                               }}
                             >
                               <Text
-                                onPress={() => Clipboard.setString('mail@mail.com')}
+                                onPress={() => {/*Clipboard.setString('mail@mail.com')*/}}
                                 style={{ textAlign: "center", color: Colors.white }}
                               >Copy</Text>
 
@@ -243,7 +243,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                       justifyContent: "center",
                       marginBottom: heightPercentageToDP(2)
                     }}
-                    onPress={() => Clipboard.setString(selectedAddress)}
+                    onPress={() => {/*Clipboard.setString(selectedAddress)}*/}}
                 >
                   <Text
 
