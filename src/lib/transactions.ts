@@ -2,6 +2,8 @@ import {CONFIG} from "./account";
 import {addBigNum, divBigNum, subBigNum} from "./utils";
 import {apiDb} from "../db/LiteDb";
 import {getProtocolParams, IAccountState} from "../api/Blockfrost";
+import {decryptData} from "./cryptoLib";
+import {BigNum, Bip32PrivateKey, LinearFee, TransactionBuilder} from "@emurgo/react-native-haskell-shelley";
 export const RECEIVE_TX = 'RECEIVE_TX';
 export const SEND_TX = 'SEND_TX';
 export const SELF_TX = 'SELF_TX';
@@ -196,7 +198,6 @@ export const buildTransaction = async (
     parameters: any,
     amount: string,
     assets: any[],
-    encryptedHex: string | null = null,
     password: string | null = null,
 ) => {
 
@@ -206,6 +207,43 @@ export const buildTransaction = async (
     console.log(accountState);
     console.log(currentAccount.selectedAddress);
 
+    let paymentKey = null;
+    let accountKey = null;
+    if (password && password.length){
+        let decryptedPassw = await decryptData(password, currentAccount.encryptedMasterKey);
+
+        accountKey = await Bip32PrivateKey.from_bytes(
+            // @ts-ignore
+            Buffer.from(decryptedPassw, 'hex')
+        );
+
+        paymentKey = (await (await accountKey.derive(0)).derive(0)).to_raw_key();
+    }
+
+    console.log('txBuilder');
+    const txBuilder = await getTransactionBuilder(parameters);
+
+    console.log(txBuilder);
+}
+
+export const getTransactionBuilder = async (protocolParams): TransactionBuilder => {
+
+    // console.log(getTransactionBuilder)
+    return await TransactionBuilder.new(
+        await LinearFee.new(
+            await BigNum.from_str(protocolParams.linearFee.minFeeA),
+            await BigNum.from_str(protocolParams.linearFee.minFeeB)),
+        // minimum utxo value
+        await BigNum.from_str(protocolParams.minUtxo),
+        // pool deposit
+        await BigNum.from_str(protocolParams.poolDeposit),
+        // key deposit
+        await BigNum.from_str(protocolParams.keyDeposit),
+        // max_value_size
+        parseInt(protocolParams.maxValSize),
+        // max_tx_size
+        protocolParams.maxTxSize,
+    );
 }
 
 

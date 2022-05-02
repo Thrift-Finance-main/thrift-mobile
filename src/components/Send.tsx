@@ -31,8 +31,6 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     const sendTransaction = async () => {
         const protocolParameters =  await getProtocolParams();
-        console.log('protocolParameters');
-        console.log(protocolParameters);
         let endpoint = "accounts/" + currentAccount.rewardAddress;
         let accountState = await fetchBlockfrost(endpoint);
         console.log('accountState');
