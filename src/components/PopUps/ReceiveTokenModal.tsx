@@ -219,7 +219,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                                 height: heightPercentageToDP(4.5),
                                 width: widthPercentageToDP(15),
                                 borderRadius: 5,
-                                backgroundColor: "blue",
+                                backgroundColor: "#F338C2",
                                 justifyContent: "center",
                               }}
                             >
@@ -248,7 +248,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                       height: heightPercentageToDP(4.5),
                       width: widthPercentageToDP(15),
                       borderRadius: 5,
-                      backgroundColor: Colors.color2,
+                      backgroundColor: '#F338C2',
                       justifyContent: "center",
                       marginBottom: heightPercentageToDP(2)
                     }}
@@ -271,12 +271,12 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                       backgroundColor: Colors.color7,
                       justifyContent: "center",
                       marginBottom: heightPercentageToDP(2),
-                      borderColor: Colors.color5,
+                      borderColor: '#F338C2',
                       borderWidth: 1
                     }}
                 >
                   <Text
-                      style={{ textAlign: "center", color: Colors.color5 }}
+                      style={{ textAlign: "center", color: '#F338C2' }}
                   >Share</Text>
 
                 </TouchableOpacity>
