@@ -1,8 +1,10 @@
 import '../../shim';
 
 import {
+  Address,
   BaseAddress,
   Bip32PrivateKey,
+  ByronAddress,
   RewardAddress,
   StakeCredential,
 } from '@emurgo/react-native-haskell-shelley';
@@ -251,3 +253,24 @@ export const createAccount = async (
   };
   return newAccount;
 };
+
+export const validateAddress  = async (address:string) => {
+  try {
+    if (await ByronAddress.is_valid(address)){
+      return true;
+    }
+    const shelleyAddress = await Address.from_bech32(address);
+    if (await ByronAddress.from_address(shelleyAddress)) {
+      return true;
+    }
+    if (await BaseAddress.from_address(shelleyAddress)){
+      return true;
+    }
+    if (await RewardAddress.from_address(shelleyAddress)){
+      return true;
+    }
+    return false
+  } catch (error) {
+    return false
+  }
+}
