@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useRef, useState} from 'react'
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {heightPercentageToDP, widthPercentageToDP} from '../utils/dimensions'
@@ -21,6 +21,7 @@ interface CreateTokenProps {
     isBlackTheme: any
     address?: string
 }
+
 const Send: FC<CreateTokenProps> = (props) => {
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
     const [assets, setAssets] = useState(currentAccount.assets || []);
@@ -32,6 +33,8 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [selectAll, setSelectAll] = useState(false);
     const [toAddress, setToAddress] = useState('addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u');
     const [amount, setAmount] = useState('5');
+    const [activeTab, setActiveTab] = useState('1st');
+    const [tabs, setTabs] = useState([{label: '1st'}]);
 
     let totalUtxos = 0
     utxos.map(utxo => {
@@ -194,6 +197,17 @@ const Send: FC<CreateTokenProps> = (props) => {
             setSelectAll(false);
         }
     };
+    const onAddRecipient = () => {
+        // add new tx template to tx list
+        //  '1st 2nd 3rd 4th'.
+        console.log('onAddRecipient');
+        let tbs = tabs;
+        const newLabel = tbs[tbs.length-1];
+        console.log(newLabel);
+        tbs.push({label: (parseInt(newLabel.label[0])+1)+'st'});
+        console.log(tbs);
+        setTabs(tbs);
+    };
 
     const renderDialog: PickerProps['renderCustomModal'] = modalProps => {
         const {visible, children, toggleModal, onDone} = modalProps;
@@ -301,6 +315,44 @@ const Send: FC<CreateTokenProps> = (props) => {
                         </View>
 
                     </View>
+
+
+                    <View style={styles._tabs_main}>
+                        {
+                            tabs.map(tab =>{
+                                console.log(tabs.length);
+                                return <TouchableOpacity
+                                    style={
+                                        activeTab === tab.label ? styles._active_tab : styles._tab
+                                    }
+                                    onPress={() => setActiveTab(tab.label)}>
+                                    <Text
+                                        style={{...
+                                                activeTab === tab.label
+                                                    ? styles._active_tab_text
+                                                    : styles._tab_text,
+                                            fontSize: 14
+                                        }}>
+                                        {tab.label}
+                                    </Text>
+                                </TouchableOpacity>
+                            })
+                        }
+                        <TouchableOpacity
+                            style={activeTab === 'AddRecipient' ? styles._active_tab : styles._tab}
+                            onPress={() => onAddRecipient()}>
+                            <Text
+                                style={{...
+                                        activeTab === 'AddRecipient'
+                                            ? styles._active_tab_text
+                                            : styles._tab_text,
+                                }}
+                            >
+                                Add Recipient
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+
                     <Text
                         style={{
                             ...styles.filedHeader, color: props.isBlackTheme ? Colors.white :
@@ -470,7 +522,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         letterSpacing: 1,
         paddingHorizontal: widthPercentageToDP(2.5),
-        paddingVertical: heightPercentageToDP(2.5),
+        paddingVertical: heightPercentageToDP(1.5),
         fontWeight: "bold"
     },
     fromAccount: {
@@ -500,6 +552,43 @@ const styles = StyleSheet.create({
     addressListTitle: {
         fontWeight: 'bold',
         marginBottom: heightPercentageToDP(1)
+    },
+    _tabs_main: {
+        backgroundColor: '#e9eeff',
+        marginTop: 10,
+        borderRadius: 100,
+        padding: 5,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    _active_tab: {
+        backgroundColor: '#fff',
+        elevation: 1,
+        borderRadius: 100,
+        height: 30,
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    _active_tab_text: {
+        color: '#000',
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        fontSize: 12,
+    },
+    _tab: {
+        backgroundColor: '#e9eeff',
+        borderRadius: 100,
+        height: 30,
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    _tab_text: {
+        color: 'gray',
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        fontSize: 12,
     }
 })
 export default Send;
