@@ -36,6 +36,8 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [toAddress, setToAddress] = useState('addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u');
     const [amount, setAmount] = useState('0');
 
+    const totalTags = availableTags.length || '0';
+
     const useIsMounted = () => {
         const isMounted = useRef(false);
         // @ts-ignore
@@ -85,7 +87,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             setUtxos(utxos);
             console.log('AvailableTags');
             console.log(tags);
-            setAvailableTags(tags);
+            setAvailableTags(Array.from(tags));
 
             // Get/show tags based on addresses in utxos array
             // Select tags from where get the ada and assets,
@@ -139,11 +141,20 @@ const Send: FC<CreateTokenProps> = (props) => {
         setToAddress(text);
     };
 
-    const onSelectTag = async (tag) => {
+    const onSelectTag = (tag) => {
         if (selectedTags.includes(tag)){
             setSelectedTags(selectedTags.filter(t => t !== tag));
         } else {
             setSelectedTags([...selectedTags, tag])
+        }
+    };
+    const onSelectAllTags = () => {
+        // select all
+        const nAvailableTags = availableTags.length;
+        if (selectedTags.length < nAvailableTags){
+            setSelectedTags(availableTags);
+        } else {
+            setSelectedTags([]);
         }
 
     };
@@ -225,19 +236,19 @@ const Send: FC<CreateTokenProps> = (props) => {
                             <Chip
                                 key={'all'}
                                 label={'All'}
-                                onPress={() => onSelectTag('all')}
+                                onPress={onSelectAllTags}
                                 containerStyle={{
                                     marginRight: 4,
                                     borderWidth: 1,
                                     borderColor: 'gray'
                                 }}
                                 badgeProps={{
-                                    label: '4',
+                                    label: availableTags.length,
                                     backgroundColor: '#603EDA'
                                 }}
                             />
                             {
-                               Array.from(availableTags).map((tag,index) => {
+                                availableTags.map((tag,index) => {
                                    return <Chip
                                        key={tag+index}
                                        label={tag}
@@ -246,10 +257,6 @@ const Send: FC<CreateTokenProps> = (props) => {
                                            marginRight: 4,
                                            borderWidth: selectedTags.includes(tag) ? 2 : 1,
                                            borderColor: selectedTags.includes(tag) ? '#F338C2' : 'black'
-                                       }}
-                                       badgeProps={{
-                                           label: '4',
-                                           backgroundColor: '#603EDA'
                                        }}
                                    />
                                })
