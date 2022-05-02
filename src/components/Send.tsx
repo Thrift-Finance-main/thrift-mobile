@@ -13,6 +13,7 @@ import removeIcon from "../assets/remove.png";
 import pasteIcon from "../assets/paste.png";
 import {buildTransaction} from "../lib/transactions";
 import {fetchBlockfrost, getProtocolParams, getTxUTxOsByAddress} from "../api/Blockfrost";
+import {validateAddress} from "../lib/account";
 
 interface CreateTokenProps {
     // onContinuePress: () => void
@@ -32,6 +33,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [selectedTags, setSelectedTags] = useState(currentAccount.selectedAddress.tags);
     const [selectAll, setSelectAll] = useState(false);
     const [toAddress, setToAddress] = useState('addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u');
+    const [toAddressError, setToAddressError] = useState(false);
     const [amount, setAmount] = useState('5');
     const [activeTab, setActiveTab] = useState('1st');
     const [tabs, setTabs] = useState([{label: '1st'}]);
@@ -176,7 +178,10 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     const fetchCopiedText = async () => {
         const text = await Clipboard.getString();
-        setToAddress(text);
+        const validAddress = await validateAddress(text);
+        if (validAddress){
+            setToAddress(text);
+        }
     };
 
     const onSelectTag = (tag) => {
@@ -207,6 +212,17 @@ const Send: FC<CreateTokenProps> = (props) => {
         tbs.push({label: (parseInt(newLabel.label[0])+1)+'st'});
         console.log(tbs);
         setTabs(tbs);
+    };
+    const setToAddr = async (address) => {
+        // add new tx template to tx list
+        //  '1st 2nd 3rd 4th'.
+        const validAddress = await validateAddress(address);
+        if (!validAddress){
+            setToAddressError(true);
+        } else {
+            setToAddressError(false);
+        }
+        setToAddress(address);
     };
 
     const renderDialog: PickerProps['renderCustomModal'] = modalProps => {
@@ -365,10 +381,10 @@ const Send: FC<CreateTokenProps> = (props) => {
                         style={{textAlign: 'center', marginLeft: 20, fontSize: 10}}
                         value={toAddress || null}
                         placeholder={"Address"}
-                        onChangeText={(text) =>{setToAddress(text)}}
+                        onChangeText={(text) =>{setToAddr(text).then(r => {})}}
                         useBottomErrors
-                        validate={['required', (n) => { return n > 0 }]}
-                        errorMessage={"Not enough funds"}
+                        validate={['required', (text) => !toAddressError]}
+                        errorMessage={"Invalid address"}
                         selectTextOnFocus={true}
                         rightButtonProps={{
                             iconSource: pasteIcon,

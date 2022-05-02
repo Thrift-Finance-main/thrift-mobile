@@ -257,16 +257,20 @@ export const createAccount = async (
 export const validateAddress  = async (address:string) => {
   try {
     if (await ByronAddress.is_valid(address)){
+      console.log('ByronAddress');
       return true;
     }
     const shelleyAddress = await Address.from_bech32(address);
     if (await ByronAddress.from_address(shelleyAddress)) {
+      console.log('ByronAddress2');
       return true;
     }
     if (await BaseAddress.from_address(shelleyAddress)){
+      console.log('BaseAddress');
       return true;
     }
     if (await RewardAddress.from_address(shelleyAddress)){
+      console.log('RewardAddress');
       return true;
     }
     return false
