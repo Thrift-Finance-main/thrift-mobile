@@ -98,6 +98,7 @@ const Send: FC<CreateTokenProps> = (props) => {
         }]
         await buildTransaction(currentAccount, accountState, selectedUtxos, outputs, protocolParameters);
     };
+
     const updateSelectedAssets = async asset => {
         let updatedAssets = assets.filter(a => a.asset_name !== asset.asset_name);
         setAssets(updatedAssets);

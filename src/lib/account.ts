@@ -191,12 +191,16 @@ export const createAccount = async (
       TESTNET_NETWORK_INDEX,
     );
 
+    let tags = [];
+    if (i === 0){
+      tags = ['Main']
+    }
     if (externalPubAddressM && externalPubAddressM.length) {
       externalPubAddress.push({
         index: i,
         network: TESTNET_NETWORK_INDEX,
         reference: '',
-        tags: [],
+        tags,
         address: externalPubAddressM,
       });
     }
@@ -211,6 +215,10 @@ export const createAccount = async (
       TESTNET_NETWORK_INDEX,
     );
 
+    let tags = [];
+    if (i === 0){
+      tags = ['Main']
+    }
     if (internalPubAddressM && internalPubAddressM.length) {
       internalPubAddress.push({
         index: i,
@@ -231,7 +239,7 @@ export const createAccount = async (
     publicKeyHex,
     encryptedPublicKeyHex,
     rewardAddress,
-    selectedAddress: externalPubAddress[0].address,
+    selectedAddress: externalPubAddress[0],
     internalPubAddress,
     externalPubAddress,
     delegated: false,

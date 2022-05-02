@@ -46,24 +46,33 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
   const customChipsInput = React.createRef<ChipsInput>();
 
   const selectedAddress = currentAccount.selectedAddress;
-  let addrs = currentAccount.externalPubAddress.filter(addr => addr.address === selectedAddress);
-
+  console.log('selectedAddress');
+  console.log(selectedAddress);
+  let addrs = currentAccount.externalPubAddress.filter(addr => addr.address === selectedAddress.address);
+  console.log('addrs');
+  console.log(addrs);
   let relatedTags = addrs[0].tags;
+
+  console.log('relatedTags');
+  console.log(relatedTags);
+
   relatedTags = relatedTags.map(tag => {
     return {label: tag}
   })
 
   const updateSelectedAddress = async addr => {
+    console.log('updateSelectedAddress');
+    console.log(addr);
     if (addr && addr.address) {
-      await apiDb.setAccountSelectedAddress(currentAccount.accountName, addr.address);
+      await apiDb.setAccountSelectedAddress(currentAccount.accountName, addr);
       const acc = await apiDb.getAccount(currentAccount.accountName);
       dispatch(setCurrentAccount(acc));
     }
   };
   const onCreateTag = (value: string) => {
-    apiDb.getAccountTagsByAddress(currentAccount.accountName, selectedAddress).then(tags => {
+    apiDb.getAccountTagsByAddress(currentAccount.accountName, selectedAddress.address).then(tags => {
       let updatedTags = [...tags, value];
-      apiDb.setAccountTagsByAddress(currentAccount.accountName, selectedAddress, updatedTags).then(r=>{
+      apiDb.setAccountTagsByAddress(currentAccount.accountName, selectedAddress.address, updatedTags).then(r=>{
         apiDb.getAccount(currentAccount.accountName).then(acc => {
           dispatch(setCurrentAccount(acc));
         });
@@ -73,9 +82,9 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
   }
   const onTagPress = (tagIndex: number, markedTagIndex: number) => {
     if (markedTagIndex !== undefined){
-      apiDb.getAccountTagsByAddress(currentAccount.accountName, selectedAddress).then(tags => {
+      apiDb.getAccountTagsByAddress(currentAccount.accountName, selectedAddress.address).then(tags => {
         let updatedTags = tags.filter((tag, index)=> index !== markedTagIndex );
-        apiDb.setAccountTagsByAddress(currentAccount.accountName, selectedAddress, updatedTags).then(r=>{
+        apiDb.setAccountTagsByAddress(currentAccount.accountName, selectedAddress.address, updatedTags).then(r=>{
           apiDb.getAccount(currentAccount.accountName).then(acc => {
             dispatch(setCurrentAccount(acc));
           });
@@ -171,7 +180,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                         minHeight: 240
                       }} >
                         <QRCode
-                            value={selectedAddress}
+                            value={selectedAddress.address}
                             size={200}
                             bgColor='black'
                             fgColor='white'/>
@@ -277,7 +286,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
 
               </View>
               <Picker
-                    placeholder={addressSlice(selectedAddress, 18) || ''}
+                    placeholder={addressSlice(selectedAddress.address, 18) || ''}
                     onChange={item => {
                       updateSelectedAddress(item).then(r => {})
                     }}
@@ -302,14 +311,14 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
 
                                     <Text style={{
                                       ...styles.addressList,
-                                      fontWeight: (address === selectedAddress ? 'bold' : '')
+                                      fontWeight: (address === selectedAddress.address ? 'bold' : '')
                                     }}>
 
                                       {addressSlice(address, 20)}
                                     </Text>
                                     <Text style={{
                                       ...styles.addressListTags,
-                                      fontWeight: (address === selectedAddress ? 'bold' : '')
+                                      fontWeight: (address === selectedAddress.address ? 'bold' : '')
                                     }}>
                                       {a.tags.map(tag => {
                                         return '#'+tag+' '
@@ -329,6 +338,8 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                     inputStyle={styles.customInput}
                     onCreateTag={(w) => onCreateTag(w)}
                     onTagPress={onTagPress}
+                    disableTagAdding={selectedAddress.index === 0}
+                    disableTagRemoval={selectedAddress.index === 0}
                 />
 
 
