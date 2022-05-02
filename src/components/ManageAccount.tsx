@@ -161,7 +161,7 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
                             bottom: 0
                         }}>
                         <Button
-                            backgroundColor={Colors.primaryButton}
+                            backgroundColor={"#F338C2"}
                             buttonTitle='Create Account'
                             onPress={props.onCreateAccountPress}
                             titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
@@ -171,7 +171,7 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
                             style={{ height: heightPercentageToDP(2) }}
                         />
                         <Button
-                            backgroundColor={Colors.primaryButtonColor2}
+                            backgroundColor={"#603EDA"}
                             buttonTitle='Restore Account'
                             onPress={props.onRestoreAccountPress}
 

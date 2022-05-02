@@ -31,7 +31,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [selectedTags, setSelectedTags] = useState(currentAccount.selectedAddress.tags);
     const [selectAll, setSelectAll] = useState(false);
     const [toAddress, setToAddress] = useState('addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u');
-    const [amount, setAmount] = useState('0');
+    const [amount, setAmount] = useState('5');
 
     let totalUtxos = 0
     utxos.map(utxo => {
@@ -39,8 +39,6 @@ const Send: FC<CreateTokenProps> = (props) => {
             totalUtxos++;
         }
     })
-
-
 
     const useIsMounted = () => {
         const isMounted = useRef(false);
