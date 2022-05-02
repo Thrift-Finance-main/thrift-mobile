@@ -153,7 +153,7 @@ const CreatePin: FC<CreatePinProps> = (props) => {
                     text60
                     labelStyle={{fontSize: 14, fontWeight: 'bold', letterSpacing: 2, textAlign: "center"}}
                     style={styles.buttonStyle}
-                    backgroundColor={CustomColors.primaryButton}
+                    backgroundColor="#603EDA"
                     disabled={!props.validate}
                     enableShadow
                     animateLayout

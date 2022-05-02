@@ -59,7 +59,7 @@ const Language: FC<LanguageProps> = (props) => {
                     style={{ height: heightPercentageToDP(40) }}
                 />
                 <Button
-                    backgroundColor={Colors.primaryButton}
+                    backgroundColor="#603EDA"
                     buttonTitle={translate('Common.Continue')}
                     onPress={props.onContinuePress}
                     titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}

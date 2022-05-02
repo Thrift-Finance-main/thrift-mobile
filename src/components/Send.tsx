@@ -71,16 +71,26 @@ const Send: FC<CreateTokenProps> = (props) => {
                     }
                 })
             );
+            console.log('utxos');
+            console.log(utxos);
             let tags = new Set();
             const updatedUtxos = utxos.map(utxo => {
+                console.log('utxo.address');
+                console.log(utxo.address);
                 const data = getAddrData(utxo.address, currentAccount.externalPubAddress);
+                console.log('data');
+                console.log(data);
                 if (data){
                     data.tags.map(tag => tags.add(tag));
-                    utxo.address = data;
+                    utxo = {...utxo, ...data};
+                    console.log('utxo000');
+                    console.log(utxo)
                     return utxo;
                 }
             }).filter(r => r !== undefined);
             setUtxos(updatedUtxos);
+            console.log('updatedUtxos');
+            console.log(updatedUtxos);
             console.log('AvailableTags');
             console.log(tags);
             setAvailableTags(Array.from(tags));

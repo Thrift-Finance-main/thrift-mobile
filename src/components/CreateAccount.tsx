@@ -100,7 +100,7 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                         style={{ height: heightPercentageToDP(5) }}
                     />
                     <Button
-                        backgroundColor={Colors.primaryButton}
+                        backgroundColor={"#603EDA"}
                         buttonTitle={props.fromScreen == "CreateAccount" ? "Continue" : "Now Set"}
                         titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
                         onPress={() => props.onContinuePress({name, passwd})}

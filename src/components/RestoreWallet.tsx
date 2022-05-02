@@ -87,7 +87,7 @@ const RestoreWallet: FC<RestoreWalletProps> = (props) => {
                         style={{ height: heightPercentageToDP(4) }}
                     />
                     <Button
-                        backgroundColor={Colors.primaryButton}
+                        backgroundColor="#603EDA"
                         buttonTitle='Restore Wallet'
                         onPress={props.onRestoreWalletPress}
                         titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
