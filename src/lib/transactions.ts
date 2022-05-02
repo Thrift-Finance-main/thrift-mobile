@@ -202,8 +202,11 @@ export const buildTransaction = async (
 
     console.log('pParams');
     console.log(parameters);
+    console.log('utxos');
+    console.log(utxos);
     console.log('accountState');
     console.log(accountState);
+    console.log('currentAccount.selectedAddress');
     console.log(currentAccount.selectedAddress);
 
     let paymentKey = null;

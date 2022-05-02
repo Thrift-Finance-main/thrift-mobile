@@ -8,7 +8,7 @@ import Back from '../assets/back.svg'
 import InputField from './Common/InputField'
 import DarkBack from '../assets//DarkBack.svg'
 import {useSelector} from "react-redux";
-import {Colors, Dialog, DialogProps, PanningProvider, Picker, PickerProps, TextField} from "react-native-ui-lib";
+import {Chip, Colors, Dialog, DialogProps, PanningProvider, Picker, PickerProps, TextField} from "react-native-ui-lib";
 import swapIcon from "../assets/plus.png";
 import removeIcon from "../assets/remove.png";
 import pasteIcon from "../assets/paste.png";
@@ -72,7 +72,16 @@ const Send: FC<CreateTokenProps> = (props) => {
                     }
                 })
             );
+            utxos.map(utxo => {
+                const data = getAddrData(utxo.address, currentAccount.externalPubAddress)
+                utxo.address = data;
+                return utxo;
+            });
             setUtxos(utxos);
+
+            // Get/show tags based on addresses in utxos array
+            // Select tags from where get the ada and assets,
+            // verify in enough amount in selected utxos, alert
         }
 
         if (isMounted.current) {
@@ -82,21 +91,24 @@ const Send: FC<CreateTokenProps> = (props) => {
                 .catch(console.error);
         }
 
-    }, [currentAccount.accountName]);
+    }, []);
 
+    const getAddrData = (address, addresses) => {
+        for (let i = 0; i < addresses.length; i++) {
+           if (address === addresses[i].address){
+               return addresses[i];
+           }
+        }
+    }
     const sendTransaction = async () => {
         const protocolParameters =  await getProtocolParams();
-
-
-        console.log('utxos');
-        console.log(utxos);
 
         const outputs = [{
             address: toAddress,
             amount,
             assets: selectedAssets
         }]
-        await buildTransaction(currentAccount, accountState, selectedUtxos, outputs, protocolParameters);
+        await buildTransaction(currentAccount, accountState, utxos, outputs, protocolParameters);
     };
 
     const updateSelectedAssets = async asset => {
@@ -116,8 +128,6 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     const fetchCopiedText = async () => {
         const text = await Clipboard.getString();
-        console.log('text');
-        console.log(text);
         setToAddress(text);
     };
 
@@ -183,13 +193,40 @@ const Send: FC<CreateTokenProps> = (props) => {
                         }}
                     >Send Assets</Text>
                     */}
-                    <Text
-                        style={{
-                            ...styles.fromAccount, color: props.isBlackTheme ? Colors.white :
-                                Colors.black,
-                        }}
-                        onPress={() => setAmount((currentAccount.balance/1000000).toString())}
-                    >From {currentAccount.accountName} {currentAccount.balance ? currentAccount.balance/1000000 : 0} Ada</Text>
+                    <View
+                        style={{}}
+                    >
+                        <Text
+                            style={{
+                                ...styles.fromAccount, color: props.isBlackTheme ? Colors.white :
+                                    Colors.black,
+                            }}
+                            onPress={() => setAmount((currentAccount.balance/1000000).toString())}
+                        >From {currentAccount.accountName} {currentAccount.balance ? currentAccount.balance/1000000 : 0} Ada</Text>
+                        <View
+                            style={{flexDirection:'row', flexWrap:'wrap', marginTop: 8, marginLeft: 12}}
+                        >
+                            <Chip
+                                label={'Chip'}
+                                onPress={() => console.log('onPress')}
+                                containerStyle={{marginRight: 4}}
+                                badgeProps={{
+                                    label: '4',
+                                    backgroundColor: 'red'
+                                }}
+                            />
+                            <Chip
+                                label={'Chip'}
+                                onPress={() => console.log('onPress')}
+
+                                badgeProps={{
+                                    label: '4',
+                                    backgroundColor: 'red'
+                                }}
+                            />
+                        </View>
+
+                    </View>
                     <Text
                         style={{
                             ...styles.filedHeader, color: props.isBlackTheme ? Colors.white :
