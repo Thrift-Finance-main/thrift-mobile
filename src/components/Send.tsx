@@ -31,6 +31,8 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     const sendTransaction = async () => {
         const protocolParameters =  await getProtocolParams();
+        console.log('protocolParameters');
+        console.log(protocolParameters);
         let endpoint = "accounts/" + currentAccount.rewardAddress;
         let accountState = await fetchBlockfrost(endpoint);
         console.log('accountState');
@@ -271,7 +273,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                         style={{ height: heightPercentageToDP(7) }}
                     />
                     <Button
-                        backgroundColor={Colors.primaryButton}
+                        backgroundColor={"#F338C2"}
                         buttonTitle={"Transfer"}
                         onPress={() => sendTransaction()}
                         titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}

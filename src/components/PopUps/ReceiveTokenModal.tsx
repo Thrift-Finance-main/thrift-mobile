@@ -4,7 +4,8 @@ import Colors from '../../constants/CustomColors';
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimensions';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RNCamera } from 'react-native-camera'; import Modal from 'react-native-modal'
-import ThriftLogo from '../../assets/ThriftLogo.svg'
+import ThriftLogo from '../../assets/ThriftLogo.svg';
+import ThriftLogo1 from '../../assets/brand/logo-thrift.svg';
 import ThriftLogoWhite from '../../assets/ThriftFinancelogo.svg'
 import QRImage from '../../assets/QRImage.svg';
 import Icon from 'react-native-vector-icons/MaterialIcons'
@@ -150,17 +151,13 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
           <View style={props.QRScanner && {marginTop : heightPercentageToDP(3)}} >
           {
                             props.isBlackTheme ?
-                            <ThriftLogoWhite
+                            <ThriftLogo1
                                 style={{
-                                    width: widthPercentageToDP(7), height: heightPercentageToDP(8),
-                                    marginTop: heightPercentageToDP(2)
                                 }}
                             />
                             :
-                            <ThriftLogo
+                            <ThriftLogo1
                                 style={{
-                                    width: widthPercentageToDP(8), height: heightPercentageToDP(8),
-                                    marginTop: heightPercentageToDP(2)
                                 }}
                             />
                         }
