@@ -275,7 +275,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                     <TextField
                         text70
                         containerStyle={{marginBottom: 1, marginLeft: 12}}
-                        style={{textAlign: 'center', marginLeft: 20}}
+                        style={{textAlign: 'center', marginLeft: 20, fontSize: 10}}
                         value={toAddress || null}
                         placeholder={"Address"}
                         onChangeText={(text) =>{setToAddress(text)}}
@@ -299,7 +299,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                     <TextField
                         text70
                         containerStyle={{marginBottom: 1, marginLeft: 12}}
-                        style={{textAlign: 'center'}}
+                        style={{textAlign: 'center', fontSize: 28}}
                         value={amount || null}
                         placeholder={'Amount'}
                         onChangeText={(text) =>{setAmount(text)}}
