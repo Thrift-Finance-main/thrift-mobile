@@ -57,12 +57,7 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     let currentTabData = outputs.filter(output => output.label === activeTab);
     currentTabData = currentTabData[0];
-    const assetsCurrentTab = Array.from(currentTabData.assets);
-
-    console.log('currentTabData1');
-    console.log(currentTabData);
-    console.log('assetsCurrentTab');
-    console.log(assetsCurrentTab);
+    const assetsCurrentTab = Array.from(currentTabData && currentTabData.assets || []);
 
     const useIsMounted = () => {
         const isMounted = useRef(false);
@@ -247,11 +242,20 @@ const Send: FC<CreateTokenProps> = (props) => {
     };
     const onAddRecipient = () => {
         if (tabs.length < 12){
-            // add new tx template to tx list
-            //  '1st 2nd 3rd 4th'.
-            const newLabel = tabs[tabs.length-1];
+            let newLabel = tabs[tabs.length-1];
             // setTabs(tabs);
-            setTabs(prevTabs => ([...prevTabs, ...[{label: (parseInt(newLabel.label)+1).toString()}]]));
+            const obj = {
+                label: (parseInt(newLabel.label)+1).toString(),
+                assets: {lovelace: ''},
+                toAddress: ''
+            };
+            setTabs(prevTabs => ([...prevTabs, ...[
+                obj
+            ]]));
+            setOutputs(prevTabs => ([...prevTabs, ...[
+                obj
+            ]]));
+            setActiveTab((parseInt(newLabel.label)+1).toString());
         }
     };
     const setToAddr = async (address) => {
@@ -284,9 +288,10 @@ const Send: FC<CreateTokenProps> = (props) => {
             setAmountError(true);
         } else {
             setAmountError(false);
-            // setAmount(amount);
-            console.log('setInputAmount');
-            console.log(amount);
+            console.log('activeTab');
+            console.log(activeTab);
+            console.log('outputs');
+            console.log(outputs);
             let outputAux = outputs.filter(output => output.label === activeTab);
             outputAux = outputAux[0];
             console.log('outputAux');
@@ -462,7 +467,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                         text70
                         containerStyle={{marginBottom: 1, marginLeft: 12}}
                         style={{textAlign: 'center', marginLeft: 20, fontSize: 10}}
-                        value={currentTabData.toAddress || null}
+                        value={currentTabData && currentTabData.toAddress || null}
                         placeholder={"Address"}
                         onChangeText={(text) =>{setToAddr(text).then(r => {})}}
                         useBottomErrors
@@ -486,7 +491,11 @@ const Send: FC<CreateTokenProps> = (props) => {
                         text70
                         containerStyle={{marginBottom: 1, marginLeft: 12}}
                         style={{textAlign: 'center', fontSize: 28}}
-                        value={currentTabData.assets.lovelace  || null}
+                        value={currentTabData
+                            && currentTabData.assets
+                            && currentTabData.assets.lovelace
+                            || null
+                        }
                         placeholder={'Amount'}
                         onChangeText={(text) => setInputAmount(text)}
                         useBottomErrors
@@ -545,7 +554,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                         </Picker>
                     </View>
 
-                    {   currentTabData.assets ?
+                    {   currentTabData && currentTabData.assets ?
                         Object.entries(currentTabData.assets).map(keyValuePair => {
                                 console.log('currentTabData_____');
                                 console.log(keyValuePair);
