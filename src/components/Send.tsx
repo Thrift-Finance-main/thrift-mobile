@@ -101,9 +101,6 @@ const Send: FC<CreateTokenProps> = (props) => {
                     }
                 })
             );
-            console.log('utxos1');
-            console.log(utxos[0]);
-            console.log(utxos[0].utxos[0]);
             let tags = new Set();
             const updatedUtxos = utxos.map(utxo => {
                 const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
@@ -172,34 +169,20 @@ const Send: FC<CreateTokenProps> = (props) => {
     };
     const updateQuantityFromSelectedAsset = async (asset, quantity) => {
 
-        console.log('asset');
-        console.log(asset);
-        console.log('quantity');
-        console.log(quantity);
-        console.log('\n\nupdateQuantityFromSelectedAsset');
         let outputAux = outputs.filter(output => output.label === activeTab);
         outputAux = outputAux[0];
 
-        console.log('outputAux');
-        console.log(outputAux);
-
         const updatedAssets = Object.entries(outputAux.assets).map(keyValuePair => {
-            console.log('keyValuePair');
-            console.log(keyValuePair);
             if (keyValuePair[0] === asset.unit+'.'+asset.asset_name) {
                 keyValuePair[1] = quantity;
             }
             return keyValuePair;
         });
-        console.log('updatedAssets');
-        console.log(updatedAssets);
         const dict = {};
         updatedAssets.map(asset =>{
             dict[asset[0]] = asset[1];
         })
 
-        console.log('dict');
-        console.log(dict);
         outputAux.assets = dict;
         outputs.map(output => {
             console.log()
@@ -207,13 +190,10 @@ const Send: FC<CreateTokenProps> = (props) => {
                 output = outputAux;
             }
             return output;
-        })
-        console.log('outputs');
-        console.log(outputs);
+        });
         // setOutputs(prevTabs => ([...prevTabs, ...[{label: (parseInt(newLabel.label)+1).toString()}]]));
         setOutputs(outputs);
     };
-
     const removeSelectedAssets = async asset => {
 
         let outputAux = outputs.filter(output => output.label === activeTab);
@@ -236,7 +216,6 @@ const Send: FC<CreateTokenProps> = (props) => {
         setOutputs(updatedOutputs);
 
     };
-
     const fetchCopiedText = async () => {
         const text = await Clipboard.getString();
 
@@ -248,7 +227,6 @@ const Send: FC<CreateTokenProps> = (props) => {
         }
         setToAddress(text);
     };
-
     const onSelectTag = (tag) => {
         if (selectedTags.includes(tag)){
             setSelectedTags(selectedTags.filter(t => t !== tag));
@@ -277,6 +255,7 @@ const Send: FC<CreateTokenProps> = (props) => {
         }
     };
     const setToAddr = async (address) => {
+
         // add new tx template to tx list
         //  '1st 2nd 3rd 4th'.
         const validAddress = await validateAddress(address);
@@ -284,20 +263,46 @@ const Send: FC<CreateTokenProps> = (props) => {
             setToAddressError(true);
         } else {
             setToAddressError(false);
+            let outputAux = outputs.filter(output => output.label === activeTab);
+            outputAux = outputAux[0];
+            outputAux.toAddress = address;
+            outputs.map(output => {
+                console.log()
+                if (output.label === activeTab){
+                    output = outputAux;
+                }
+                return output;
+            });
+            setOutputs(outputs);
         }
         setToAddress(address);
     };
     const setInputAmount= (amount) => {
-        // add new tx template to tx list
-        //  '1st 2nd 3rd 4th'.
+
         const validAmount = !isNaN(amount);
         if (!validAmount){
             setAmountError(true);
         } else {
             setAmountError(false);
             // setAmount(amount);
-        }
+            console.log('setInputAmount');
+            console.log(amount);
+            let outputAux = outputs.filter(output => output.label === activeTab);
+            outputAux = outputAux[0];
+            console.log('outputAux');
+            console.log(outputAux);
+            outputAux.assets.lovelace = amount;
 
+            outputs.map(output => {
+                console.log()
+                if (output.label === activeTab){
+                    output = outputAux;
+                }
+                return output;
+            });
+            // setOutputs(prevTabs => ([...prevTabs, ...[{label: (parseInt(newLabel.label)+1).toString()}]]));
+            setOutputs(outputs);
+        }
     };
 
     const renderDialog: PickerProps['renderCustomModal'] = modalProps => {
