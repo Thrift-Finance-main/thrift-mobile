@@ -243,36 +243,20 @@ export const buildTransaction = async (
     }
 }
 export const mergeAssetsFromUtxos = async (utxos) => {
-    console.log('utxos');
-    console.log(utxos); //  [{"address": {"address": "addr_test1qp699gyph5gj8c4whp62048z7w7kte2w5ghkpl36wwh5z84t9gat4d3njffvnlde55dwtqyev48z8ywwqask7rsmwd9s0pxmc2", "index": 0, "network": "0", "reference": "", "tags": [Array]}, "utxos": [[Object]]}]
     let assets: { [key: string]: string } = {};
     await Promise.all(
-        utxos.map(utxo => {
-            console.log('utxo');
-            console.log(utxo); //  {"address": {"address": "addr_test1qp699gyph5gj8c4whp62048z7w7kte2w5ghkpl36wwh5z84t9gat4d3njffvnlde55dwtqyev48z8ywwqask7rsmwd9s0pxmc2", "index": 0, "network": "0", "reference": "", "tags": ["Main"]}, "utxos": [{"amount": [Array], "block": "ab69e2a0c1b8089875439210130bd60327738e1a8ef3fb36dfe05f8d018783c0", "data_hash": null, "output_index": 0, "tx_hash": "69d72b7e73b03c9dcd3f8ce6b185bdab8f85c5d989dffed51edc3f3c482beef0", "tx_index": 0}]}
+        utxos.map(utxo => {console.log(utxo); //  {"address": {"address": "addr_test1qp699gyph5gj8c4whp62048z7w7kte2w5ghkpl36wwh5z84t9gat4d3njffvnlde55dwtqyev48z8ywwqask7rsmwd9s0pxmc2", "index": 0, "network": "0", "reference": "", "tags": ["Main"]}, "utxos": [{"amount": [Array], "block": "ab69e2a0c1b8089875439210130bd60327738e1a8ef3fb36dfe05f8d018783c0", "data_hash": null, "output_index": 0, "tx_hash": "69d72b7e73b03c9dcd3f8ce6b185bdab8f85c5d989dffed51edc3f3c482beef0", "tx_index": 0}]}
             utxo.utxos.map(async u => {
-                console.log('u');
-                console.log(u.amount); //  [{"quantity": "3000000", "unit": "lovelace"}, {"quantity": "900", "unit": "3fb0efd17304d74896130d9ea419a9883a2ef3c8bf9f9e39478dc21074574d54"}]
                 await Promise.all(
                     u.amount.map(async a => {
-                        console.log('a');
-                        console.log(a);
                         if (assets[a.unit] === undefined) {
-                            console.log('first time');
-                            console.log(assets[a.unit]);
-                            console.log(a.quantity);
                             assets[a.unit] = a.quantity;
                         } else {
-                            console.log('current '+a.unit);
-                            console.log(assets[a.unit]);
-                            console.log('add: '+a.quantity);
                             //const sum = await addBigNum(assets[a.unit], a.quantity);
-                            const sum = (parseInt(assets[a.unit])+parseInt(a.quantity)).toString();
-                            console.log('sum');
-                            console.log(sum);
+                            let x = BigInt(assets[a.unit]);
+                            let y = BigInt(a.quantity);
+                            const sum = (x.add(y)).toString();
                             assets[a.unit] = sum;
-                            console.log('updated a.unit');
-                            console.log(assets[a.unit]);
                         }
                     })
                 );
@@ -288,13 +272,13 @@ export const mergeAssetsFromOutputs = async (outputs: {address:string, assets:an
         outputs.map(output =>
             {
                 Object.entries(output.assets).map(async keyValuePair => {
-                    console.log('keyValuePair');
-                    console.log(keyValuePair);
                     const unit = keyValuePair[0].includes('.') ? keyValuePair[0].split('.')[0] : keyValuePair[0];
                     if (assets[unit] === undefined) {
                         assets[unit] = keyValuePair[1];
                     } else {
-                        const sum = (parseInt(assets[unit])+parseInt(keyValuePair[1])).toString();
+                        let x = BigInt(assets[unit]);
+                        let y = BigInt(keyValuePair[1]);
+                        const sum = (x.add(y)).toString();
                         assets[unit] = sum;
                     }
                 });
