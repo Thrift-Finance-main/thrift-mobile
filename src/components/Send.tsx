@@ -34,7 +34,8 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [selectAll, setSelectAll] = useState(false);
     const [toAddress, setToAddress] = useState('');
     const [toAddressError, setToAddressError] = useState(false);
-    const [amount, setAmount] = useState('5');
+    const [amount, setAmount] = useState('');
+    const [amountError, setAmountError] = useState(false);
     const [activeTab, setActiveTab] = useState('1st');
     const [tabs, setTabs] = useState([{label: '1st'}]);
 
@@ -178,8 +179,6 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     const fetchCopiedText = async () => {
         const text = await Clipboard.getString();
-        console.log('text');
-        console.log(text);
 
         const validAddress = await validateAddress(text);
         if (validAddress){
@@ -211,12 +210,9 @@ const Send: FC<CreateTokenProps> = (props) => {
     const onAddRecipient = () => {
         // add new tx template to tx list
         //  '1st 2nd 3rd 4th'.
-        console.log('onAddRecipient');
         let tbs = tabs;
         const newLabel = tbs[tbs.length-1];
-        console.log(newLabel);
         tbs.push({label: (parseInt(newLabel.label[0])+1)+'st'});
-        console.log(tbs);
         setTabs(tbs);
     };
     const setToAddr = async (address) => {
@@ -229,6 +225,21 @@ const Send: FC<CreateTokenProps> = (props) => {
             setToAddressError(false);
         }
         setToAddress(address);
+    };
+    const setInputAmount= (amount) => {
+        // add new tx template to tx list
+        //  '1st 2nd 3rd 4th'.
+        console.log('setInputAmount');
+        const validAmount = !isNaN(amount);
+        console.log(amount);
+        console.log(validAmount);
+        if (!validAmount){
+            setAmountError(true);
+        } else {
+            setAmountError(false);
+            // setAmount(amount);
+        }
+
     };
 
     const renderDialog: PickerProps['renderCustomModal'] = modalProps => {
@@ -411,10 +422,10 @@ const Send: FC<CreateTokenProps> = (props) => {
                         style={{textAlign: 'center', fontSize: 28}}
                         value={amount || null}
                         placeholder={'Amount'}
-                        onChangeText={(text) =>{setAmount(text)}}
+                        onChangeText={(text) => setInputAmount(text)}
                         useBottomErrors
-                        validate={['required', (n) => { return n > 0 }]}
-                        errorMessage={"Not enough funds"}
+                        validate={['required', (text) => !amountError]}
+                        errorMessage={"Invalid amount"}
                     />
                     <Text
                         style={{
@@ -496,6 +507,9 @@ const Send: FC<CreateTokenProps> = (props) => {
                                                     accessibilityLabel: 'TextField Info',
                                                     iconColor: Colors.red10
                                                 }}
+                                                useBottomErrors
+                                                validate={['required']}
+                                                errorMessage={"Invalid amount"}
                                             />
 
                                     </View>
