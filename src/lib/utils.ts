@@ -14,9 +14,11 @@ export const addBigNum = async (a:string, b:string) => {
     console.log('addBigNum');
     const aBig =  await BigNum.from_str(a)
     const bBig = await BigNum.from_str(b)
-    const r = await aBig.checked_add(bBig);
-    console.log(await r.to_str());
-    return await r.to_str();
+    let r = await aBig.checked_add(bBig);
+    r  = await r.to_str();
+    console.log('rrr');
+    console.log(r);
+    return r;
 }
 
 export const divBigNum = async (a:string, b:string) => {

@@ -229,7 +229,7 @@ export const buildTransaction = async (
     console.log('mergedAssetsFromUtxos');
     console.log(mergedAssetsFromUtxos);
     console.log('outputs');
-    console.log(outputs[0]);
+    console.log(outputs);
     const mergedAssetsFromOutputs = await mergeAssetsFromOutputs(outputs);
     console.log('mergedAssetsFromOutputs');
     console.log(mergedAssetsFromOutputs);
@@ -245,7 +245,7 @@ export const buildTransaction = async (
 export const mergeAssetsFromUtxos = async (utxos) => {
     console.log('utxos');
     console.log(utxos); //  [{"address": {"address": "addr_test1qp699gyph5gj8c4whp62048z7w7kte2w5ghkpl36wwh5z84t9gat4d3njffvnlde55dwtqyev48z8ywwqask7rsmwd9s0pxmc2", "index": 0, "network": "0", "reference": "", "tags": [Array]}, "utxos": [[Object]]}]
-    let assets: { [unit: string]: string } = {};
+    let assets: { [key: string]: string } = {};
     await Promise.all(
         utxos.map(utxo => {
             console.log('utxo');
@@ -258,9 +258,21 @@ export const mergeAssetsFromUtxos = async (utxos) => {
                         console.log('a');
                         console.log(a);
                         if (assets[a.unit] === undefined) {
+                            console.log('first time');
+                            console.log(assets[a.unit]);
+                            console.log(a.quantity);
                             assets[a.unit] = a.quantity;
                         } else {
-                            assets[a.unit] = await addBigNum(assets[a.unit], a.quantity);
+                            console.log('current '+a.unit);
+                            console.log(assets[a.unit]);
+                            console.log('add: '+a.quantity);
+                            //const sum = await addBigNum(assets[a.unit], a.quantity);
+                            const sum = (parseInt(assets[a.unit])+parseInt(a.quantity)).toString();
+                            console.log('sum');
+                            console.log(sum);
+                            assets[a.unit] = sum;
+                            console.log('updated a.unit');
+                            console.log(assets[a.unit]);
                         }
                     })
                 );
@@ -276,10 +288,14 @@ export const mergeAssetsFromOutputs = async (outputs: {address:string, assets:an
         outputs.map(output =>
             {
                 Object.entries(output.assets).map(async keyValuePair => {
-                    if (assets[keyValuePair[0]] === undefined) {
-                        assets[keyValuePair[0]] = keyValuePair[1];
+                    console.log('keyValuePair');
+                    console.log(keyValuePair);
+                    const unit = keyValuePair[0].includes('.') ? keyValuePair[0].split('.')[0] : keyValuePair[0];
+                    if (assets[unit] === undefined) {
+                        assets[unit] = keyValuePair[1];
                     } else {
-                        assets[keyValuePair[0]] = await addBigNum(assets[keyValuePair[0]], keyValuePair[1]);
+                        const sum = (parseInt(assets[unit])+parseInt(keyValuePair[1])).toString();
+                        assets[unit] = sum;
                     }
                 });
             })

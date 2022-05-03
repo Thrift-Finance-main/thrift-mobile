@@ -101,6 +101,9 @@ const Send: FC<CreateTokenProps> = (props) => {
                     }
                 })
             );
+            console.log('utxos1');
+            console.log(utxos[0]);
+            console.log(utxos[0].utxos[0]);
             let tags = new Set();
             const updatedUtxos = utxos.map(utxo => {
                 const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
@@ -168,21 +171,45 @@ const Send: FC<CreateTokenProps> = (props) => {
         setOutputs(updatedOutputs);
     };
     const updateQuantityFromSelectedAsset = async (asset, quantity) => {
+
+        console.log('asset');
+        console.log(asset);
+        console.log('quantity');
+        console.log(quantity);
+        console.log('\n\nupdateQuantityFromSelectedAsset');
         let outputAux = outputs.filter(output => output.label === activeTab);
         outputAux = outputAux[0];
 
-        outputAux.assets.map(a => {
-            if (a.asset_name === asset.asset_name && a.unit === asset.unit){
-                a.quantityToSend = quantity;
+        console.log('outputAux');
+        console.log(outputAux);
+
+        const updatedAssets = Object.entries(outputAux.assets).map(keyValuePair => {
+            console.log('keyValuePair');
+            console.log(keyValuePair);
+            if (keyValuePair[0] === asset.unit+'.'+asset.asset_name) {
+                keyValuePair[1] = quantity;
             }
-            return a;
+            return keyValuePair;
         });
+        console.log('updatedAssets');
+        console.log(updatedAssets);
+        const dict = {};
+        updatedAssets.map(asset =>{
+            dict[asset[0]] = asset[1];
+        })
+
+        console.log('dict');
+        console.log(dict);
+        outputAux.assets = dict;
         outputs.map(output => {
+            console.log()
             if (output.label === activeTab){
                 output = outputAux;
             }
             return output;
         })
+        console.log('outputs');
+        console.log(outputs);
         // setOutputs(prevTabs => ([...prevTabs, ...[{label: (parseInt(newLabel.label)+1).toString()}]]));
         setOutputs(outputs);
     };
