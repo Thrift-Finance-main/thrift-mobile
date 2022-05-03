@@ -37,6 +37,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [outputs, setOutputs] = useState([
         {
             toAddress: 'addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u',
+            validAddress: true,
             assets: {lovelace: '7'},
             label: '1'
         }
@@ -249,6 +250,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             // setTabs(tabs);
             const obj = {
                 label: (parseInt(newLabel.label)+1).toString(),
+                validAddress: true,
                 assets: {lovelace: ''},
                 toAddress: ''
             };
@@ -266,27 +268,28 @@ const Send: FC<CreateTokenProps> = (props) => {
         // add new tx template to tx list
         //  '1st 2nd 3rd 4th'.
         const validAddress = await validateAddress(address);
-        if (!validAddress){
+        let outputAux = outputs.filter(output => output.label === activeTab);
+        outputAux = outputAux[0];
+        if (!validAddress && address !== ''){
             setToAddressError(true);
+            outputAux.validAddress = false;
         } else {
             setToAddressError(false);
-            let outputAux = outputs.filter(output => output.label === activeTab);
-            outputAux = outputAux[0];
-            outputAux.toAddress = address;
-            outputs.map(output => {
-                if (output.label === activeTab){
-                    output = outputAux;
-                }
-                return output;
-            });
-            setOutputs(outputs);
+            outputAux.validAddress = true;
         }
-        setToAddress(address);
+        outputAux.toAddress = address;
+        outputs.map(output => {
+            if (output.label === activeTab){
+                output = outputAux;
+            }
+            return output;
+        });
+        setOutputs(outputs);
     };
     const setInputAmount= (amount) => {
 
         const validAmount = !isNaN(amount);
-        if (!validAmount){
+        if (!validAmount && amount !== ''){
             setAmountError(true);
         } else {
             setAmountError(false);
@@ -466,7 +469,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                         placeholder={"Address"}
                         onChangeText={(text) =>{setToAddr(text).then(r => {})}}
                         useBottomErrors
-                        validate={['required', (text) => !toAddressError]}
+                        validate={['required', (text) => currentTabData && currentTabData.validAddress]}
                         errorMessage={"Invalid address"}
                         selectTextOnFocus={true}
                         rightButtonProps={{
@@ -494,7 +497,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                         placeholder={'Amount'}
                         onChangeText={(text) => setInputAmount(text)}
                         useBottomErrors
-                        validate={['required', (text) => !amountError]}
+                        validate={['required', (text) => !isNaN(text)]}
                         errorMessage={"Invalid amount"}
                     />
                     <Text
