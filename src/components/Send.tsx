@@ -32,7 +32,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [availableTags, setAvailableTags] = useState([]);
     const [selectedTags, setSelectedTags] = useState(currentAccount.selectedAddress.tags);
     const [selectAll, setSelectAll] = useState(false);
-    const [toAddress, setToAddress] = useState('addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u');
+    const [toAddress, setToAddress] = useState('');
     const [toAddressError, setToAddressError] = useState(false);
     const [amount, setAmount] = useState('5');
     const [activeTab, setActiveTab] = useState('1st');
@@ -178,10 +178,16 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     const fetchCopiedText = async () => {
         const text = await Clipboard.getString();
+        console.log('text');
+        console.log(text);
+
         const validAddress = await validateAddress(text);
         if (validAddress){
-            setToAddress(text);
+            setToAddressError(false);
+        } else {
+            setToAddressError(true);
         }
+        setToAddress(text);
     };
 
     const onSelectTag = (tag) => {
