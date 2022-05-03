@@ -511,12 +511,6 @@ const Send: FC<CreateTokenProps> = (props) => {
                                 Colors.black,
                         }}
                     >Amount</Text>
-                    {
-                        console.log('currentTabData.assets.lovelace')
-                    }
-                    {
-                        console.log(currentTabData.assets.lovelace)
-                    }
                     <TextField
                         text70
                         containerStyle={{marginBottom: 1, marginLeft: 12}}
@@ -527,7 +521,8 @@ const Send: FC<CreateTokenProps> = (props) => {
                             && BigInt(currentTabData.assets.lovelace).over(1000000).toString()
                             || null
                         }
-                        placeholder={'Amount'}
+
+                        placeholder={'$Ada'}
                         onChangeText={(text) => setInputAmount(text)}
                         useBottomErrors
                         validate={['required', (text) => !isNaN(text)]}
