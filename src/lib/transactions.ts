@@ -273,14 +273,16 @@ export const mergeAssetsFromUtxos = async (utxos) => {
 export const mergeAssetsFromOutputs = async (outputs: {address:string, assets:any[]}[]) => {
     let assets: { [unit: string]: string } = {};
     await Promise.all(
-        outputs.map(output => {output.assets.map(async a => {
-                if (assets[a.unit] === undefined) {
-                    assets[a.unit] = a.quantityToSend;
-                } else {
-                    assets[a.unit] = await addBigNum(assets[a.unit], a.quantityToSend);
-                }
-            });
-        })
+        outputs.map(output =>
+            {
+                Object.entries(output.assets).map(async keyValuePair => {
+                    if (assets[keyValuePair[0]] === undefined) {
+                        assets[keyValuePair[0]] = keyValuePair[1];
+                    } else {
+                        assets[keyValuePair[0]] = await addBigNum(assets[keyValuePair[0]], keyValuePair[1]);
+                    }
+                });
+            })
     );
 
     return assets;

@@ -41,7 +41,6 @@ const Send: FC<CreateTokenProps> = (props) => {
         }
     ]);
 
-
     const [toAddress, setToAddress] = useState('addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u');
     const [toAddressError, setToAddressError] = useState(false);
     const [amount, setAmount] = useState('6');
@@ -147,11 +146,6 @@ const Send: FC<CreateTokenProps> = (props) => {
             });
         }
 
-        const filterAssets = selectedAssets.filter(asset => asset.quantityToSend && asset.quantityToSend.length > 0 && parseInt(asset.quantityToSend) > 0);
-        const outputs = [{
-            address: toAddress,
-            assets: [...filterAssets, {unit: 'lovelace', quantityToSend: amount}]
-        }];
         const tx = await buildTransaction(currentAccount, accountState, filterUtxos, outputs, protocolParameters);
         if (tx && tx.error){
             console.log(tx.error);
@@ -161,13 +155,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     const updateSelectedAssets = async asset => {
         let outputAux = outputs.filter(output => output.label === activeTab);
         outputAux = outputAux[0];
-        console.log('asset');
-        console.log(asset);
-        console.log('outputAux');
-        console.log(outputAux);
         outputAux.assets[asset.unit+'.'+asset.asset_name] = '';
-        console.log('outputAu2');
-        console.log(outputAux);
         const updatedOutputs = outputs.map(output => {
             if (output.label === activeTab){
                 output = outputAux;
@@ -175,19 +163,9 @@ const Send: FC<CreateTokenProps> = (props) => {
             return output;
         })
 
-        console.log('outputs1');
-        console.log(outputs);
         // setOutputs(prevOuts => ([...prevOuts, ...updatedOutputs]));
 
         setOutputs(updatedOutputs);
-        console.log('outputs2');
-        console.log(outputs);
-
-        //let updatedAssets = assets.filter(a => a.asset_name !== asset.asset_name);
-        //setAssets(updatedAssets);
-        //let selecAssets = selectedAssets;
-        //selecAssets.push(asset);
-        //setSelectedAssets(selecAssets);
     };
     const updateQuantityFromSelectedAsset = async (asset, quantity) => {
         let outputAux = outputs.filter(output => output.label === activeTab);
@@ -211,22 +189,25 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     const removeSelectedAssets = async asset => {
 
-
         let outputAux = outputs.filter(output => output.label === activeTab);
         outputAux = outputAux[0];
-        outputAux.assets.filter(a => a.asset_name !== asset.asset_name);
+        const updatedAssets = Object.entries(outputAux.assets).filter(keyValuePair => {
+            return keyValuePair[0] !== asset.unit+'.'+asset.asset_name;
+        });
+        const dict = {};
+        updatedAssets.map(asset =>{
+            dict[asset[0]] = asset[1];
+        })
+        outputAux.assets = dict;
 
-        outputs.map(output => {
+        const updatedOutputs = outputs.map(output => {
             if (output.label === activeTab){
                 output = outputAux;
             }
             return output;
-        })
-        setOutputs(outputs);
+        });
+        setOutputs(updatedOutputs);
 
-        let aa = assets;
-        aa.push(asset);
-        //setAssets(aa);
     };
 
     const fetchCopiedText = async () => {
@@ -532,17 +513,11 @@ const Send: FC<CreateTokenProps> = (props) => {
                         </Picker>
                     </View>
 
-                    {
-                        console.log('currentTabData.assets')
-                    }
-                    {
-                        console.log(currentTabData.assets)
-                    }
                     {   currentTabData.assets ?
                         Object.entries(currentTabData.assets).map(keyValuePair => {
                                 console.log('currentTabData_____');
                                 console.log(keyValuePair);
-                                const assetName =  keyValuePair[0].includes('.') ? Buffer.from(keyValuePair[0].split('.')[1], 'hex').toString() : keyValuePair[0];
+                                const assetName =  keyValuePair[0].includes('.') ? keyValuePair[0].split('.')[1] : keyValuePair[0];
                                 const unit = keyValuePair[0].includes('.') ? keyValuePair[0].split('.')[0] : keyValuePair[0];
                                 console.log('unit');
                                 console.log(unit);
@@ -557,7 +532,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                         <TextField
                                             containerStyle={{width: 330, marginHorizontal: 6}}
                                             floatingPlaceholder
-                                            placeholder={assetName}
+                                            placeholder={Buffer.from(assetName, 'hex').toString() }
                                             onChangeText={(text) => updateQuantityFromSelectedAsset({asset_name: assetName, unit}, text)}
                                             helperText="this is an helper text"
                                             rightButtonProps={{
