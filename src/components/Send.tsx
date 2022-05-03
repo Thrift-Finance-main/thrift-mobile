@@ -32,9 +32,9 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [availableTags, setAvailableTags] = useState([]);
     const [selectedTags, setSelectedTags] = useState(currentAccount.selectedAddress.tags);
     const [selectAll, setSelectAll] = useState(false);
-    const [toAddress, setToAddress] = useState('');
+    const [toAddress, setToAddress] = useState('addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u');
     const [toAddressError, setToAddressError] = useState(false);
-    const [amount, setAmount] = useState('');
+    const [amount, setAmount] = useState('6');
     const [amountError, setAmountError] = useState(false);
     const [activeTab, setActiveTab] = useState('1st');
     const [tabs, setTabs] = useState([{label: '1st'}]);
@@ -279,7 +279,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     return (
         <SafeAreaView style={{
             ...styles.mainContainer, backgroundColor:
-                props.isBlackTheme ? Colors.blackTheme :
+                props.isBlackTheme ? Colors.black :
                     Colors.white,
         }}>
             <ScrollView>
