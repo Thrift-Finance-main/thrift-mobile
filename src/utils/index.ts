@@ -42,3 +42,7 @@ export const delay = ms => new Promise(res => setTimeout(res, ms));
 export const displayUnit = (quantity, decimals = 6) => {
   return parseInt(quantity) / 10 ** decimals;
 };
+
+export const isDictEmpty = (obj) => {
+  return Object.keys(obj).length === 0;
+}

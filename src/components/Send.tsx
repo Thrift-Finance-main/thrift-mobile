@@ -14,6 +14,7 @@ import pasteIcon from "../assets/paste.png";
 import {buildTransaction} from "../lib/transactions";
 import {fetchBlockfrost, getProtocolParams, getTxUTxOsByAddress} from "../api/Blockfrost";
 import {validateAddress} from "../lib/account";
+import {isDictEmpty} from "../utils";
 
 interface CreateTokenProps {
     // onContinuePress: () => void
@@ -140,12 +141,17 @@ const Send: FC<CreateTokenProps> = (props) => {
             });
         }
 
-        const tx = await buildTransaction(currentAccount, accountState, filterUtxos, outputs, protocolParameters);
+        // Remove empty assets and filter outputs with no assets
+        const filterOutputs = outputs.map(output => {
+            output.assets = Object.entries(output.assets).reduce((acc, [k, v]) => v ? {...acc, [k]:v} : acc , {})
+            return output;
+        }).filter(output => !isDictEmpty(output.assets));
+
+        const tx = await buildTransaction(currentAccount, accountState, filterUtxos, filterOutputs, protocolParameters);
         if (tx && tx.error){
             console.log(tx.error);
         }
     };
-
     const updateSelectedAssets = async asset => {
         let outputAux = outputs.filter(output => output.label === activeTab);
         outputAux = outputAux[0];
@@ -179,7 +185,6 @@ const Send: FC<CreateTokenProps> = (props) => {
 
         outputAux.assets = dict;
         outputs.map(output => {
-            console.log()
             if (output.label === activeTab){
                 output = outputAux;
             }
@@ -269,7 +274,6 @@ const Send: FC<CreateTokenProps> = (props) => {
             outputAux = outputAux[0];
             outputAux.toAddress = address;
             outputs.map(output => {
-                console.log()
                 if (output.label === activeTab){
                     output = outputAux;
                 }
@@ -286,18 +290,11 @@ const Send: FC<CreateTokenProps> = (props) => {
             setAmountError(true);
         } else {
             setAmountError(false);
-            console.log('activeTab');
-            console.log(activeTab);
-            console.log('outputs');
-            console.log(outputs);
             let outputAux = outputs.filter(output => output.label === activeTab);
             outputAux = outputAux[0];
-            console.log('outputAux');
-            console.log(outputAux);
             outputAux.assets.lovelace = amount;
 
             outputs.map(output => {
-                console.log()
                 if (output.label === activeTab){
                     output = outputAux;
                 }
@@ -554,15 +551,9 @@ const Send: FC<CreateTokenProps> = (props) => {
 
                     {   currentTabData && currentTabData.assets ?
                         Object.entries(currentTabData.assets).map(keyValuePair => {
-                                console.log('currentTabData_____');
-                                console.log(keyValuePair);
                                 const assetName =  keyValuePair[0].includes('.') ? keyValuePair[0].split('.')[1] : keyValuePair[0];
                                 const unit = keyValuePair[0].includes('.') ? keyValuePair[0].split('.')[0] : keyValuePair[0];
-                                console.log('unit');
-                                console.log(unit);
-                                console.log('assetName');
-                                console.log(assetName);
-                                console.log('hey1111');
+
                                 if (assetName !== 'lovelace')
                                 {
                                     return <View
