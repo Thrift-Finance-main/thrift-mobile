@@ -11,7 +11,7 @@ import {Chip, Colors, Dialog, PanningProvider, Picker, PickerProps, TextField} f
 import swapIcon from "../assets/plus.png";
 import removeIcon from "../assets/remove.png";
 import pasteIcon from "../assets/paste.png";
-import {buildTransaction} from "../lib/transactions";
+import {buildTransaction, mergeAssetsFromOutputs, mergeAssetsFromUtxos} from "../lib/transactions";
 import {fetchBlockfrost, getProtocolParams, getTxUTxOsByAddress} from "../api/Blockfrost";
 import {validateAddress} from "../lib/account";
 import {isDictEmpty} from "../utils";
@@ -42,6 +42,9 @@ const Send: FC<CreateTokenProps> = (props) => {
             label: '1'
         }
     ]);
+    const [mergedUtxos, setMergedUtxos] = useState({});
+    const [mergedOutputs, setMergedOutputs] = useState({});
+    const [mergedDiff, setMergedDiff] = useState({});
 
     const [toAddress, setToAddress] = useState('addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u');
     const [toAddressError, setToAddressError] = useState(false);
@@ -65,6 +68,10 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     console.log('currentTabData');
     console.log(currentTabData);
+    console.log('mergedUtxos');
+    console.log(mergedUtxos);
+    console.log('mergedOutputs');
+    console.log(mergedOutputs);
 
     const useIsMounted = () => {
         const isMounted = useRef(false);
@@ -118,6 +125,8 @@ const Send: FC<CreateTokenProps> = (props) => {
             // Get/show tags based on addresses in utxos array
             // Select tags from where get the ada and assets,
             // verify in enough amount in selected utxos, alert
+
+            await mergeAssets();
         }
 
         if (isMounted.current) {
@@ -135,6 +144,58 @@ const Send: FC<CreateTokenProps> = (props) => {
                return addresses[i];
            }
         }
+    }
+    const renderAssetMerge = () => {
+        console.log('renderAssetMerge');
+        // mergedOutputs, mergedUtxos
+        console.log('assets');
+        console.log(assets);
+        console.log('mergedOutputs');
+        console.log(mergedOutputs);
+        if (mergedOutputs){
+            return <>
+                <View
+                    style={{ flexDirection: "row", justifyContent: "center", paddingHorizontal: widthPercentageToDP(3), paddingVertical: heightPercentageToDP(2) }}
+                >
+                    <Text
+                        style={{ color: props.isBlackTheme ? Colors.white : Colors.black }}
+                    >Ada {BigInt(mergedOutputs.lovelace).over(1000000).toString()} </Text>
+
+                    {
+                        Object.entries(mergedOutputs).map(keyValuePair => {
+                            return <Text
+                                style={{ color: props.isBlackTheme ? Colors.white : Colors.black }}
+                            >{keyValuePair[0]}{' '}{BigInt(keyValuePair[1]).over(1000000).toString()} </Text>
+                        })
+                    }
+
+                </View>
+            </>
+        }
+    }
+    const mergeAssets = async () => {
+        let filterUtxos = utxos;
+        if (!selectAll){
+            filterUtxos = utxos.filter((utxo) =>{
+                return utxo.tags.some(tag => {
+                    return selectedTags.includes(tag)
+                });
+            });
+        }
+        console.log('mergedAssetsFromUtxos');
+        const mergedAssetsFromUtxos = await mergeAssetsFromUtxos(filterUtxos);
+        console.log(mergedAssetsFromUtxos)
+        setMergedUtxos(mergedAssetsFromUtxos);
+
+
+        const filterOutputs = outputs.map(output => {
+            output.assets = Object.entries(output.assets).reduce((acc, [k, v]) => v ? {...acc, [k]:v} : acc , {})
+            return output;
+        }).filter(output => !isDictEmpty(output.assets));
+        console.log('mergeAssetsFromOutputs');
+        const mergedAssetsFromOutputs = await mergeAssetsFromOutputs(filterOutputs);
+        console.log(mergedAssetsFromOutputs)
+        setMergedOutputs(mergedAssetsFromOutputs);
     }
     const sendTransaction = async () => {
         const protocolParameters =  await getProtocolParams();
@@ -196,6 +257,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             return output;
         });
         setOutputs(outputs);
+        await mergeAssets();
     };
     const removeSelectedAssets = async asset => {
 
@@ -330,6 +392,8 @@ const Send: FC<CreateTokenProps> = (props) => {
             setOutputs(outputs);
             console.log('outputs2');
             console.log(outputs);
+
+            mergeAssets().then(r=>{});
         }
     };
 
@@ -623,12 +687,13 @@ const Send: FC<CreateTokenProps> = (props) => {
                         >Free:0</Text>
 
                     </View>
+                    {renderAssetMerge()}
                     <View
                         style={{ height: heightPercentageToDP(4)}}
                     />
                         <Button
                             backgroundColor={"#F338C2"}
-                            buttonTitle={"Transfer"}
+                            buttonTitle={"Transfer | Fee 0.17"}
                             onPress={() => sendTransaction()}
                             titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
 
