@@ -32,6 +32,16 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [availableTags, setAvailableTags] = useState([]);
     const [selectedTags, setSelectedTags] = useState(currentAccount.selectedAddress.tags);
     const [selectAll, setSelectAll] = useState(false);
+
+    const [outputs, setOutputs] = useState([
+        {
+            toAddress: 'addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u',
+            assets: {lovelace: '7'},
+            label: '1'
+        }
+    ]);
+
+
     const [toAddress, setToAddress] = useState('addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u');
     const [toAddressError, setToAddressError] = useState(false);
     const [amount, setAmount] = useState('6');
@@ -45,6 +55,15 @@ const Send: FC<CreateTokenProps> = (props) => {
             totalUtxos++;
         }
     })
+
+    let currentTabData = outputs.filter(output => output.label === activeTab);
+    currentTabData = currentTabData[0];
+    const assetsCurrentTab = Array.from(currentTabData.assets);
+
+    console.log('currentTabData1');
+    console.log(currentTabData);
+    console.log('assetsCurrentTab');
+    console.log(assetsCurrentTab);
 
     const useIsMounted = () => {
         const isMounted = useRef(false);
@@ -140,29 +159,74 @@ const Send: FC<CreateTokenProps> = (props) => {
     };
 
     const updateSelectedAssets = async asset => {
-        let updatedAssets = assets.filter(a => a.asset_name !== asset.asset_name);
-        setAssets(updatedAssets);
-        let selecAssets = selectedAssets;
-        selecAssets.push(asset);
-        setSelectedAssets(selecAssets);
+        let outputAux = outputs.filter(output => output.label === activeTab);
+        outputAux = outputAux[0];
+        console.log('asset');
+        console.log(asset);
+        console.log('outputAux');
+        console.log(outputAux);
+        outputAux.assets[asset.unit+'.'+asset.asset_name] = '';
+        console.log('outputAu2');
+        console.log(outputAux);
+        const updatedOutputs = outputs.map(output => {
+            if (output.label === activeTab){
+                output = outputAux;
+            }
+            return output;
+        })
+
+        console.log('outputs1');
+        console.log(outputs);
+        // setOutputs(prevOuts => ([...prevOuts, ...updatedOutputs]));
+
+        setOutputs(updatedOutputs);
+        console.log('outputs2');
+        console.log(outputs);
+
+        //let updatedAssets = assets.filter(a => a.asset_name !== asset.asset_name);
+        //setAssets(updatedAssets);
+        //let selecAssets = selectedAssets;
+        //selecAssets.push(asset);
+        //setSelectedAssets(selecAssets);
     };
-    const updateQuantityFromSelectedAsset = async (unit, quantity) => {
-        let selecAssets = selectedAssets;
-        selecAssets.map(a => {
-            if (a.asset_name === unit.assetName && a.unit === unit.unit){
+    const updateQuantityFromSelectedAsset = async (asset, quantity) => {
+        let outputAux = outputs.filter(output => output.label === activeTab);
+        outputAux = outputAux[0];
+
+        outputAux.assets.map(a => {
+            if (a.asset_name === asset.asset_name && a.unit === asset.unit){
                 a.quantityToSend = quantity;
             }
             return a;
         });
-        setSelectedAssets(selecAssets);
+        outputs.map(output => {
+            if (output.label === activeTab){
+                output = outputAux;
+            }
+            return output;
+        })
+        // setOutputs(prevTabs => ([...prevTabs, ...[{label: (parseInt(newLabel.label)+1).toString()}]]));
+        setOutputs(outputs);
     };
 
     const removeSelectedAssets = async asset => {
-        let updatedSelectedAssets = selectedAssets.filter(a => a.asset_name !== asset.asset_name);
-        setSelectedAssets(updatedSelectedAssets);
+
+
+        let outputAux = outputs.filter(output => output.label === activeTab);
+        outputAux = outputAux[0];
+        outputAux.assets.filter(a => a.asset_name !== asset.asset_name);
+
+        outputs.map(output => {
+            if (output.label === activeTab){
+                output = outputAux;
+            }
+            return output;
+        })
+        setOutputs(outputs);
+
         let aa = assets;
         aa.push(asset);
-        setAssets(aa);
+        //setAssets(aa);
     };
 
     const fetchCopiedText = async () => {
@@ -385,7 +449,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                         text70
                         containerStyle={{marginBottom: 1, marginLeft: 12}}
                         style={{textAlign: 'center', marginLeft: 20, fontSize: 10}}
-                        value={toAddress || null}
+                        value={currentTabData.toAddress || null}
                         placeholder={"Address"}
                         onChangeText={(text) =>{setToAddr(text).then(r => {})}}
                         useBottomErrors
@@ -409,7 +473,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                         text70
                         containerStyle={{marginBottom: 1, marginLeft: 12}}
                         style={{textAlign: 'center', fontSize: 28}}
-                        value={amount || null}
+                        value={currentTabData.assets.lovelace  || null}
                         placeholder={'Amount'}
                         onChangeText={(text) => setInputAmount(text)}
                         useBottomErrors
@@ -467,6 +531,51 @@ const Send: FC<CreateTokenProps> = (props) => {
                             : null}
                         </Picker>
                     </View>
+
+                    {
+                        console.log('currentTabData.assets')
+                    }
+                    {
+                        console.log(currentTabData.assets)
+                    }
+                    {   currentTabData.assets ?
+                        Object.entries(currentTabData.assets).map(keyValuePair => {
+                                console.log('currentTabData_____');
+                                console.log(keyValuePair);
+                                const assetName =  keyValuePair[0].includes('.') ? Buffer.from(keyValuePair[0].split('.')[1], 'hex').toString() : keyValuePair[0];
+                                const unit = keyValuePair[0].includes('.') ? keyValuePair[0].split('.')[0] : keyValuePair[0];
+                                console.log('unit');
+                                console.log(unit);
+                                console.log('assetName');
+                                console.log(assetName);
+                                console.log('hey1111');
+                                if (assetName !== 'lovelace')
+                                {
+                                    return <View
+                                        style={{flexDirection:'row', flexWrap:'wrap', paddingHorizontal: widthPercentageToDP(3)}}
+                                    >
+                                        <TextField
+                                            containerStyle={{width: 330, marginHorizontal: 6}}
+                                            floatingPlaceholder
+                                            placeholder={assetName}
+                                            onChangeText={(text) => updateQuantityFromSelectedAsset({asset_name: assetName, unit}, text)}
+                                            helperText="this is an helper text"
+                                            rightButtonProps={{
+                                                iconSource: removeIcon,
+                                                onPress: () => removeSelectedAssets({asset_name: assetName, unit}),
+                                                accessibilityLabel: 'TextField Info',
+                                                iconColor: Colors.red10
+                                            }}
+                                            useBottomErrors
+                                            validate={['required']}
+                                            errorMessage={"Invalid amount"}
+                                        />
+
+                                    </View>
+                                }
+                            })
+                            : null
+                    }
                     <View
                         style={{ flexDirection: "row", justifyContent: "space-between", paddingHorizontal: widthPercentageToDP(3), paddingVertical: heightPercentageToDP(2) }}
                     >
@@ -478,35 +587,8 @@ const Send: FC<CreateTokenProps> = (props) => {
                         >Free:0</Text>
 
                     </View>
-                    {
-                        selectedAssets.length ?
-                            selectedAssets.map(asset => {
-                                return <View
-                                        style={{flexDirection:'row', flexWrap:'wrap', paddingHorizontal: widthPercentageToDP(3)}}
-                                        >
-                                            <TextField
-                                                containerStyle={{width: 128}}
-                                                floatingPlaceholder
-                                                placeholder={Buffer.from(asset.asset_name, 'hex').toString()}
-                                                onChangeText={(text) => updateQuantityFromSelectedAsset({assetName: asset.asset_name, unit: asset.unit}, text)}
-                                                helperText="this is an helper text"
-                                                rightButtonProps={{
-                                                    iconSource: removeIcon,
-                                                    onPress: () => removeSelectedAssets(asset),
-                                                    accessibilityLabel: 'TextField Info',
-                                                    iconColor: Colors.red10
-                                                }}
-                                                useBottomErrors
-                                                validate={['required']}
-                                                errorMessage={"Invalid amount"}
-                                            />
-
-                                    </View>
-                            })
-                            : null
-                    }
                     <View
-                        style={{ height: heightPercentageToDP(7)}}
+                        style={{ height: heightPercentageToDP(4)}}
                     />
                         <Button
                             backgroundColor={"#F338C2"}
