@@ -57,7 +57,6 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     let currentTabData = outputs.filter(output => output.label === activeTab);
     currentTabData = currentTabData[0];
-    const assetsCurrentTab = Array.from(currentTabData && currentTabData.assets || []);
 
     const useIsMounted = () => {
         const isMounted = useRef(false);
@@ -213,14 +212,13 @@ const Send: FC<CreateTokenProps> = (props) => {
     };
     const fetchCopiedText = async () => {
         const text = await Clipboard.getString();
-
         const validAddress = await validateAddress(text);
         if (validAddress){
-            setToAddressError(false);
+            setToAddressError(false)
+            await setToAddr(text);
         } else {
             setToAddressError(true);
         }
-        setToAddress(text);
     };
     const onSelectTag = (tag) => {
         if (selectedTags.includes(tag)){
