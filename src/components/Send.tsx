@@ -38,7 +38,7 @@ const Send: FC<CreateTokenProps> = (props) => {
         {
             toAddress: 'addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u',
             validAddress: true,
-            assets: {lovelace: '7'},
+            assets: {lovelace: ''},
             label: '1'
         }
     ]);
@@ -48,9 +48,8 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [amount, setAmount] = useState('6');
     const [amountError, setAmountError] = useState(false);
     const [activeTab, setActiveTab] = useState('1');
-    const [tabs, setTabs] = useState([{label: '1'}]);
 
-    let totalUtxos = 0
+    let totalUtxos = 0;
     utxos.map(utxo => {
         if (utxo.utxos && utxo.utxos.length){
             totalUtxos++;
@@ -245,8 +244,8 @@ const Send: FC<CreateTokenProps> = (props) => {
         }
     };
     const onAddRecipient = () => {
-        if (tabs.length < 12){
-            let newLabel = tabs[tabs.length-1];
+        if (outputs.length < 12){
+            let newLabel = outputs[outputs.length-1];
             // setTabs(tabs);
             const obj = {
                 label: (parseInt(newLabel.label)+1).toString(),
@@ -254,13 +253,22 @@ const Send: FC<CreateTokenProps> = (props) => {
                 assets: {lovelace: ''},
                 toAddress: ''
             };
-            setTabs(prevTabs => ([...prevTabs, ...[
-                obj
-            ]]));
+
             setOutputs(prevTabs => ([...prevTabs, ...[
                 obj
             ]]));
             setActiveTab((parseInt(newLabel.label)+1).toString());
+        }
+    };
+    const onRemoveRecipient = () => {
+        let currentTab = activeTab;
+        if (currentTab !== '1' || outputs.length > 1){
+            let updatedOutputs = outputs.filter(tab => tab.label !== currentTab);
+            for(let i=0; i < updatedOutputs.length; i++){
+                updatedOutputs[i].label = (i+1).toString();
+            }
+            setOutputs(updatedOutputs);
+            setActiveTab('1');
         }
     };
     const setToAddr = async (address) => {
@@ -295,7 +303,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             setAmountError(false);
             let outputAux = outputs.filter(output => output.label === activeTab);
             outputAux = outputAux[0];
-            outputAux.assets.lovelace = amount;
+            outputAux.assets.lovelace = amount*1000000;
 
             outputs.map(output => {
                 if (output.label === activeTab){
@@ -418,11 +426,12 @@ const Send: FC<CreateTokenProps> = (props) => {
 
                     <View style={styles._tabs_main}>
                         {
-                            tabs.map(tab =>{
+                            outputs.map(tab =>{
                                 return <TouchableOpacity
                                     style={
                                         activeTab === tab.label ? styles._active_tab : styles._tab
                                     }
+                                    onLongPress={() => onRemoveRecipient()}
                                     onPress={() => setActiveTab(tab.label)}>
                                     <Text
                                         style={{...
@@ -437,7 +446,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                             })
                         }
                         {
-                            tabs.length < 12 ?
+                            outputs.length < 12 ?
                                 <TouchableOpacity
                                     style={activeTab === 'AddRecipient' ? styles._active_tab : styles._tab}
                                     onPress={() => onAddRecipient()}>
@@ -448,7 +457,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                                     : styles._tab_text,
                                         }}
                                     >
-                                        ✚{tabs.length < 8 ? 'New' : '' }
+                                        {outputs.length < 8 ? 'New' : '' }✚
                                     </Text>
                                 </TouchableOpacity>
                             : null
@@ -469,7 +478,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                         placeholder={"Address"}
                         onChangeText={(text) =>{setToAddr(text).then(r => {})}}
                         useBottomErrors
-                        validate={['required', (text) => currentTabData && currentTabData.validAddress]}
+                        validate={[(text) => currentTabData && currentTabData.validAddress]}
                         errorMessage={"Invalid address"}
                         selectTextOnFocus={true}
                         rightButtonProps={{
