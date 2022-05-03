@@ -36,8 +36,8 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [toAddressError, setToAddressError] = useState(false);
     const [amount, setAmount] = useState('6');
     const [amountError, setAmountError] = useState(false);
-    const [activeTab, setActiveTab] = useState('1st');
-    const [tabs, setTabs] = useState([{label: '1st'}]);
+    const [activeTab, setActiveTab] = useState('1');
+    const [tabs, setTabs] = useState([{label: '1'}]);
 
     let totalUtxos = 0
     utxos.map(utxo => {
@@ -83,28 +83,16 @@ const Send: FC<CreateTokenProps> = (props) => {
                     }
                 })
             );
-            console.log('utxos');
-            console.log(utxos);
             let tags = new Set();
             const updatedUtxos = utxos.map(utxo => {
-                console.log('utxo.address');
-                console.log(utxo.address);
                 const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
-                console.log('data');
-                console.log(data);
                 if (data){
                     data.tags.map(tag => tags.add(tag));
                     utxo = {...utxo, ...data};
-                    console.log('utxo000');
-                    console.log(utxo)
                     return utxo;
                 }
             }).filter(r => r !== undefined);
             setUtxos(updatedUtxos);
-            console.log('updatedUtxos');
-            console.log(updatedUtxos);
-            console.log('AvailableTags');
-            console.log(tags);
             setAvailableTags(Array.from(tags));
 
             // Get/show tags based on addresses in utxos array
@@ -208,12 +196,13 @@ const Send: FC<CreateTokenProps> = (props) => {
         }
     };
     const onAddRecipient = () => {
-        // add new tx template to tx list
-        //  '1st 2nd 3rd 4th'.
-        let tbs = tabs;
-        const newLabel = tbs[tbs.length-1];
-        tbs.push({label: (parseInt(newLabel.label[0])+1)+'st'});
-        setTabs(tbs);
+        if (tabs.length < 12){
+            // add new tx template to tx list
+            //  '1st 2nd 3rd 4th'.
+            const newLabel = tabs[tabs.length-1];
+            // setTabs(tabs);
+            setTabs(prevTabs => ([...prevTabs, ...[{label: (parseInt(newLabel.label)+1).toString()}]]));
+        }
     };
     const setToAddr = async (address) => {
         // add new tx template to tx list
@@ -229,10 +218,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     const setInputAmount= (amount) => {
         // add new tx template to tx list
         //  '1st 2nd 3rd 4th'.
-        console.log('setInputAmount');
         const validAmount = !isNaN(amount);
-        console.log(amount);
-        console.log(validAmount);
         if (!validAmount){
             setAmountError(true);
         } else {
@@ -322,7 +308,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                 onPress={onSelectAllTags}
                                 containerStyle={{
                                     marginRight: 4,
-                                    borderWidth: 1,
+                                    borderWidth:  selectAll ? 2 : 1,
                                     borderColor: 'gray'
                                 }}
                                 badgeProps={{
@@ -353,7 +339,6 @@ const Send: FC<CreateTokenProps> = (props) => {
                     <View style={styles._tabs_main}>
                         {
                             tabs.map(tab =>{
-                                console.log(tabs.length);
                                 return <TouchableOpacity
                                     style={
                                         activeTab === tab.label ? styles._active_tab : styles._tab
@@ -371,19 +356,23 @@ const Send: FC<CreateTokenProps> = (props) => {
                                 </TouchableOpacity>
                             })
                         }
-                        <TouchableOpacity
-                            style={activeTab === 'AddRecipient' ? styles._active_tab : styles._tab}
-                            onPress={() => onAddRecipient()}>
-                            <Text
-                                style={{...
-                                        activeTab === 'AddRecipient'
-                                            ? styles._active_tab_text
-                                            : styles._tab_text,
-                                }}
-                            >
-                                Add Recipient
-                            </Text>
-                        </TouchableOpacity>
+                        {
+                            tabs.length < 12 ?
+                                <TouchableOpacity
+                                    style={activeTab === 'AddRecipient' ? styles._active_tab : styles._tab}
+                                    onPress={() => onAddRecipient()}>
+                                    <Text
+                                        style={{...
+                                                activeTab === 'AddRecipient'
+                                                    ? styles._active_tab_text
+                                                    : styles._tab_text,
+                                        }}
+                                    >
+                                        ✚{tabs.length < 8 ? 'New' : '' }
+                                    </Text>
+                                </TouchableOpacity>
+                            : null
+                        }
                     </View>
 
                     <Text
