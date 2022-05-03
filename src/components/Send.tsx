@@ -56,8 +56,15 @@ const Send: FC<CreateTokenProps> = (props) => {
         }
     })
 
+    console.log('\noutputs');
+    console.log(outputs);
+    console.log('activeTab');
+    console.log(activeTab);
     let currentTabData = outputs.filter(output => output.label === activeTab);
     currentTabData = currentTabData[0];
+
+    console.log('currentTabData');
+    console.log(currentTabData);
 
     const useIsMounted = () => {
         const isMounted = useRef(false);
@@ -163,8 +170,6 @@ const Send: FC<CreateTokenProps> = (props) => {
             return output;
         })
 
-        // setOutputs(prevOuts => ([...prevOuts, ...updatedOutputs]));
-
         setOutputs(updatedOutputs);
     };
     const updateQuantityFromSelectedAsset = async (asset, quantity) => {
@@ -190,7 +195,6 @@ const Send: FC<CreateTokenProps> = (props) => {
             }
             return output;
         });
-        // setOutputs(prevTabs => ([...prevTabs, ...[{label: (parseInt(newLabel.label)+1).toString()}]]));
         setOutputs(outputs);
     };
     const removeSelectedAssets = async asset => {
@@ -296,14 +300,23 @@ const Send: FC<CreateTokenProps> = (props) => {
     };
     const setInputAmount= (amount) => {
 
+        console.log('\n\nsetInputAmount');
         const validAmount = !isNaN(amount);
+        console.log('activeTab');
+        console.log(activeTab);
+        console.log('validAmount');
+        console.log(validAmount);
         if (!validAmount && amount !== ''){
             setAmountError(true);
         } else {
             setAmountError(false);
             let outputAux = outputs.filter(output => output.label === activeTab);
             outputAux = outputAux[0];
-            outputAux.assets.lovelace = amount*1000000;
+            console.log('outputAux');
+            console.log(outputAux);
+            outputAux.assets.lovelace = BigInt(amount).multiply(1000000).toString();
+            console.log('outputAux1');
+            console.log(outputAux);
 
             outputs.map(output => {
                 if (output.label === activeTab){
@@ -311,8 +324,12 @@ const Send: FC<CreateTokenProps> = (props) => {
                 }
                 return output;
             });
+            console.log('outputs1');
+            console.log(outputs);
             // setOutputs(prevTabs => ([...prevTabs, ...[{label: (parseInt(newLabel.label)+1).toString()}]]));
             setOutputs(outputs);
+            console.log('outputs2');
+            console.log(outputs);
         }
     };
 
@@ -494,6 +511,12 @@ const Send: FC<CreateTokenProps> = (props) => {
                                 Colors.black,
                         }}
                     >Amount</Text>
+                    {
+                        console.log('currentTabData.assets.lovelace')
+                    }
+                    {
+                        console.log(currentTabData.assets.lovelace)
+                    }
                     <TextField
                         text70
                         containerStyle={{marginBottom: 1, marginLeft: 12}}
@@ -501,6 +524,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                         value={currentTabData
                             && currentTabData.assets
                             && currentTabData.assets.lovelace
+                            && BigInt(currentTabData.assets.lovelace).over(1000000).toString()
                             || null
                         }
                         placeholder={'Amount'}
