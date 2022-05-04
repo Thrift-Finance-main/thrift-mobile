@@ -3,11 +3,10 @@ import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native
 import Clipboard from '@react-native-clipboard/clipboard';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {heightPercentageToDP, widthPercentageToDP} from '../utils/dimensions'
-import Button from './Common/Button'
 import Back from '../assets/back.svg'
 import DarkBack from '../assets//DarkBack.svg'
 import {useSelector} from "react-redux";
-import {Chip, Colors, Dialog, PanningProvider, Picker, PickerProps, TextField} from "react-native-ui-lib";
+import {Button, Chip, Colors, Dialog, PanningProvider, Picker, PickerProps, TextField} from "react-native-ui-lib";
 import swapIcon from "../assets/plus.png";
 import removeIcon from "../assets/remove.png";
 import pasteIcon from "../assets/paste.png";
@@ -26,6 +25,7 @@ interface CreateTokenProps {
 
 const Send: FC<CreateTokenProps> = (props) => {
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
+    const [availableAda, setAvailableAda] = useState(currentAccount.balance);
     const [assets, setAssets] = useState(currentAccount.assets || []);
     const [selectedAssets, setSelectedAssets] = useState([]);
     const [accountState, setAccountState] = useState({});
@@ -68,11 +68,6 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     console.log('currentTabData');
     console.log(currentTabData);
-    console.log('mergedUtxos');
-    console.log(mergedUtxos);
-    console.log('mergedOutputs');
-    console.log(mergedOutputs);
-
     const useIsMounted = () => {
         const isMounted = useRef(false);
         // @ts-ignore
@@ -84,6 +79,18 @@ const Send: FC<CreateTokenProps> = (props) => {
     };
 
     const isMounted = useIsMounted();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            await mergeAssets();
+        }
+        if (isMounted.current) {
+            // call the function
+            fetchData()
+                // make sure to catch any error
+                .catch(console.error);
+        }
+    }, []);
 
     useEffect(() =>{
 
@@ -182,20 +189,18 @@ const Send: FC<CreateTokenProps> = (props) => {
                 });
             });
         }
-        console.log('mergedAssetsFromUtxos');
         const mergedAssetsFromUtxos = await mergeAssetsFromUtxos(filterUtxos);
-        console.log(mergedAssetsFromUtxos)
         setMergedUtxos(mergedAssetsFromUtxos);
-
+        setAvailableAda(BigInt(mergedAssetsFromUtxos.lovelace).over(1000000).toString())
 
         const filterOutputs = outputs.map(output => {
             output.assets = Object.entries(output.assets).reduce((acc, [k, v]) => v ? {...acc, [k]:v} : acc , {})
             return output;
         }).filter(output => !isDictEmpty(output.assets));
-        console.log('mergeAssetsFromOutputs');
         const mergedAssetsFromOutputs = await mergeAssetsFromOutputs(filterOutputs);
-        console.log(mergedAssetsFromOutputs)
         setMergedOutputs(mergedAssetsFromOutputs);
+
+
     }
     const sendTransaction = async () => {
         const protocolParameters =  await getProtocolParams();
@@ -291,14 +296,15 @@ const Send: FC<CreateTokenProps> = (props) => {
             setToAddressError(true);
         }
     };
-    const onSelectTag = (tag) => {
+    const onSelectTag = async (tag) => {
         if (selectedTags.includes(tag)){
             setSelectedTags(selectedTags.filter(t => t !== tag));
         } else {
             setSelectedTags([...selectedTags, tag])
         }
+        await mergeAssets();
     };
-    const onSelectAllTags = () => {
+    const onSelectAllTags = async () => {
         // select all
         const nAvailableTags = availableTags.length;
         if (selectedTags.length < nAvailableTags){
@@ -308,6 +314,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             setSelectedTags([]);
             setSelectAll(false);
         }
+        await mergeAssets();
     };
     const onAddRecipient = () => {
         if (outputs.length < 12){
@@ -364,35 +371,21 @@ const Send: FC<CreateTokenProps> = (props) => {
 
         console.log('\n\nsetInputAmount');
         const validAmount = !isNaN(amount);
-        console.log('activeTab');
-        console.log(activeTab);
-        console.log('validAmount');
-        console.log(validAmount);
         if (!validAmount && amount !== ''){
             setAmountError(true);
         } else {
             setAmountError(false);
             let outputAux = outputs.filter(output => output.label === activeTab);
             outputAux = outputAux[0];
-            console.log('outputAux');
-            console.log(outputAux);
             outputAux.assets.lovelace = BigInt(amount).multiply(1000000).toString();
-            console.log('outputAux1');
-            console.log(outputAux);
-
             outputs.map(output => {
                 if (output.label === activeTab){
                     output = outputAux;
                 }
                 return output;
             });
-            console.log('outputs1');
-            console.log(outputs);
             // setOutputs(prevTabs => ([...prevTabs, ...[{label: (parseInt(newLabel.label)+1).toString()}]]));
             setOutputs(outputs);
-            console.log('outputs2');
-            console.log(outputs);
-
             mergeAssets().then(r=>{});
         }
     };
@@ -431,6 +424,10 @@ const Send: FC<CreateTokenProps> = (props) => {
         );
     };
 
+    console.log('mergedUtxos');
+    console.log(mergedUtxos);
+    console.log(BigInt(mergedUtxos.lovelace).toString());
+    console.log(BigInt(mergedUtxos.lovelace).over(1000000).toString());
     return (
         <SafeAreaView style={{
             ...styles.mainContainer, backgroundColor:
@@ -467,7 +464,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                     Colors.black,
                             }}
                             onPress={() => setAmount((currentAccount.balance/1000000).toString())}
-                        >From {currentAccount.accountName} {currentAccount.balance ? currentAccount.balance/1000000 : 0} Ada</Text>
+                        >From {currentAccount.accountName} {BigInt(mergedUtxos.lovelace).over(1000000).toString()} Ada</Text>
                         <View
                             style={{flexDirection:'row', flexWrap:'wrap', marginTop: 8, marginLeft: 12}}
                         >
@@ -677,27 +674,33 @@ const Send: FC<CreateTokenProps> = (props) => {
                             : null
                     }
                     <View
-                        style={{ flexDirection: "row", justifyContent: "space-between", paddingHorizontal: widthPercentageToDP(3), paddingVertical: heightPercentageToDP(2) }}
-                    >
-                        <Text
-                            style={{ color: props.isBlackTheme ? Colors.white : Colors.black }}
-                        >Balance:0.005 Dana</Text>
-                        <Text
-                            style={{ color: props.isBlackTheme ? Colors.white : Colors.black }}
-                        >Free:0</Text>
-
-                    </View>
-                    {renderAssetMerge()}
-                    <View
                         style={{ height: heightPercentageToDP(4)}}
                     />
                         <Button
                             backgroundColor={"#F338C2"}
-                            buttonTitle={"Transfer | Fee 0.17"}
                             onPress={() => sendTransaction()}
-                            titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
 
-                        />
+                        >
+                            <Text style={{color: 'white', padding:4, fontSize: 16}}>
+                                <Text style={{color: 'white', padding:4, textAlign: 'center', fontSize: 20, fontWeight: 'bold'}}>
+                                    Send{'\n'}
+                                </Text>
+                                <Text style={{color: 'white', padding:4, fontSize: 16}}>
+                                    Ada{' '}{BigInt(mergedOutputs.lovelace).over(1000000).toString()}{' | '}
+                                </Text>
+                                {
+                                    Object.keys(mergedOutputs).length-1 > 0 ?
+                                        <Text style={{color: 'white', padding:4, fontSize: 16}}>
+                                            Assets{' ('}{Object.keys(mergedOutputs).length-1}{') | '}
+                                        </Text>
+                                    : null
+                                }
+                                <Text style={{color: 'white', padding:4, fontSize: 16}}>
+                                    Fee 0.17
+                                </Text>
+
+                            </Text>
+                        </Button>
                     </View>
                     <View
                         style={{height: heightPercentageToDP(4)}}
