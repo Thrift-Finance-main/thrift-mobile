@@ -68,6 +68,8 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     console.log('currentTabData');
     console.log(currentTabData);
+    console.log('currentAccount');
+    console.log(currentAccount);    // TODO: Get utxos from currentAccount, set in wallet
     const useIsMounted = () => {
         const isMounted = useRef(false);
         // @ts-ignore
@@ -79,18 +81,6 @@ const Send: FC<CreateTokenProps> = (props) => {
     };
 
     const isMounted = useIsMounted();
-
-    useEffect(() => {
-        const fetchData = async () => {
-            await mergeAssets();
-        }
-        if (isMounted.current) {
-            // call the function
-            fetchData()
-                // make sure to catch any error
-                .catch(console.error);
-        }
-    }, []);
 
     useEffect(() =>{
 
@@ -127,6 +117,10 @@ const Send: FC<CreateTokenProps> = (props) => {
                 }
             }).filter(r => r !== undefined);
             setUtxos(updatedUtxos);
+
+            const mergedAssetsFromUtxos = await mergeAssetsFromUtxos(updatedUtxos);
+            setMergedUtxos(currentUtxos => ({...currentUtxos, mergedAssetsFromUtxos}));
+
             setAvailableTags(Array.from(tags));
 
             // Get/show tags based on addresses in utxos array
@@ -302,7 +296,6 @@ const Send: FC<CreateTokenProps> = (props) => {
         } else {
             setSelectedTags([...selectedTags, tag])
         }
-        await mergeAssets();
     };
     const onSelectAllTags = async () => {
         // select all
@@ -314,7 +307,6 @@ const Send: FC<CreateTokenProps> = (props) => {
             setSelectedTags([]);
             setSelectAll(false);
         }
-        await mergeAssets();
     };
     const onAddRecipient = () => {
         if (outputs.length < 12){

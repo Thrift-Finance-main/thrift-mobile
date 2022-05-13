@@ -15,7 +15,7 @@ import DarkTheme from '../assets/darkTheme.svg'
 import DarkScanner from '../assets/DarkScanner.svg'
 import {useDispatch, useSelector} from "react-redux";
 import WalletIcon from "../assets/wallet.svg";
-import {fetchBlockfrost, getBlockInfo, getTxInfo, getTxUTxOs} from "../api/Blockfrost";
+import {fetchBlockfrost, getBlockInfo, getTxInfo, getTxUTxOs, getTxUTxOsByAddress} from "../api/Blockfrost";
 import {apiDb} from "../db/LiteDb";
 import {setCurrentAccount, setCurrentPrice} from "../store/Action";
 import {classifyTx, RECEIVE_TX, SEND_TX} from "../lib/transactions";
@@ -91,7 +91,18 @@ const Wallet: FC<WalletProps> = (props) => {
                     return;
                 }
 
+                const utxos = await Promise.all(
+                    relatedAddresses.map(async a => {
+                        const utxos = await getTxUTxOsByAddress(a.address);
+                        if (utxos && !utxos.error){
+                            a.utxos = utxos;
+                            return a;
+                        }
+                    })
+                );
+
                 let currentAccountInLocal = await apiDb.getAccount(currentAccount.accountName);
+                currentAccountInLocal.utxos = utxos;
                 currentAccountInLocal.balance = accountState.controlled_amount;
                 currentAccountInLocal.delegated = accountState.active;
                 currentAccountInLocal.activeEpoch = accountState.active_epoch;
