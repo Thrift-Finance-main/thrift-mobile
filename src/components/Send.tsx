@@ -89,8 +89,7 @@ const Send: FC<CreateTokenProps> = (props) => {
         setUtxos(updatedUtxos);
 
         const mergedAssetsFromUtxos = mergeAssetsFromUtxos(updatedUtxos);
-        console.log('mergedAssetsFromUtxos');
-        console.log(mergedAssetsFromUtxos);
+
         setMergedUtxos(currentUtxos => ({...currentUtxos, ...mergedAssetsFromUtxos}));
 
         setAvailableTags(Array.from(tags));
@@ -103,7 +102,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             endpoint = endpoint + "/addresses";
             const relatedAddresses = await fetchBlockfrost(endpoint);
             console.log('relatedAddresses');
-            console.log(relatedAddresses);
+            console.log(relatedAddresses.length);
             if (relatedAddresses.error){
                 return;
             }
@@ -128,8 +127,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             setUtxos(updatedUtxos);
 
             const mergedAssetsFromUtxos = mergeAssetsFromUtxos(updatedUtxos);
-            console.log('mergedAssetsFromUtxos');
-            console.log(mergedAssetsFromUtxos);
+
             setMergedUtxos(currentUtxos => ({...currentUtxos, mergedAssetsFromUtxos}));
 
             setAvailableTags(Array.from(tags));
@@ -419,14 +417,12 @@ const Send: FC<CreateTokenProps> = (props) => {
         );
     };
 
-    console.log('mergedUtxos');
-    console.log(mergedUtxos);
-    console.log(BigInt(mergedUtxos.lovelace).toString());
-    console.log(BigInt(mergedUtxos.lovelace).over(1000000).toString());
-    console.log(BigInt(mergedUtxos.lovelace).divmod(1000000));
     const mergedLovelace = BigInt(mergedUtxos.lovelace).divmod(1000000);
     const mergedLovelaceLeft = mergedLovelace.quotient;
     const mergedLovelaceRight = mergedLovelace.remainder;
+
+    const listOfAssets = Object.entries(mergedUtxos).filter(a => a[0] !== 'lovelace');
+    const filterAssets = assets.filter(a => listOfAssets.some(l => l[0] === a.unit));
     return (
         <SafeAreaView style={{
             ...styles.mainContainer, backgroundColor:
@@ -474,7 +470,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                 containerStyle={{
                                     marginRight: 4,
                                     borderWidth:  selectAll ? 2 : 1,
-                                    borderColor: 'gray'
+                                    borderColor: selectAll ? '#603EDA' : 'gray',
                                 }}
                                 badgeProps={{
                                     label: totalUtxos,
@@ -606,7 +602,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                             renderCustomModal={renderDialog}
                             style={{color: 'black', fontSize: 14, textAlign: 'center', marginLeft: 28}}
                         >
-                            {assets && assets.length ? assets.map((asset,index) => (
+                            {filterAssets && filterAssets.length ? filterAssets.map((asset,index) => (
                                 <Picker.Item
                                     key={asset+index}
                                     value={asset}

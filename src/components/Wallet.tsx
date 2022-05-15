@@ -166,9 +166,6 @@ const Wallet: FC<WalletProps> = (props) => {
                 }[] = [];
                 addressTxsList.map(addr => {
                     addr.txs.map(tx => {
-                        console.log('block_time');
-                        console.log(typeof tx.block_time);
-                        console.log(tx.block_time);
                         tx.block_time = tx.block_time*1000; // TODO: hot fix, from Moment unix
                         joinedTxsList.push({...tx, address: addr.address});
                     })
