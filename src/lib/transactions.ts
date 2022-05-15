@@ -225,12 +225,12 @@ export const buildTransaction = async (
     console.log(txBuilder);
     console.log(txBuilderDraft);
 
-    const mergedAssetsFromUtxos = await mergeAssetsFromUtxos(utxos);
+    const mergedAssetsFromUtxos = mergeAssetsFromUtxos(utxos);
     console.log('mergedAssetsFromUtxos');
     console.log(mergedAssetsFromUtxos);
     console.log('outputs');
     console.log(outputs);
-    const mergedAssetsFromOutputs = await mergeAssetsFromOutputs(outputs);
+    const mergedAssetsFromOutputs = mergeAssetsFromOutputs(outputs);
     console.log('mergedAssetsFromOutputs');
     console.log(mergedAssetsFromOutputs);
     const outputsAreValid = validOutputs(mergedAssetsFromUtxos,mergedAssetsFromOutputs);
@@ -242,49 +242,47 @@ export const buildTransaction = async (
         }
     }
 }
-export const mergeAssetsFromUtxos = async (utxos) => {
+export const mergeAssetsFromUtxos = (utxos) => {
     let assets: { [key: string]: string } = {};
-    await Promise.all(
-        utxos.map(utxo => {//  {"address": {"address": "addr_test1qp699gyph5gj8c4whp62048z7w7kte2w5ghkpl36wwh5z84t9gat4d3njffvnlde55dwtqyev48z8ywwqask7rsmwd9s0pxmc2", "index": 0, "network": "0", "reference": "", "tags": ["Main"]}, "utxos": [{"amount": [Array], "block": "ab69e2a0c1b8089875439210130bd60327738e1a8ef3fb36dfe05f8d018783c0", "data_hash": null, "output_index": 0, "tx_hash": "69d72b7e73b03c9dcd3f8ce6b185bdab8f85c5d989dffed51edc3f3c482beef0", "tx_index": 0}]}
-            utxo.utxos.map(async u => {
-                await Promise.all(
-                    u.amount.map(async a => {
-                        if (assets[a.unit] === undefined) {
-                            assets[a.unit] = a.quantity;
-                        } else {
-                            //const sum = await addBigNum(assets[a.unit], a.quantity);
-                            let x = BigInt(assets[a.unit]);
-                            let y = BigInt(a.quantity);
-                            const sum = (x.add(y)).toString();
-                            assets[a.unit] = sum;
-                        }
-                    })
-                );
-            });
-        })
-    );
+    console.log('utxos to merge');
+    console.log(utxos.length);
 
+    utxos.map(utxo => {//  {"address": {"address": "addr_test1qp699gyph5gj8c4whp62048z7w7kte2w5ghkpl36wwh5z84t9gat4d3njffvnlde55dwtqyev48z8ywwqask7rsmwd9s0pxmc2", "index": 0, "network": "0", "reference": "", "tags": ["Main"]}, "utxos": [{"amount": [Array], "block": "ab69e2a0c1b8089875439210130bd60327738e1a8ef3fb36dfe05f8d018783c0", "data_hash": null, "output_index": 0, "tx_hash": "69d72b7e73b03c9dcd3f8ce6b185bdab8f85c5d989dffed51edc3f3c482beef0", "tx_index": 0}]}
+        console.log(utxo)
+        utxo.utxos.map( u => {
+            u.amount.map( a => {
+                if (assets[a.unit] === undefined) {
+                    assets[a.unit] = a.quantity;
+                } else {
+                    //const sum = await addBigNum(assets[a.unit], a.quantity);
+                    let x = BigInt(assets[a.unit]);
+                    let y = BigInt(a.quantity);
+                    const sum = (x.add(y)).toString();
+                    assets[a.unit] = sum;
+                }
+            });
+            console.log(u);
+        });
+
+    })
     return assets;
 }
-export const mergeAssetsFromOutputs = async (outputs: {address:string, assets:any[]}[]) => {
+export const mergeAssetsFromOutputs = (outputs: {address:string, assets:any[]}[]) => {
     let assets: { [unit: string]: string } = {};
-    await Promise.all(
-        outputs.map(output =>
-            {
-                Object.entries(output.assets).map(async keyValuePair => {
-                    const unit = keyValuePair[0].includes('.') ? keyValuePair[0].split('.')[0] : keyValuePair[0];
-                    if (assets[unit] === undefined) {
-                        assets[unit] = keyValuePair[1];
-                    } else {
-                        let x = BigInt(assets[unit]);
-                        let y = BigInt(keyValuePair[1]);
-                        const sum = (x.add(y)).toString();
-                        assets[unit] = sum;
-                    }
-                });
-            })
-    );
-
+    outputs.map(output =>
+    {
+        Object.entries(output.assets).map(async keyValuePair => {
+            const unit = keyValuePair[0].includes('.') ? keyValuePair[0].split('.')[0] : keyValuePair[0];
+            if (assets[unit] === undefined) {
+                assets[unit] = keyValuePair[1];
+            } else {
+                let x = BigInt(assets[unit]);
+                let y = BigInt(keyValuePair[1]);
+                const sum = (x.add(y)).toString();
+                assets[unit] = sum;
+            }
+        });
+    })
     return assets;
 }
 export const validOutputs = (mergedAssetsFromUtxos, mergedAssetsFromOutputs ) => {

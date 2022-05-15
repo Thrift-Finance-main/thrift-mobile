@@ -29,7 +29,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [assets, setAssets] = useState(currentAccount.assets || []);
     const [selectedAssets, setSelectedAssets] = useState([]);
     const [accountState, setAccountState] = useState({});
-    const [utxos, setUtxos] = useState([]);
+    const [utxos, setUtxos] = useState(currentAccount.utxos);
     const [availableTags, setAvailableTags] = useState([]);
     const [selectedTags, setSelectedTags] = useState(currentAccount.selectedAddress.tags);
     const [selectAll, setSelectAll] = useState(false);
@@ -59,17 +59,10 @@ const Send: FC<CreateTokenProps> = (props) => {
         }
     })
 
-    console.log('\noutputs');
-    console.log(outputs);
-    console.log('activeTab');
-    console.log(activeTab);
     let currentTabData = outputs.filter(output => output.label === activeTab);
     currentTabData = currentTabData[0];
 
-    console.log('currentTabData');
-    console.log(currentTabData);
-    console.log('currentAccount');
-    console.log(currentAccount);    // TODO: Get utxos from currentAccount, set in wallet
+  // TODO: Get utxos from currentAccount, set in wallet
     const useIsMounted = () => {
         const isMounted = useRef(false);
         // @ts-ignore
@@ -84,12 +77,28 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     useEffect(() =>{
 
+        let tags = new Set();
+        const updatedUtxos = currentAccount.utxos.map(utxo => {
+            const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
+            if (data){
+                data.tags.map(tag => tags.add(tag));
+                utxo = {...utxo, ...data};
+                return utxo;
+            }
+        }).filter(r => r !== undefined);
+        setUtxos(updatedUtxos);
+
+        const mergedAssetsFromUtxos = mergeAssetsFromUtxos(updatedUtxos);
+        console.log('mergedAssetsFromUtxos');
+        console.log(mergedAssetsFromUtxos);
+        setMergedUtxos(currentUtxos => ({...currentUtxos, ...mergedAssetsFromUtxos}));
+
+        setAvailableTags(Array.from(tags));
+
         const fetchData = async () => {
             console.log('fetchData');
             let endpoint = "accounts/" + currentAccount.rewardAddress;
             let accountState = await fetchBlockfrost(endpoint);
-            console.log('accountState');
-            console.log(accountState);
             setAccountState(accountState);
             endpoint = endpoint + "/addresses";
             const relatedAddresses = await fetchBlockfrost(endpoint);
@@ -118,7 +127,9 @@ const Send: FC<CreateTokenProps> = (props) => {
             }).filter(r => r !== undefined);
             setUtxos(updatedUtxos);
 
-            const mergedAssetsFromUtxos = await mergeAssetsFromUtxos(updatedUtxos);
+            const mergedAssetsFromUtxos = mergeAssetsFromUtxos(updatedUtxos);
+            console.log('mergedAssetsFromUtxos');
+            console.log(mergedAssetsFromUtxos);
             setMergedUtxos(currentUtxos => ({...currentUtxos, mergedAssetsFromUtxos}));
 
             setAvailableTags(Array.from(tags));
@@ -127,7 +138,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             // Select tags from where get the ada and assets,
             // verify in enough amount in selected utxos, alert
 
-            await mergeAssets();
+            mergeAssets();
         }
 
         if (isMounted.current) {
@@ -146,54 +157,35 @@ const Send: FC<CreateTokenProps> = (props) => {
            }
         }
     }
-    const renderAssetMerge = () => {
-        console.log('renderAssetMerge');
-        // mergedOutputs, mergedUtxos
-        console.log('assets');
-        console.log(assets);
-        console.log('mergedOutputs');
-        console.log(mergedOutputs);
-        if (mergedOutputs){
-            return <>
-                <View
-                    style={{ flexDirection: "row", justifyContent: "center", paddingHorizontal: widthPercentageToDP(3), paddingVertical: heightPercentageToDP(2) }}
-                >
-                    <Text
-                        style={{ color: props.isBlackTheme ? Colors.white : Colors.black }}
-                    >Ada {BigInt(mergedOutputs.lovelace).over(1000000).toString()} </Text>
 
-                    {
-                        Object.entries(mergedOutputs).map(keyValuePair => {
-                            return <Text
-                                style={{ color: props.isBlackTheme ? Colors.white : Colors.black }}
-                            >{keyValuePair[0]}{' '}{BigInt(keyValuePair[1]).over(1000000).toString()} </Text>
-                        })
-                    }
+    const mergeAssets = () => {
 
-                </View>
-            </>
+        if (!selectedTags.length){
+            setMergedUtxos({});
+            setAvailableAda('0');
+        } else if (selectAll && selectedTags.length === availableTags.length) {
+            const mergedAssetsFromUtxos = mergeAssetsFromUtxos(utxos);
+            setMergedUtxos(mergedAssetsFromUtxos);
+            setAvailableAda(BigInt(mergedAssetsFromUtxos.lovelace).over(1000000).toString())
+        } else if (selectAll && selectedTags.length !== availableTags.length){
+            const filterUtxos = utxos.filter((utxo) => !utxo.tags.length || utxo.tags.some(t => selectedTags.includes(t)));
+            const mergedAssetsFromUtxos = mergeAssetsFromUtxos(filterUtxos);
+            setMergedUtxos(mergedAssetsFromUtxos);
+            setAvailableAda(BigInt(mergedAssetsFromUtxos.lovelace).over(1000000).toString())
         }
-    }
-    const mergeAssets = async () => {
-        let filterUtxos = utxos;
-        if (!selectAll){
-            filterUtxos = utxos.filter((utxo) =>{
-                return utxo.tags.some(tag => {
-                    return selectedTags.includes(tag)
-                });
-            });
+        else {
+            const filterUtxos = utxos.filter((utxo) => utxo.tags.some(t => selectedTags.includes(t)));
+            const mergedAssetsFromUtxos = mergeAssetsFromUtxos(filterUtxos);
+            setMergedUtxos(mergedAssetsFromUtxos);
+            setAvailableAda(BigInt(mergedAssetsFromUtxos.lovelace).over(1000000).toString())
         }
-        const mergedAssetsFromUtxos = await mergeAssetsFromUtxos(filterUtxos);
-        setMergedUtxos(mergedAssetsFromUtxos);
-        setAvailableAda(BigInt(mergedAssetsFromUtxos.lovelace).over(1000000).toString())
 
         const filterOutputs = outputs.map(output => {
             output.assets = Object.entries(output.assets).reduce((acc, [k, v]) => v ? {...acc, [k]:v} : acc , {})
             return output;
         }).filter(output => !isDictEmpty(output.assets));
-        const mergedAssetsFromOutputs = await mergeAssetsFromOutputs(filterOutputs);
+        const mergedAssetsFromOutputs = mergeAssetsFromOutputs(filterOutputs);
         setMergedOutputs(mergedAssetsFromOutputs);
-
 
     }
     const sendTransaction = async () => {
@@ -256,7 +248,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             return output;
         });
         setOutputs(outputs);
-        await mergeAssets();
+        mergeAssets();
     };
     const removeSelectedAssets = async asset => {
 
@@ -290,23 +282,41 @@ const Send: FC<CreateTokenProps> = (props) => {
             setToAddressError(true);
         }
     };
-    const onSelectTag = async (tag) => {
+
+    useEffect(() => {
+        if (selectedTags.length === 0){
+            setSelectAll(false);
+        }
+        console.log('selectedTags');
+        console.log(selectedTags);
+        mergeAssets();
+
+    }, [selectedTags.length]);
+
+    const onSelectTag = (tag) => {
+        console.log('\nonSelectTag');
+        console.log(tag);
         if (selectedTags.includes(tag)){
-            setSelectedTags(selectedTags.filter(t => t !== tag));
+            const updatedTags = selectedTags.filter(t => t !== tag);
+            setSelectedTags(updatedTags);
         } else {
             setSelectedTags([...selectedTags, tag])
         }
     };
-    const onSelectAllTags = async () => {
-        // select all
-        const nAvailableTags = availableTags.length;
-        if (selectedTags.length < nAvailableTags){
-            setSelectedTags(availableTags);
-            setSelectAll(true);
-        } else {
+    const onSelectAllTags = () => {
+
+        console.log('\nonSelectAllTags');
+        console.log('selectedTags');
+        console.log(selectedTags);
+        // const nAvailableTags = availableTags.length;
+        if (selectAll){
             setSelectedTags([]);
             setSelectAll(false);
+        } else {
+            setSelectedTags(availableTags);
+            setSelectAll(true);
         }
+
     };
     const onAddRecipient = () => {
         if (outputs.length < 12){
@@ -378,10 +388,9 @@ const Send: FC<CreateTokenProps> = (props) => {
             });
             // setOutputs(prevTabs => ([...prevTabs, ...[{label: (parseInt(newLabel.label)+1).toString()}]]));
             setOutputs(outputs);
-            mergeAssets().then(r=>{});
+            mergeAssets();
         }
     };
-
     const renderDialog: PickerProps['renderCustomModal'] = modalProps => {
         const {visible, children, toggleModal, onDone} = modalProps;
 
@@ -420,6 +429,10 @@ const Send: FC<CreateTokenProps> = (props) => {
     console.log(mergedUtxos);
     console.log(BigInt(mergedUtxos.lovelace).toString());
     console.log(BigInt(mergedUtxos.lovelace).over(1000000).toString());
+    console.log(BigInt(mergedUtxos.lovelace).divmod(1000000));
+    const mergedLovelace = BigInt(mergedUtxos.lovelace).divmod(1000000);
+    const mergedLovelaceLeft = mergedLovelace.quotient;
+    const mergedLovelaceRight = mergedLovelace.remainder;
     return (
         <SafeAreaView style={{
             ...styles.mainContainer, backgroundColor:
@@ -455,8 +468,8 @@ const Send: FC<CreateTokenProps> = (props) => {
                                 ...styles.fromAccount, color: props.isBlackTheme ? Colors.white :
                                     Colors.black,
                             }}
-                            onPress={() => setAmount((currentAccount.balance/1000000).toString())}
-                        >From {currentAccount.accountName} {BigInt(mergedUtxos.lovelace).over(1000000).toString()} Ada</Text>
+                            onPress={() => setAmount(mergedLovelaceLeft+'.'+mergedLovelaceRight)}
+                        >From {currentAccount.accountName} {mergedLovelaceLeft+'.'+mergedLovelaceRight} Ada</Text>
                         <View
                             style={{flexDirection:'row', flexWrap:'wrap', marginTop: 8, marginLeft: 12}}
                         >

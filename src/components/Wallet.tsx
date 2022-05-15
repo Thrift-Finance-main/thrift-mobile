@@ -101,8 +101,18 @@ const Wallet: FC<WalletProps> = (props) => {
                     })
                 );
 
+                let tags = new Set();
+                const updatedUtxos = utxos.map(utxo => {
+                    const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
+                    if (data){
+                        data.tags.map(tag => tags.add(tag));
+                        utxo = {...utxo, ...data};
+                        return utxo;
+                    }
+                }).filter(r => r !== undefined);
+
                 let currentAccountInLocal = await apiDb.getAccount(currentAccount.accountName);
-                currentAccountInLocal.utxos = utxos;
+                currentAccountInLocal.utxos = updatedUtxos;
                 currentAccountInLocal.balance = accountState.controlled_amount;
                 currentAccountInLocal.delegated = accountState.active;
                 currentAccountInLocal.activeEpoch = accountState.active_epoch;
@@ -256,6 +266,14 @@ const Wallet: FC<WalletProps> = (props) => {
         }
 
     }, [currentAccount.accountName]);
+
+    const getAddrData = (address, addresses) => {
+        for (let i = 0; i < addresses.length; i++) {
+            if (address === addresses[i].address){
+                return addresses[i];
+            }
+        }
+    }
 
     const renderItemMenuList = ({item, index}) => {
         return (
