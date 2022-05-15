@@ -160,14 +160,22 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     const mergeAssets = () => {
 
-        if (!selectedTags.length){
+        // Just utxos without tags
+        if (selectAll && !selectedTags.length){
+            const filterUtxos = utxos.filter((utxo) => !utxo.tags.length);
+            const mergedAssetsFromUtxos = mergeAssetsFromUtxos(filterUtxos);
+            setMergedUtxos(mergedAssetsFromUtxos);
+            setAvailableAda(BigInt(mergedAssetsFromUtxos.lovelace).over(1000000).toString())
+        }
+        else if (!selectedTags.length){
             setMergedUtxos({});
             setAvailableAda('0');
         } else if (selectAll && selectedTags.length === availableTags.length) {
             const mergedAssetsFromUtxos = mergeAssetsFromUtxos(utxos);
             setMergedUtxos(mergedAssetsFromUtxos);
             setAvailableAda(BigInt(mergedAssetsFromUtxos.lovelace).over(1000000).toString())
-        } else if (selectAll && selectedTags.length !== availableTags.length){
+        }
+        else if (selectAll && selectedTags.length !== availableTags.length){
             const filterUtxos = utxos.filter((utxo) => !utxo.tags.length || utxo.tags.some(t => selectedTags.includes(t)));
             const mergedAssetsFromUtxos = mergeAssetsFromUtxos(filterUtxos);
             setMergedUtxos(mergedAssetsFromUtxos);
@@ -284,18 +292,10 @@ const Send: FC<CreateTokenProps> = (props) => {
     };
 
     useEffect(() => {
-        if (selectedTags.length === 0){
-            setSelectAll(false);
-        }
-        console.log('selectedTags');
-        console.log(selectedTags);
         mergeAssets();
-
-    }, [selectedTags.length]);
+    }, [selectedTags.length, selectAll]);
 
     const onSelectTag = (tag) => {
-        console.log('\nonSelectTag');
-        console.log(tag);
         if (selectedTags.includes(tag)){
             const updatedTags = selectedTags.filter(t => t !== tag);
             setSelectedTags(updatedTags);
@@ -304,11 +304,6 @@ const Send: FC<CreateTokenProps> = (props) => {
         }
     };
     const onSelectAllTags = () => {
-
-        console.log('\nonSelectAllTags');
-        console.log('selectedTags');
-        console.log(selectedTags);
-        // const nAvailableTags = availableTags.length;
         if (selectAll){
             setSelectedTags([]);
             setSelectAll(false);
@@ -316,7 +311,6 @@ const Send: FC<CreateTokenProps> = (props) => {
             setSelectedTags(availableTags);
             setSelectAll(true);
         }
-
     };
     const onAddRecipient = () => {
         if (outputs.length < 12){
