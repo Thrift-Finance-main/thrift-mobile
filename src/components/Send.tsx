@@ -302,7 +302,7 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     useEffect(() => {
         mergeAssets();
-    }, [selectedTags.length, selectAll]);
+    }, [selectedTags.length, selectAll, outputs.length]);
 
     const onSelectTag = (tag) => {
         if (selectedTags.includes(tag)){
@@ -346,7 +346,9 @@ const Send: FC<CreateTokenProps> = (props) => {
                 updatedOutputs[i].label = (i+1).toString();
             }
             setOutputs(updatedOutputs);
-            setActiveTab('1');
+            let nextTab = parseInt(currentTab)-1;
+            nextTab = nextTab <= 0 ? '1' : nextTab.toString();
+            setActiveTab(nextTab);
         }
     };
     const setToAddr = async (address) => {

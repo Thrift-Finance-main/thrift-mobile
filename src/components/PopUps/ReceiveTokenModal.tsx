@@ -13,7 +13,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {addressSlice} from "../../utils";
 //import Clipboard from '@react-native-community/clipboard';
 import Scan from "../QrCodeCamera";
-import CameraQr from "../CameraQr";
+import Clipboard from '@react-native-clipboard/clipboard';
 import {
   Chip,
   ChipsInput,
@@ -60,6 +60,11 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
     return {label: tag}
   })
 
+  const copyToClipboard = async text => {
+    console.log('copyToClipboard');
+    console.log(text);
+    //await Clipboard.setString(text);
+  };
   const updateSelectedAddress = async addr => {
     console.log('updateSelectedAddress');
     console.log(addr);
@@ -213,7 +218,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                               result: {scanText}
                             </Text>
                             <TouchableOpacity
-                              //  onPress={props.onBackIconPress}
+                              //onPress={() => {}}
                               style={{
                                 alignSelf: "center", marginTop: heightPercentageToDP(1),
                                 height: heightPercentageToDP(4.5),
@@ -224,7 +229,6 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                               }}
                             >
                               <Text
-                                onPress={() => {/*Clipboard.setString('mail@mail.com')*/}}
                                 style={{ textAlign: "center", color: Colors.white }}
                               >Copy</Text>
 
@@ -252,7 +256,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                       justifyContent: "center",
                       marginBottom: heightPercentageToDP(2)
                     }}
-                    onPress={() => {/*Clipboard.setString(selectedAddress)}*/}}
+                    onPress={() => {Clipboard.setString(selectedAddress.address)}}
                 >
                   <Text
 
