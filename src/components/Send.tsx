@@ -80,8 +80,13 @@ const Send: FC<CreateTokenProps> = (props) => {
         let tags = new Set();
         const updatedUtxos = currentAccount.utxos.map(utxo => {
             const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
+            const len = utxo.utxos.length;
             if (data){
-                data.tags.map(tag => tags.add(tag));
+                data.tags.map(tag => {
+                    if (len){
+                        tags.add(tag)
+                    }
+                });
                 utxo = {...utxo, ...data};
                 return utxo;
             }
@@ -115,15 +120,21 @@ const Send: FC<CreateTokenProps> = (props) => {
                     }
                 })
             );
+
             let tags = new Set();
             const updatedUtxos = utxos.map(utxo => {
                 const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
+                const len = utxo.utxos.length;
                 if (data){
-                    data.tags.map(tag => tags.add(tag));
+                    data.tags.map(tag => {
+                        if (len){
+                            tags.add(tag)
+                        }
+                    });
                     utxo = {...utxo, ...data};
                     return utxo;
                 }
-            }).filter(r => r !== undefined);
+            }).filter(r => r !== undefined || r.utxos.length);
             setUtxos(updatedUtxos);
 
             const mergedAssetsFromUtxos = mergeAssetsFromUtxos(updatedUtxos);
