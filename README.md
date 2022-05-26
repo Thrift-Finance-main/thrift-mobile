@@ -88,3 +88,8 @@ yarn android
 ```
 
 React-Native version: ```0.65.1```
+
+Add custom fonts:
+```
+react-native link
+```

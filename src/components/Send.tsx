@@ -494,7 +494,8 @@ const Send: FC<CreateTokenProps> = (props) => {
                                 }}
                                 badgeProps={{
                                     label: totalUtxos,
-                                    backgroundColor: '#603EDA'
+                                    backgroundColor: '#603EDA',
+                                    fontFamily: 'AvenirNextCyr-Medium'
                                 }}
                             />
                             {
@@ -506,8 +507,9 @@ const Send: FC<CreateTokenProps> = (props) => {
                                        containerStyle={{
                                            marginRight: 4,
                                            borderWidth: selectedTags.includes(tag) ? 2 : 1,
-                                           borderColor: selectedTags.includes(tag) ? '#F338C2' : 'black'
+                                           borderColor: selectedTags.includes(tag) ? '#F338C2' : 'black',
                                        }}
+                                       labelStyle={{fontFamily: 'AvenirNextCyr-Medium'}}
                                    />
                                })
 
@@ -531,7 +533,8 @@ const Send: FC<CreateTokenProps> = (props) => {
                                                 activeTab === tab.label
                                                     ? styles._active_tab_text
                                                     : styles._tab_text,
-                                            fontSize: 14
+                                            fontSize: 14,
+                                            fontFamily: 'AvenirNextCyr-Medium'
                                         }}>
                                         {tab.label}
                                     </Text>
@@ -548,6 +551,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                                 activeTab === 'AddRecipient'
                                                     ? styles._active_tab_text
                                                     : styles._tab_text,
+                                                fontFamily: 'AvenirNextCyr-Medium'
                                         }}
                                     >
                                         {outputs.length < 8 ? 'New' : '' }✚
@@ -566,7 +570,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                     <TextField
                         text70
                         containerStyle={{marginBottom: 1, marginLeft: 12}}
-                        style={{textAlign: 'center', marginLeft: 20, fontSize: 10}}
+                        style={{textAlign: 'center', marginLeft: 20, fontSize: 10, fontFamily: 'AvenirNextCyr-Medium'}}
                         value={currentTabData && currentTabData.toAddress || null}
                         placeholder={"Address"}
                         onChangeText={(text) =>{setToAddr(text).then(r => {})}}
@@ -590,7 +594,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                     <TextField
                         text70
                         containerStyle={{marginBottom: 1, marginLeft: 12}}
-                        style={{textAlign: 'center', fontSize: 28}}
+                        style={{textAlign: 'center', fontSize: 28, fontFamily: 'AvenirNextCyr-Medium'}}
                         value={currentTabData
                             && currentTabData.assets
                             && currentTabData.assets.lovelace
@@ -606,7 +610,9 @@ const Send: FC<CreateTokenProps> = (props) => {
                     />
                     <Text
                         style={{
-                            ...styles.filedHeader, color: props.isBlackTheme ? Colors.white :
+                            ...styles.filedHeader,
+                            fontFamily: 'AvenirNextCyr-Medium',
+                            color: props.isBlackTheme ? Colors.white :
                                 Colors.black,
                         }}                    >Assets</Text>
                     <View
@@ -620,7 +626,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                             mode={Picker.modes.SINGLE}
                             rightIconSource={swapIcon}
                             renderCustomModal={renderDialog}
-                            style={{color: 'black', fontSize: 14, textAlign: 'center', marginLeft: 28}}
+                            style={{color: 'black', fontSize: 14, textAlign: 'center', marginLeft: 28, fontFamily: 'AvenirNextCyr-Medium'}}
                         >
                             {filterAssets && filterAssets.length ? filterAssets.map((asset,index) => (
                                 <Picker.Item
@@ -667,7 +673,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                         style={{flexDirection:'row', flexWrap:'wrap', paddingHorizontal: widthPercentageToDP(3)}}
                                     >
                                         <TextField
-                                            containerStyle={{width: 330, marginHorizontal: 6}}
+                                            containerStyle={{width: 330, marginHorizontal: 6,  fontFamily: 'AvenirNextCyr-Medium'}}
                                             floatingPlaceholder
                                             placeholder={Buffer.from(assetName, 'hex').toString() }
                                             onChangeText={(text) => updateQuantityFromSelectedAsset({asset_name: assetName, unit}, text)}
@@ -696,21 +702,21 @@ const Send: FC<CreateTokenProps> = (props) => {
                             onPress={() => sendTransaction()}
 
                         >
-                            <Text style={{color: 'white', padding:4, fontSize: 16}}>
+                            <Text style={{color: 'white', padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
                                 <Text style={{color: 'white', padding:4, textAlign: 'center', fontSize: 20, fontWeight: 'bold'}}>
                                     Send{'\n'}
                                 </Text>
-                                <Text style={{color: 'white', padding:4, fontSize: 16}}>
+                                <Text style={{color: 'white', padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
                                     Ada{' '}{BigInt(mergedOutputs.lovelace).over(1000000).toString()}{' | '}
                                 </Text>
                                 {
                                     Object.keys(mergedOutputs).length-1 > 0 ?
-                                        <Text style={{color: 'white', padding:4, fontSize: 16}}>
+                                        <Text style={{color: 'white', padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
                                             Assets{' ('}{Object.keys(mergedOutputs).length-1}{') | '}
                                         </Text>
                                     : null
                                 }
-                                <Text style={{color: 'white', padding:4, fontSize: 16}}>
+                                <Text style={{color: 'white', padding:4, fontSize: 16, fontFamily: 'AvenirNextCyr-Medium'}}>
                                     Fee 0.17
                                 </Text>
 
@@ -742,42 +748,49 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         marginTop: heightPercentageToDP(5),
         letterSpacing: 1,
-        paddingHorizontal: widthPercentageToDP(2.5)
+        paddingHorizontal: widthPercentageToDP(2.5),
+        fontFamily: 'AvenirNextCyr-Medium'
     },
     filedHeader: {
         fontSize: 14,
         letterSpacing: 1,
         paddingHorizontal: widthPercentageToDP(2.5),
         paddingVertical: heightPercentageToDP(1.5),
-        fontWeight: "bold"
+        fontWeight: "bold",
+        fontFamily: 'AvenirNextCyr-Medium'
     },
     fromAccount: {
         fontSize: 14,
         marginTop: heightPercentageToDP(2.5),
         letterSpacing: 1,
         paddingHorizontal: widthPercentageToDP(2.5),
-        fontWeight: "bold"
+        fontWeight: "bold",
+        fontFamily: 'AvenirNextCyr-Medium'
     },
     hintStyle: {
         color: Colors.hintsColor,
         fontSize: 10,
         paddingHorizontal: widthPercentageToDP(2),
-        marginTop: heightPercentageToDP(2)
+        marginTop: heightPercentageToDP(2),
+        fontFamily: 'AvenirNextCyr-Medium'
     },
     addressList: {
         textAlign: 'center',
         fontSize: 12,
         marginTop: heightPercentageToDP(1),
         fontStyle: "italic",
+        fontFamily: 'AvenirNextCyr-Medium'
     },
     addressListTags: {
         textAlign: 'center',
         opacity: 0.8,
-        marginBottom: heightPercentageToDP(2)
+        marginBottom: heightPercentageToDP(2),
+        fontFamily: 'AvenirNextCyr-Medium'
     },
     addressListTitle: {
         fontWeight: 'bold',
-        marginBottom: heightPercentageToDP(1)
+        marginBottom: heightPercentageToDP(1),
+        fontFamily: 'AvenirNextCyr-Medium'
     },
     _tabs_main: {
         backgroundColor: '#e9eeff',
@@ -801,6 +814,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textTransform: 'uppercase',
         fontSize: 12,
+        fontFamily: 'AvenirNextCyr-Medium'
     },
     _tab: {
         backgroundColor: '#e9eeff',
@@ -815,6 +829,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textTransform: 'uppercase',
         fontSize: 12,
+        fontFamily: 'AvenirNextCyr-Medium'
     }
 })
 export default Send;

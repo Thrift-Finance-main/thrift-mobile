@@ -311,6 +311,7 @@ const Wallet: FC<WalletProps> = (props) => {
                             style={{
                                 color: props.isBlackTheme ? Colors.white : Colors.black,
                                 fontSize: 14,
+                                fontFamily: 'AvenirNextCyr-Medium'
                             }}>
                             {item && item.metadata && item.metadata.name}
                             {/*Buffer.from(item.asset_name,"hex").toString()*/}
@@ -320,6 +321,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                 style={{
                                     color: props.isBlackTheme ? Colors.lightWhite : Colors.black,
                                     fontSize: 11,
+                                    fontFamily: 'AvenirNextCyr-Medium'
                                 }}>
                                 $5, 625.01
                             </Text>
@@ -327,6 +329,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                 style={{
                                     color: 'green',
                                     fontSize: 11,
+                                    fontFamily: 'AvenirNextCyr-Medium',
                                     marginLeft: widthPercentageToDP(5)
                                 }}>
                                 0%
@@ -338,6 +341,7 @@ const Wallet: FC<WalletProps> = (props) => {
                     style={{
                         color: props.isBlackTheme ? Colors.white : Colors.black,
                         fontSize: 16,
+                        fontFamily: 'AvenirNextCyr-Medium',
                         paddingHorizontal: props.isBlackTheme
                             ? widthPercentageToDP(3.4)
                             : widthPercentageToDP(3.4),
@@ -413,6 +417,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                 style={{
                                     color: props.isBlackTheme ? Colors.white : Colors.black,
                                     fontSize: 11,
+                                    fontFamily: 'AvenirNextCyr-Medium'
                                 }}>
                                 {addressSlice(showAddr,13)}
                             </Text>
@@ -420,6 +425,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                 style={{
                                     color: props.isBlackTheme ? Colors.white : Colors.black,
                                     fontSize: 10,
+                                    fontFamily: 'AvenirNextCyr-Medium'
                                 }}>
                                 {moment(item.blockTime).format("DD-MM-YYYY hh:mm")}
                             </Text>
@@ -436,6 +442,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                     style={{
                                         textAlign: 'right',
                                         fontSize: 16,
+                                        fontFamily: 'AvenirNextCyr-Medium',
                                         color: props.isBlackTheme ? Colors.white : Colors.black,
                                     }}>
                                     {getSymbolFromTxType(item.type)}{item.amount && formatter.format((item.amount.lovelace)/1000000).substring(1)}
@@ -444,6 +451,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                     style={{
                                         fontSize: 8,
                                         textAlign: 'center',
+                                        fontFamily: 'AvenirNextCyr-Medium',
                                         color: props.isBlackTheme ? Colors.white : Colors.black,
                                     }}>
                                     Confirmed
@@ -512,7 +520,7 @@ const Wallet: FC<WalletProps> = (props) => {
                 <View style={styles.walletInnerContainer}>
                     <Text style={styles.delegated}>{currentAccount.delegated ? 'Delegated' : 'Undelegated'}</Text>
                 </View>
-                <Text style={styles.adaText}>{currentAccount.balance ? currentAccount.balance/1000000 : 0} Ada</Text>
+                <Text style={{...styles.adaText}}>{currentAccount.balance ? currentAccount.balance/1000000 : 0} Ada</Text>
                 <Text style={styles.price}>${currentAccount.balance && currPrice.usd ? ((currentAccount.balance/1000000)*currPrice.usd).toFixed(2) : 0.00}</Text>
                 <View style={styles.sendReceiveContainer}>
                     <View style={{justifyContent: 'center', alignItems: 'center'}}>
@@ -637,7 +645,7 @@ const styles = StyleSheet.create({
     topTitle: {
         fontSize: 15,
         fontWeight: 'bold',
-        letterSpacing: 1,
+        letterSpacing: 1
     },
     topContainer: {
         flexDirection: 'row',
@@ -659,11 +667,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: Colors.white,
         fontSize: 12,
+        fontFamily: 'AvenirNextCyr-Medium'
     },
     delegated: {
         textAlign: 'center',
         color: Colors.white,
         fontSize: 9,
+        fontFamily: 'AvenirNextCyr-Medium'
     },
     walletInnerContainer: {
         backgroundColor: '#213EC2',
@@ -676,11 +686,11 @@ const styles = StyleSheet.create({
     },
     adaText: {
         fontSize: 18,
-        fontWeight: 'bold',
         letterSpacing: 1,
         color: Colors.white,
         textAlign: 'center',
         marginTop: heightPercentageToDP(3),
+        fontFamily: 'AvenirNextCyr-Medium'
     },
     accountName: {
         fontSize: 12,
@@ -689,6 +699,7 @@ const styles = StyleSheet.create({
         color: Colors.white,
         textAlign: 'center',
         marginTop: heightPercentageToDP(1),
+        fontFamily: 'AvenirNextCyr-Medium'
     },
     sendReceiveContainer: {
         flexDirection: 'row',
@@ -711,6 +722,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: Colors.white,
         fontSize: 10,
+        fontFamily: 'AvenirNextCyr-Medium'
     },
 });
 export default Wallet;
