@@ -75,13 +75,18 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
     }
   };
   const onCreateTag = (value: string) => {
-    apiDb.getAccountTagsByAddress(currentAccount.accountName, selectedAddress.address).then(tags => {
-      let updatedTags = [...tags, value];
-      apiDb.setAccountTagsByAddress(currentAccount.accountName, selectedAddress.address, updatedTags).then(r=>{
-        apiDb.getAccount(currentAccount.accountName).then(acc => {
-          dispatch(setCurrentAccount(acc));
+    apiDb.getAccountTagsByAddress(currentAccount.accountName, selectedAddress.address).then((tags:string[]) => {
+      console.log('onCreateTag');
+      console.log(tags);
+      if (tags.length === 0){
+        let updatedTags = [...tags, value];
+        console.log('add tag');
+        apiDb.setAccountTagsByAddress(currentAccount.accountName, selectedAddress.address, updatedTags).then(r=>{
+          apiDb.getAccount(currentAccount.accountName).then(acc => {
+            dispatch(setCurrentAccount(acc));
+          });
         });
-      });
+      }
     })
     return {label: value};
   }
@@ -229,7 +234,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                               }}
                             >
                               <Text
-                                style={{ textAlign: "center", color: Colors.white }}
+                                style={{ textAlign: "center", color: Colors.white, fontFamily: 'AvenirNextCyr-Medium', }}
                               >Copy</Text>
 
                             </TouchableOpacity>
@@ -260,7 +265,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                 >
                   <Text
 
-                      style={{ textAlign: "center", color: Colors.white }}
+                      style={{ textAlign: "center", color: Colors.white, fontFamily: 'AvenirNextCyr-Medium', }}
                   >Copy</Text>
 
                 </TouchableOpacity>
@@ -280,7 +285,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                     }}
                 >
                   <Text
-                      style={{ textAlign: "center", color: '#F338C2' }}
+                      style={{ textAlign: "center", color: '#F338C2', fontFamily: 'AvenirNextCyr-Medium', }}
                   >Share</Text>
 
                 </TouchableOpacity>
@@ -297,7 +302,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                     mode={Picker.modes.SINGLE}
                     rightIconSource={swapIcon}
                     renderCustomModal={renderDialog}
-                    style={{color: 'black', fontSize: 14, textAlign: 'center'}}
+                    style={{color: 'black', fontSize: 14, textAlign: 'center', fontFamily: 'AvenirNextCyr-Medium'}}
                 >
                   {currentAccount.externalPubAddress.map((addr,index) => (
                       <Picker.Item
@@ -337,13 +342,13 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                 <ChipsInput
                     ref={customChipsInput}
                     containerStyle={{}}
-                    placeholder="Enter Tags"
+                    placeholder="Enter #Tag"
                     chips={relatedTags}
                     inputStyle={styles.customInput}
                     onCreateTag={(w) => onCreateTag(w)}
                     onTagPress={onTagPress}
-                    disableTagAdding={selectedAddress.index === 0}
-                    disableTagRemoval={selectedAddress.index === 0}
+                    disableTagAdding={selectedAddress.index === 0 || relatedTags.length > 0}
+                    disableTagRemoval={selectedAddress.index === 0 || relatedTags.length === 0}
                 />
 
 
@@ -391,7 +396,7 @@ const styles = StyleSheet.create({
 
   topTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: 'AvenirNextCyr-Demi',
     width: "100%",
     textAlign: "center"
   },
@@ -402,6 +407,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 14,
     textAlign: "center",
+    fontFamily: 'AvenirNextCyr-Medium',
     marginBottom: -heightPercentageToDP(1)
   },
   camerStyle: {
@@ -415,20 +421,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 12,
     marginTop: heightPercentageToDP(1),
-    fontStyle: "italic",
+    fontFamily: 'AvenirNextCyr-Medium',
   },
   addressListTags: {
     textAlign: 'center',
     opacity: 0.8,
+    fontFamily: 'AvenirNextCyr-Medium',
     marginBottom: heightPercentageToDP(2)
   },
   addressListTitle: {
-    fontWeight: 'bold',
+    fontFamily: 'AvenirNextCyr-Demi',
     marginBottom: heightPercentageToDP(1)
   },
   customInput: {
-    ...Typography.text60,
-    color: Colors.blue30
+    color: Colors.blue30,
+    fontFamily: 'AvenirNextCyr-Medium',
   },
 
 });
