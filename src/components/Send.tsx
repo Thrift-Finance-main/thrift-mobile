@@ -479,7 +479,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                     Colors.black,
                             }}
                             onPress={() => setAmount(mergedLovelaceLeft+'.'+mergedLovelaceRight)}
-                        >From {currentAccount.accountName} {mergedLovelaceLeft+'.'+mergedLovelaceRight} Ada</Text>
+                        >From <Text style={{fontFamily: 'AvenirNextCyr-Demi'}}>{currentAccount.accountName} {mergedLovelaceLeft+'.'+mergedLovelaceRight}</Text> Ada</Text>
                         <View
                             style={{flexDirection:'row', flexWrap:'wrap', marginTop: 8, marginLeft: 12}}
                         >
@@ -570,7 +570,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                     <TextField
                         text70
                         containerStyle={{marginBottom: 1, marginLeft: 12}}
-                        style={{textAlign: 'center', marginLeft: 20, fontSize: 10, fontFamily: 'AvenirNextCyr-Medium'}}
+                        style={{textAlign: 'center', marginLeft: 20, marginRight: 20, fontSize: 10, fontFamily: 'AvenirNextCyr-Medium'}}
                         value={currentTabData && currentTabData.toAddress || null}
                         placeholder={"Address"}
                         onChangeText={(text) =>{setToAddr(text).then(r => {})}}
@@ -579,8 +579,8 @@ const Send: FC<CreateTokenProps> = (props) => {
                         errorMessage={"Invalid address"}
                         selectTextOnFocus={true}
                         rightButtonProps={{
-                            iconSource: pasteIcon,
-                            onPress: () => fetchCopiedText(),
+                            //iconSource: pasteIcon,
+                            //onPress: () => fetchCopiedText(),
                             accessibilityLabel: 'TextField Info',
                             iconColor: Colors.black
                         }}
@@ -611,7 +611,6 @@ const Send: FC<CreateTokenProps> = (props) => {
                     <Text
                         style={{
                             ...styles.filedHeader,
-                            fontFamily: 'AvenirNextCyr-Medium',
                             color: props.isBlackTheme ? Colors.white :
                                 Colors.black,
                         }}                    >Assets</Text>
@@ -756,15 +755,13 @@ const styles = StyleSheet.create({
         letterSpacing: 1,
         paddingHorizontal: widthPercentageToDP(2.5),
         paddingVertical: heightPercentageToDP(1.5),
-        fontWeight: "bold",
-        fontFamily: 'AvenirNextCyr-Medium'
+        fontFamily: 'AvenirNextCyr-Demi'
     },
     fromAccount: {
         fontSize: 14,
         marginTop: heightPercentageToDP(2.5),
         letterSpacing: 1,
         paddingHorizontal: widthPercentageToDP(2.5),
-        fontWeight: "bold",
         fontFamily: 'AvenirNextCyr-Medium'
     },
     hintStyle: {
@@ -778,19 +775,18 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 12,
         marginTop: heightPercentageToDP(1),
-        fontStyle: "italic",
         fontFamily: 'AvenirNextCyr-Medium'
     },
     addressListTags: {
         textAlign: 'center',
+        fontSize: 10,
         opacity: 0.8,
         marginBottom: heightPercentageToDP(2),
         fontFamily: 'AvenirNextCyr-Medium'
     },
     addressListTitle: {
-        fontWeight: 'bold',
         marginBottom: heightPercentageToDP(1),
-        fontFamily: 'AvenirNextCyr-Medium'
+        fontFamily: 'AvenirNextCyr-Demi'
     },
     _tabs_main: {
         backgroundColor: '#e9eeff',
@@ -811,10 +807,9 @@ const styles = StyleSheet.create({
     },
     _active_tab_text: {
         color: '#000',
-        fontWeight: 'bold',
         textTransform: 'uppercase',
         fontSize: 12,
-        fontFamily: 'AvenirNextCyr-Medium'
+        fontFamily: 'AvenirNextCyr-Heavy'
     },
     _tab: {
         backgroundColor: '#e9eeff',
@@ -826,10 +821,9 @@ const styles = StyleSheet.create({
     },
     _tab_text: {
         color: 'gray',
-        fontWeight: 'bold',
         textTransform: 'uppercase',
         fontSize: 12,
-        fontFamily: 'AvenirNextCyr-Medium'
+        fontFamily: 'AvenirNextCyr-Demi'
     }
 })
 export default Send;
