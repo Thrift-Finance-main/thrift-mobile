@@ -53,7 +53,7 @@ const RestoreWallet: FC<RestoreWalletProps> = (props) => {
                                     props.isBlackTheme ? Colors.white :
                                         Colors.black,
                             }}
-                        >To restore wallet, please provider the 12-word recovery phrase genereated when you created your wallet for the first time.</Text>
+                        >To restore wallet, please provide the 15 or 24 words recovery phrase genereated when you created your wallet for the first time.</Text>
                     </View>
                     <View
                         style={{
@@ -119,6 +119,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         letterSpacing: 0.7,
         lineHeight: 17,
+        fontFamily: 'AvenirNextCyr-Medium',
         paddingVertical: heightPercentageToDP(2),
     },
     tagsContainer: {
@@ -142,11 +143,12 @@ const styles = StyleSheet.create({
         color: Colors.hintsColor,
         fontSize: 14,
         paddingHorizontal: widthPercentageToDP(8),
-        lineHeight: 20
+        lineHeight: 20,
+        fontFamily: 'AvenirNextCyr-Medium',
     },
     topTitle: {
         fontSize: 16,
-        fontWeight: "bold",
+        fontFamily: 'AvenirNextCyr-Demi',
         letterSpacing: 1,
     },
     verifyContainer: {

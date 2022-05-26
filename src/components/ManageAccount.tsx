@@ -213,6 +213,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         paddingHorizontal: widthPercentageToDP(4),
         lineHeight: 20,
+        fontFamily: 'AvenirNextCyr-Medium',
     },
     buttonStyle: {
         width: widthPercentageToDP(80),
@@ -224,7 +225,7 @@ const styles = StyleSheet.create({
     },
     buttonTitleStyle: {
         textAlign: "center",
-        fontWeight: "bold",
+        fontFamily: 'AvenirNextCyr-Demi',
         fontSize: 12
     }
 });

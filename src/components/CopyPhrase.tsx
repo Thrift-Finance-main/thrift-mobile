@@ -150,6 +150,7 @@ const styles = StyleSheet.create({
         letterSpacing: 0.7,
         lineHeight: 17,
         paddingVertical: heightPercentageToDP(2),
+        fontFamily: 'AvenirNextCyr-Medium',
     },
     bottomButtons: {
         borderRadius: 6,
@@ -175,7 +176,7 @@ const styles = StyleSheet.create({
     },
     tagText: {
         fontSize: 10,
-        fontWeight: "bold"
+        fontFamily: 'AvenirNextCyr-Demi',
     },
     accountsContainer: {
         flexDirection: "row",
@@ -186,7 +187,8 @@ const styles = StyleSheet.create({
         color: Colors.hintsColor,
         fontSize: 14,
         paddingHorizontal: widthPercentageToDP(8),
-        lineHeight: 20
+        lineHeight: 20,
+        fontFamily: 'AvenirNextCyr-Medium',
     },
     errorText: {
         color: Colors.error,
@@ -194,6 +196,7 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         paddingHorizontal: widthPercentageToDP(8),
         lineHeight: 20,
+        fontFamily: 'AvenirNextCyr-Medium',
     },
     copyQRContainer: {
         flexDirection: "row",

@@ -644,7 +644,7 @@ const styles = StyleSheet.create({
     },
     topTitle: {
         fontSize: 15,
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
         letterSpacing: 1
     },
     topContainer: {

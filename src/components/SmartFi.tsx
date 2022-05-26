@@ -573,14 +573,14 @@ let styles = StyleSheet.create({
     },
     _tips_heading: {
         color: '#000',
-        fontWeight: 'bold',
         fontSize: 16,
+        fontFamily: 'AvenirNextCyr-Demi'
     },
     _view_all: {
         color: '#000',
         fontSize: 13,
         textDecorationLine: 'underline',
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi'
     },
     _slider_image: {
         width: screens.width - 70,
@@ -604,6 +604,7 @@ let styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
         fontSize: 16,
+        fontFamily: 'AvenirNextCyr-Demi'
     },
     _card_time_main: {
         flexDirection: 'row',
@@ -613,7 +614,7 @@ let styles = StyleSheet.create({
         color: '#fff',
         fontSize: 14,
         marginLeft: 5,
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi'
     },
     _tabs_main: {
         backgroundColor: '#e9eeff',
@@ -634,7 +635,7 @@ let styles = StyleSheet.create({
     },
     _active_tab_text: {
         color: '#000',
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
         textTransform: 'uppercase',
         fontSize: 12,
     },
@@ -648,7 +649,7 @@ let styles = StyleSheet.create({
     },
     _tab_text: {
         color: 'gray',
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
         textTransform: 'uppercase',
         fontSize: 12,
     },
@@ -660,10 +661,11 @@ let styles = StyleSheet.create({
     _new_worth_heading: {
         color: 'gray',
         fontSize: 14,
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     _new_worth_price: {
         color: '#000',
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
         fontSize: 20,
         marginLeft: 10,
     },
@@ -677,6 +679,7 @@ let styles = StyleSheet.create({
     _new_worth_percentage: {
         color: 'green',
         fontSize: 14,
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     _filter_main: {
         marginTop: 20,
@@ -686,10 +689,12 @@ let styles = StyleSheet.create({
     _filter_heading: {
         color: 'gray',
         fontSize: 16,
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     _filter_percentage: {
         color: 'green',
         fontSize: 16,
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     _selected_filter: {
         backgroundColor: '#2f80ed',
@@ -712,6 +717,7 @@ let styles = StyleSheet.create({
     _selected_filter_title: {
         color: '#fff',
         fontSize: 16,
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     _filter_title: {
         color: '#738aa9',
@@ -719,14 +725,14 @@ let styles = StyleSheet.create({
     },
     _heading: {
         color: '#000',
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
         fontSize: 16,
         marginTop: 20,
     },
     _slider2_title: {
         color: '#fff',
         textAlign: 'center',
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
         fontSize: 15,
         marginHorizontal: 10,
     },
@@ -740,6 +746,7 @@ let styles = StyleSheet.create({
         backgroundColor: '#bebee3',
         height: 15,
         borderRadius: 100,
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     _percentage_done: {
         backgroundColor: '#4ebd7d',
@@ -751,12 +758,14 @@ let styles = StyleSheet.create({
     _percentage_done_show: {
         color: '#fff',
         fontSize: 10,
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     _date: {
         color: '#fff',
         textAlign: 'center',
         fontSize: 10,
         marginVertical: 2,
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     _add_funds_btn: {
         backgroundColor: '#edf4fd',
@@ -770,6 +779,7 @@ let styles = StyleSheet.create({
         color: 'gray',
         fontSize: 12,
         paddingVertical: 3,
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     _goals_image: {
         height: 174,
@@ -782,11 +792,12 @@ let styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
         fontSize: 16,
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     _goals_des: {
         color: '#fff',
         fontSize: 14,
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
         marginTop: 10,
     },
     _goals_btn_main: {
@@ -805,12 +816,13 @@ let styles = StyleSheet.create({
     },
     _goals_btn_text: {
         color: '#000',
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
         fontSize: 15,
     },
     _in_out: {
         color: '#000',
         fontSize: 16,
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     _expenses_data_main: {
         marginTop: 30,
@@ -844,17 +856,18 @@ let styles = StyleSheet.create({
     },
     _expenses_card_name: {
         color: '#005cee',
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
         fontSize: 16,
     },
     _expenses_card_heading: {
         color: '#000',
         fontSize: 14,
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
     },
     _expenses_card_date: {
         color: 'gray',
         fontSize: 13,
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     __price: {
         fontSize: 16,
@@ -875,13 +888,14 @@ let styles = StyleSheet.create({
     _summery_show_mian: {},
     _summery_heading: {
         color: '#000',
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
         fontSize: 20,
     },
     _summery_date: {
         color: 'gray',
         fontSize: 10,
         marginBottom: 20,
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     centeredView: {
         flex: 1,
@@ -898,7 +912,7 @@ let styles = StyleSheet.create({
     },
     _model_heading: {
         color: '#000',
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
         textAlign: 'center',
         fontSize: 16,
         marginBottom: 10,
@@ -906,7 +920,7 @@ let styles = StyleSheet.create({
     _chart_title: {
         color: '#000',
         fontSize: 14,
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
         marginRight: 10,
     },
     _select_chart_btn: {
@@ -947,6 +961,7 @@ let styles = StyleSheet.create({
     _model_cancel_btn_text: {
         color: '#000',
         fontSize: 14,
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     _model_confirm_btn: {
         backgroundColor: '#005cee',
@@ -959,6 +974,7 @@ let styles = StyleSheet.create({
     _model_confirm_btn_text: {
         color: '#fff',
         fontSize: 14,
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     _pie_setting: {
         marginTop: 30,
@@ -975,7 +991,7 @@ let styles = StyleSheet.create({
     },
     _toal_earning: {
         color: 'gray',
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
         fontSize: 15,
     },
     _total_earning_price_main: {
@@ -984,12 +1000,12 @@ let styles = StyleSheet.create({
     },
     _total_earning_price: {
         color: '#000',
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
         fontSize: 20,
     },
     _Show_progress: {
         color: '#000',
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
         fontSize: 20,
     },
     _pie_chart: {
@@ -1001,6 +1017,7 @@ let styles = StyleSheet.create({
         fontSize: 16,
         textAlign: 'center',
         marginTop: 20,
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     _pie_price_main: {
         alignSelf: 'center',
@@ -1011,7 +1028,7 @@ let styles = StyleSheet.create({
     _pie_Des: {
         color: 'gray',
         fontSize: 14,
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
         alignSelf: 'center',
     },
     _wave_main: {
@@ -1025,12 +1042,12 @@ let styles = StyleSheet.create({
     _wave_heading: {
         color: '#000',
         fontSize: 16,
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
     },
     _wave_percentage: {
         color: 'gray',
         fontSize: 16,
-        fontWeight: 'bold',
+        fontFamily: 'AvenirNextCyr-Demi',
     },
 })
 export default SmartFi;

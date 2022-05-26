@@ -52,7 +52,7 @@ class ExpensesChart extends React.PureComponent {
                         left: deviceWidth / 2 - labelWidth / 2,
                         textAlign: 'center',
                         color: "#000",
-                        fontWeight: "bold",
+                        fontFamily: 'AvenirNextCyr-Demi',
                         fontSize: 20,
                         marginLeft: -20
                     }}>

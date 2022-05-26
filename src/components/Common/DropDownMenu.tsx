@@ -94,7 +94,8 @@ const styles = StyleSheet.create({
         //maxHeight: 1
     },
     dropDownText: {
-        color: Colors.dropDownTextColor
+        color: Colors.dropDownTextColor,
+        fontFamily: 'AvenirNextCyr-Medium',
     },
     menuItemStyle: {
         width: 200,

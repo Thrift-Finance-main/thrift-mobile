@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
     },
     topTitle: {
         fontSize: 18,
-        fontWeight: "bold",
+        fontFamily: 'AvenirNextCyr-Demi',
         // textAlign: "center",
         letterSpacing: 1,
         marginTop: heightPercentageToDP(3),

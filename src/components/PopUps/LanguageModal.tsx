@@ -37,7 +37,7 @@ const LanguageModal: FC<LanguageModalProps> = (props) => {
         }}
       >
         <Text
-          style={{ color: props.isBlackTheme ? Colors.white : Colors.black }}
+          style={{ color: props.isBlackTheme ? Colors.white : Colors.black, fontFamily: 'AvenirNextCyr-Medium', }}
         >{item.title}</Text>
       </TouchableOpacity >
     )

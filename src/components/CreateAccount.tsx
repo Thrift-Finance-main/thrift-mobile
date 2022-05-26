@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     },
     topTitle: {
         fontSize: 18,
-        fontWeight: "bold",
+        fontFamily: 'AvenirNextCyr-Demi',
         marginTop: heightPercentageToDP(5),
         letterSpacing: 1,
         paddingHorizontal: widthPercentageToDP(2.5)
@@ -136,13 +136,14 @@ const styles = StyleSheet.create({
         letterSpacing: 1,
         paddingHorizontal: widthPercentageToDP(2.5),
         paddingVertical: heightPercentageToDP(2.5),
-        fontWeight: "bold"
+        fontFamily: 'AvenirNextCyr-Demi',
     },
     hintStyle: {
         color: Colors.hintsColor,
         fontSize: 10,
         paddingHorizontal: widthPercentageToDP(2),
-        marginTop: heightPercentageToDP(2)
+        marginTop: heightPercentageToDP(2),
+        fontFamily: 'AvenirNextCyr-Medium',
     }
 
 })

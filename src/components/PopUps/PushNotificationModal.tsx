@@ -70,10 +70,10 @@ const PushNotificationModal: FC<LanguageModalProps> = (props) => {
                 justifyContent : 'center',
                 alignItems: 'center',
                 shadowColor: '#000',
-  shadowOffset: { width: 0, height: 1 },
-  shadowOpacity: 0.2,
-  shadowRadius: 1,
-  elevation: 1,
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.2,
+                shadowRadius: 1,
+                elevation: 1,
               }}
               onPress={props.hideModal}
             >
@@ -85,7 +85,7 @@ const PushNotificationModal: FC<LanguageModalProps> = (props) => {
           >
 
             <Text
-              style={{ color: props.isBlackTheme ? Colors.white : Colors.authTitle }}
+              style={{ color: props.isBlackTheme ? Colors.white : Colors.authTitle, fontFamily: 'AvenirNextCyr-Medium', }}
             >Allow Push Nofications</Text>
             <ToggleSwitch
               isOn={toggle}
@@ -101,7 +101,7 @@ const PushNotificationModal: FC<LanguageModalProps> = (props) => {
           >
 
             <Text
-              style={{ color: props.isBlackTheme ? Colors.white : Colors.authTitle }}
+              style={{ color: props.isBlackTheme ? Colors.white : Colors.authTitle, fontFamily: 'AvenirNextCyr-Medium' }}
             >Send and Recieve</Text>
             <ToggleSwitch
               isOn={toggle1}
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   topTitle: {
     // paddingHorizontal: widthPercentageToDP(12),
     fontSize: 18,
-    fontWeight: "bold",
+      fontFamily: 'AvenirNextCyr-Demi',
     // width: "100%",
 
   },

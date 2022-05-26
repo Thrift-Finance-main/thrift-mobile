@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     },
     topTitle: {
         fontSize: 18,
-        fontWeight: "bold",
+        fontFamily: 'AvenirNextCyr-Demi',
         textAlign: "center",
         letterSpacing: 1
     },
@@ -70,7 +70,8 @@ const styles = StyleSheet.create({
         textAlign: "center",
         paddingHorizontal: widthPercentageToDP(10),
         marginTop: heightPercentageToDP(15),
-        lineHeight: 20
+        lineHeight: 20,
+        fontFamily: 'AvenirNextCyr-Medium',
     }
 })
 export default Welcome;

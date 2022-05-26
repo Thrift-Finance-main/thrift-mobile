@@ -38,7 +38,8 @@ const styles = StyleSheet.create({
         borderColor: Colors.inputFieldBorder,
         paddingHorizontal: widthPercentageToDP(3),
         width: widthPercentageToDP(86),
-        alignSelf: "center"
+        alignSelf: "center",
+        fontFamily: 'AvenirNextCyr-Medium',
     },
 
 })

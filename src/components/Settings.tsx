@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     },
     topTitle: {
         fontSize: 18,
-        fontWeight: "bold",
+        fontFamily: 'AvenirNextCyr-Demi',
         textAlign: "center",
         letterSpacing: 1,
         marginTop: heightPercentageToDP(3),
@@ -201,12 +201,14 @@ const styles = StyleSheet.create({
     renderTitle: {
         fontSize: 15,
         fontWeight: "500",
+        fontFamily: 'AvenirNextCyr-Medium',
         paddingHorizontal: widthPercentageToDP(3),
         textAlign: "center"
     },
     renderSubTitle: {
         paddingHorizontal: widthPercentageToDP(4),
-        fontSize: 12
+        fontSize: 12,
+        fontFamily: 'AvenirNextCyr-Regular',
     }
 })
 export default Settings;

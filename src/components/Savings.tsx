@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
     },
     topTitle: {
         fontSize: 18,
-        fontWeight: "bold",
+        fontFamily: 'AvenirNextCyr-Demi',
         // textAlign: "center",
         letterSpacing: 1,
         marginTop: heightPercentageToDP(3),
@@ -274,17 +274,17 @@ const styles = StyleSheet.create({
     container2Title: {
         color: Colors.white,
         fontSize: 15,
-        fontWeight: "bold",
+        fontFamily: 'AvenirNextCyr-Demi',
         marginTop: heightPercentageToDP(1.7)
     },
-    container2Sub: { color: Colors.white, fontSize: 12 },
+    container2Sub: { color: Colors.white, fontSize: 12, fontFamily: 'AvenirNextCyr-Medium', },
     row1: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
         marginTop: heightPercentageToDP(1.7)
     },
-    subBold: { color: Colors.white, fontSize: 13, fontWeight: "bold" },
+    subBold: { color: Colors.white, fontSize: 13, fontFamily: 'AvenirNextCyr-Demi' },
     row2: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: heightPercentageToDP(1) }
 })
 export default Savings;

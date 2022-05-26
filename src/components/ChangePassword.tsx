@@ -31,7 +31,7 @@ const ChangePassword: FC<ChangePasswordProps> = (props) => {
                     <Text
                         style={{
                             ...styles.topTitle, color: props.isBlackTheme ? Colors.white :
-                                Colors.black,
+                                Colors.black, fontFamily: 'AvenirNextCyr-Medium',
                         }}
                     >Change Spending Password</Text>
                     <Text
@@ -84,7 +84,7 @@ const ChangePassword: FC<ChangePasswordProps> = (props) => {
                         size={Button.sizes.large}
                         color={props.isBlackTheme ? Colors.black : Colors.white}
                         text60
-                        labelStyle={{fontSize: 14, fontWeight: 'bold', letterSpacing: 2, textAlign: "center"}}
+                        labelStyle={{fontSize: 14, fontWeight: 'bold', letterSpacing: 2, textAlign: "center", fontFamily: 'AvenirNextCyr-Demi',}}
                         style={styles.buttonStyle}
                         backgroundColor={CustomColors.primaryButton}
                         disabled={!props.valid}
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     },
     topTitle: {
         fontSize: 18,
-        fontWeight: "bold",
+        fontFamily: 'AvenirNextCyr-Demi',
         marginTop: heightPercentageToDP(5),
         letterSpacing: 1,
         paddingHorizontal: widthPercentageToDP(2.5),
@@ -131,11 +131,12 @@ const styles = StyleSheet.create({
         letterSpacing: 1,
         paddingHorizontal: widthPercentageToDP(4),
         paddingVertical: heightPercentageToDP(2.5),
-        fontWeight: "bold"
+        fontFamily: 'AvenirNextCyr-Demi',
     },
     hintStyle: {
         color: Colors.hintsColor,
         fontSize: 10,
+        fontFamily: 'AvenirNextCyr-Medium',
         paddingHorizontal: widthPercentageToDP(2),
         marginTop: heightPercentageToDP(2)
     },

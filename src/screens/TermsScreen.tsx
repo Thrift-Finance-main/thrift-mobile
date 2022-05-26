@@ -88,7 +88,7 @@ const TermsScreen = ({navigation, route}) => {
               borderRadius={5}
               size={Button.sizes.large}
               text60
-              labelStyle={{fontSize: 14, fontWeight: 'bold', letterSpacing: 2, textAlign: "center"}}
+              labelStyle={{fontSize: 14, fontFamily: 'AvenirNextCyr-Demi', letterSpacing: 2, textAlign: "center"}}
               style={styles.buttonStyle}
               backgroundColor={CustomColors.primaryButton}
               disabled={false}
@@ -124,6 +124,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     paddingHorizontal: widthPercentageToDP(8),
     lineHeight: 20,
+    fontFamily: 'AvenirNextCyr-Medium',
   },
   buttonStyle: {
     width: widthPercentageToDP(80),
@@ -135,7 +136,7 @@ const styles = StyleSheet.create({
   },
   buttonTitleStyle: {
     textAlign: "center",
-    fontWeight: "bold",
+    fontFamily: 'AvenirNextCyr-Demi',
     fontSize: 12
   }
 });

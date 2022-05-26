@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     topTitle: {
         paddingHorizontal: widthPercentageToDP(5),
         fontSize: 18,
-        fontWeight: "bold",
+        fontFamily: 'AvenirNextCyr-Demi',
         paddingVertical: heightPercentageToDP(15)
     }
 })

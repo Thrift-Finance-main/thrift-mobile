@@ -168,6 +168,7 @@ const styles = StyleSheet.create({
         letterSpacing: 0.7,
         lineHeight: 17,
         paddingVertical: heightPercentageToDP(2),
+        fontFamily: 'AvenirNextCyr-Medium',
     },
     buttonStyle: {
         width: widthPercentageToDP(80),
@@ -199,6 +200,7 @@ const styles = StyleSheet.create({
     },
     tagText: {
         fontSize: 10,
+        fontFamily: 'AvenirNextCyr-Medium',
     },
     accountsContainer: {
         flexDirection: "row",
@@ -209,11 +211,12 @@ const styles = StyleSheet.create({
         color: Colors.hintsColor,
         fontSize: 14,
         paddingHorizontal: widthPercentageToDP(8),
-        lineHeight: 20
+        lineHeight: 20,
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     topTitle: {
         fontSize: 16,
-        fontWeight: "bold",
+        fontFamily: 'AvenirNextCyr-Demi',
         letterSpacing: 1,
     },
     verifyContainer: {

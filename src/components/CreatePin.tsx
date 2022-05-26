@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     },
     topTitle: {
         fontSize: 18,
-        fontWeight: "bold",
+        fontFamily: 'AvenirNextCyr-Demi',
         marginTop: heightPercentageToDP(5),
         letterSpacing: 1,
         paddingHorizontal: widthPercentageToDP(4)
@@ -206,13 +206,14 @@ const styles = StyleSheet.create({
         letterSpacing: 1,
         paddingHorizontal: widthPercentageToDP(4),
         paddingVertical: heightPercentageToDP(2.5),
-        fontWeight: "bold"
+        fontFamily: 'AvenirNextCyr-Demi',
     },
     hintStyle: {
         color: Colors.hintsColor,
         fontSize: 10,
         paddingHorizontal: widthPercentageToDP(4),
-        marginTop: heightPercentageToDP(1)
+        marginTop: heightPercentageToDP(1),
+        fontFamily: 'AvenirNextCyr-Medium',
     },
     roundedTextInput: {
         borderRadius: 8,
@@ -223,6 +224,5 @@ const styles = StyleSheet.create({
         height: heightPercentageToDP(8),
 
     },
-
 })
 export default CreatePin;

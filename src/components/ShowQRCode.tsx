@@ -81,10 +81,12 @@ const styles = StyleSheet.create({
     },
     filedHeader: {
         fontSize: 12,
+        fontFamily: 'AvenirNextCyr-Medium',
     },
     buttonText: {
         fontSize: 14,
-        textAlign: "center"
+        textAlign: "center",
+        fontFamily: 'AvenirNextCyr-Regular',
     },
     topContainer: {
         backgroundColor: Colors.copyPhrase,

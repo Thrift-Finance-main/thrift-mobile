@@ -49,7 +49,7 @@ const CurrencyConvertorModal: FC<LanguageModalProps> = (props) => {
         }}
       >
         <Text
-          style={{ color: props.isBlackTheme ? Colors.white : Colors.black }}
+          style={{ color: props.isBlackTheme ? Colors.white : Colors.black, fontFamily: 'AvenirNextCyr-Medium' }}
         >{item.title}</Text>
       </TouchableOpacity >
 
@@ -88,10 +88,10 @@ const CurrencyConvertorModal: FC<LanguageModalProps> = (props) => {
                 justifyContent : 'center',
                 alignItems: 'center',
                 shadowColor: '#000',
-  shadowOffset: { width: 0, height: 1 },
-  shadowOpacity: 0.2,
-  shadowRadius: 1,
-  elevation: 1,
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 1,
+                  elevation: 1,
               }}
               onPress={props.hideModal}
             >
@@ -99,7 +99,7 @@ const CurrencyConvertorModal: FC<LanguageModalProps> = (props) => {
             </TouchableOpacity>
               <TouchableOpacity onPress={() => setShowList(!showList)} style={{borderWidth: 1, borderColor: Colors.inputFieldBorder, borderRadius: 8, paddingVertical : heightPercentageToDP(2), paddingHorizontal : widthPercentageToDP(5), flexDirection : 'row', justifyContent : 'space-between', alignItems : 'center'}} >
                 <Text style={{
-                            color: props.isBlackTheme ? Colors.white : Colors.dropDownTextColor
+                            color: props.isBlackTheme ? Colors.white : Colors.dropDownTextColor, fontFamily: 'AvenirNextCyr-Demi',
                         }} >{dropDownText}</Text>
 {
                         showList ?
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   topTitle: {
     paddingHorizontal: widthPercentageToDP(12),
     fontSize: 18,
-    fontWeight: "bold",
+      fontFamily: 'AvenirNextCyr-Demi',
     width: "100%",
     marginBottom: heightPercentageToDP(1.5)
 

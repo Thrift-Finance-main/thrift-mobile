@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     },
     buttonTitleStyle: {
         textAlign: "center",
-        fontWeight: "bold",
+        fontFamily: 'AvenirNextCyr-Demi',
         fontSize: 14
     }
 })

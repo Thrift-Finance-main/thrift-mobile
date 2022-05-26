@@ -62,7 +62,7 @@ let styles = StyleSheet.create({
   _header_title: {
     color: '#000',
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: 'AvenirNextCyr-Demi',
   },
 });
 export default Header;
