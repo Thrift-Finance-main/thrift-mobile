@@ -241,6 +241,8 @@ export const buildTransaction = async (
             error: 'Not enough assets in selected tags'
         }
     }
+
+    //
 }
 export const mergeAssetsFromUtxos = (utxos) => {
     let assets: { [key: string]: string } = {};

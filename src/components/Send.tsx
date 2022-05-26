@@ -53,8 +53,8 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [activeTab, setActiveTab] = useState('1');
 
     let totalUtxos = 0;
-    utxos.map(utxo => {
-        if (utxo.utxos && utxo.utxos.length){
+    utxos.map(acc => {
+        if (acc.utxos && acc.utxos.length){
             totalUtxos++;
         }
     })
@@ -108,6 +108,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             const relatedAddresses = await fetchBlockfrost(endpoint);
             console.log('relatedAddresses');
             console.log(relatedAddresses.length);
+            console.log(relatedAddresses);
             if (relatedAddresses.error){
                 return;
             }
@@ -136,6 +137,12 @@ const Send: FC<CreateTokenProps> = (props) => {
                 }
             }).filter(r => r !== undefined || r.utxos.length);
             setUtxos(updatedUtxos);
+            console.log('\n\nupdatedUtxos');
+            console.log(updatedUtxos.length);
+            console.log(updatedUtxos[0]);
+            console.log(updatedUtxos[1]);
+            console.log(updatedUtxos[2]);
+            console.log(updatedUtxos[3]);
 
             const mergedAssetsFromUtxos = mergeAssetsFromUtxos(updatedUtxos);
 

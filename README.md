@@ -87,3 +87,4 @@ yarn android
 # react-native run-android --variant=Debug
 ```
 
+React-Native version: ```0.65.1```
