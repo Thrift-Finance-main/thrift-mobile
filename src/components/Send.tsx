@@ -401,17 +401,32 @@ const Send: FC<CreateTokenProps> = (props) => {
             setActiveTab((parseInt(newLabel.label)+1).toString());
         }
     };
-    const onRemoveRecipient = () => {
-        let currentTab = activeTab;
-        if (currentTab !== '1' || outputs.length > 1){
-            let updatedOutputs = outputs.filter(tab => tab.label !== currentTab);
+    const onRemoveRecipient = (label:string) => {
+        if (label !== '1' || outputs.length > 1){
+            let updatedOutputs = outputs.filter(tab => tab.label !== label);
             for(let i=0; i < updatedOutputs.length; i++){
                 updatedOutputs[i].label = (i+1).toString();
             }
-            setOutputs(updatedOutputs);
-            let nextTab = parseInt(currentTab)-1;
-            nextTab = nextTab <= 0 ? '1' : nextTab.toString();
+            let nextTab = '1';
+
+            if (activeTab !== label){
+                if (label === '1'){
+                    nextTab = (parseInt(activeTab)-1).toString()
+                } else {
+                    if (activeTab < label){
+                        nextTab = activeTab
+                    } else {
+                        nextTab = (parseInt(activeTab)-1).toString()
+                    }
+                }
+            }
+            else if (activeTab === label && activeTab === '1'){
+                nextTab = '1'
+            } else  {
+                nextTab = (parseInt(label)-1).toString();
+            }
             setActiveTab(nextTab);
+            setOutputs(updatedOutputs);
         }
     };
     const setToAddr = async (address) => {
@@ -584,7 +599,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                     style={
                                         activeTab === tab.label ? styles._active_tab : styles._tab
                                     }
-                                    onLongPress={() => onRemoveRecipient()}
+                                    onLongPress={() => onRemoveRecipient(tab.label)}
                                     onPress={() => setActiveTab(tab.label)}>
                                     <Text
                                         style={{...
