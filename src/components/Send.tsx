@@ -545,6 +545,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                 onPress={onSelectNotTagged}
                                 containerStyle={{
                                     marginRight: 4,
+                                    marginVertical: 2,
                                     borderWidth:  currentTabData && currentTabData.notTagged ? 2 : 1,
                                     borderColor: currentTabData && currentTabData.notTagged ? '#603EDA' : 'gray',
                                 }}
@@ -561,6 +562,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                        onPress={() => onSelectTag(tag)}
                                        onLongPress={() => onPressLongTag(tag)}
                                        containerStyle={{
+                                           marginVertical: 2,
                                            marginRight: 4,
                                            borderWidth: currentTabData && currentTabData.fromTags.includes(tag) ? 2 : 1,
                                            borderColor: currentTabData && currentTabData.fromTags.includes(tag) ? '#F338C2' : 'black',
