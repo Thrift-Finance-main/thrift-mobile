@@ -53,7 +53,6 @@ const Send: FC<CreateTokenProps> = (props) => {
     })
     const notTaggedUtxos = (utxos.filter((utxo) => !utxo.tags.length)).length;
     const [totalNotTagged, setTotalNotTagged] = useState(notTaggedUtxos);
-    const [selectedUtxos, setSelectedUtxos] = useState(utxos);
     /*
          1. if Selected address has tag, show and select its tag. Change from selected address and others(if selected) to selected address.
          2. if Selected address has NOOO tag, show and select Global tag. Change from global & others(if selected) to global.
@@ -226,7 +225,6 @@ const Send: FC<CreateTokenProps> = (props) => {
         }
         console.log('joinUtxos');
         console.log(joinUtxos);
-        setSelectedUtxos(joinUtxos);
 
         const mergedAssetsFromUtxos = mergeAssetsFromUtxos(joinUtxos);
         console.log('mergedAssetsFromUtxos');
@@ -363,6 +361,15 @@ const Send: FC<CreateTokenProps> = (props) => {
             return out;
         })
         setOutputs(updatedOutputs);
+    };
+
+    const copyToClipboard = async text => {
+        await Clipboard.setString(text);
+    };
+    const onPressLongTag = (tag) => {
+        let address = currentAccount.externalPubAddress.filter(addr => addr.tags.includes(tag));
+        address = address[0];
+        copyToClipboard(address.address).then(r=>{})
     };
 
     const onSelectNotTagged = () => {
@@ -552,6 +559,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                        key={tag+index}
                                        label={tag}
                                        onPress={() => onSelectTag(tag)}
+                                       onLongPress={() => onPressLongTag(tag)}
                                        containerStyle={{
                                            marginRight: 4,
                                            borderWidth: currentTabData && currentTabData.fromTags.includes(tag) ? 2 : 1,

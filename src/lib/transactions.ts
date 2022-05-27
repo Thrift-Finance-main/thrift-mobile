@@ -242,7 +242,7 @@ export const buildTransaction = async (
         }
     }
 
-    //
+    // After verify there is enough amount in utxos to cover the outputs
 }
 export const mergeAssetsFromUtxos = (utxos) => {
     console.log('mergeAssetsFromUtxos')
