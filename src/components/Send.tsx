@@ -31,18 +31,10 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [accountState, setAccountState] = useState({});
     const [utxos, setUtxos] = useState(currentAccount.utxos);
     const [availableTags, setAvailableTags] = useState([]);
-    const [selectedTags, setSelectedTags] = useState(currentAccount.selectedAddress.tags);
+
     const [selectAll, setSelectAll] = useState(false);
     const [selectNotTagged, setSelectNotTagged] = useState(false);
 
-    const [outputs, setOutputs] = useState([
-        {
-            toAddress: 'addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u',
-            validAddress: true,
-            assets: {lovelace: ''},
-            label: '1'
-        }
-    ]);
     const [mergedUtxos, setMergedUtxos] = useState({});
     const [mergedOutputs, setMergedOutputs] = useState({});
     const [mergedDiff, setMergedDiff] = useState({});
@@ -59,33 +51,41 @@ const Send: FC<CreateTokenProps> = (props) => {
             totalUtxos++;
         }
     })
-
-    let currentTabData = outputs.filter(output => output.label === activeTab);
-    currentTabData = currentTabData[0];
-
-
+    const notTaggedUtxos = (utxos.filter((utxo) => !utxo.tags.length)).length;
+    const [totalNotTagged, setTotalNotTagged] = useState(notTaggedUtxos);
     /*
          1. if Selected address has tag, show and select its tag. Change from selected address and others(if selected) to selected address.
          2. if Selected address has NOOO tag, show and select Global tag. Change from global & others(if selected) to global.
          3.
+
+         modelar los merged outputs para que ir construyendo el input-output
+         construir los ooutputs-receipt con su origen
      */
 
     const selectAddr = currentAccount.externalPubAddress.filter(a => a.address === currentAccount.selectedAddress.address);  // TODO: refactor
-    console.log('selectAddr');
-    console.log(selectAddr);
-    if (selectAddr[0].tags.length === 0){
-        console.log("Hey, the selected address has no tag, lets select the global one")
-    } else {
-        console.log("Hey, the selected address has a tag")
-    }
 
+    const [selectedTags, setSelectedTags] = useState(selectAddr[0].tags);
+    const [outputs, setOutputs] = useState([
+        {
+            toAddress: 'addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u',
+            validAddress: true,
+            assets: {lovelace: ''},
+            fromTags: selectedTags,
+            notTagged: selectNotTagged,
+            label: '1'
+        }
+    ]);
 
+    let currentTabData = outputs.filter(output => output.label === activeTab);
+    currentTabData = currentTabData[0];
 
+    console.log('selectedTags');
+    console.log(selectedTags);
+    console.log('currentTabData');
+    console.log(currentTabData);
 
-
-
-
-
+    console.log('availableTags');
+    console.log(availableTags);
 
   // TODO: Get utxos from currentAccount, set in wallet
     const useIsMounted = () => {
@@ -102,7 +102,6 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     useEffect(() =>{
 
-
         const updatedUtxos = currentAccount.utxos.map(utxo => {
             const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
             if (data){
@@ -116,10 +115,10 @@ const Send: FC<CreateTokenProps> = (props) => {
 
         setMergedUtxos(currentUtxos => ({...currentUtxos, ...mergedAssetsFromUtxos}));
 
-        let tags = new Set();   // TODO: show all tags even with no assets
+        let tags = [];   // TODO: show all tags even with no assets
         currentAccount.externalPubAddress.map(addr => {
             if (addr.tags && addr.tags.length){
-                tags.add(addr.tags)
+                tags = [...tags,...addr.tags]
             }
         })
         setAvailableTags(Array.from(tags));
@@ -144,16 +143,9 @@ const Send: FC<CreateTokenProps> = (props) => {
                 })
             );
 
-            let tags = new Set();
             const updatedUtxos = utxos.map(utxo => {
                 const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
-                const len = utxo.utxos.length;
                 if (data){
-                    data.tags.map(tag => {
-                        if (len){
-                            tags.add(tag)
-                        }
-                    });
                     utxo = {...utxo, ...data};
                     return utxo;
                 }
@@ -173,13 +165,13 @@ const Send: FC<CreateTokenProps> = (props) => {
 
             setMergedUtxos(currentUtxos => ({...currentUtxos, mergedAssetsFromUtxos}));
 
-            let tags2 = new Set();   // TODO: show all tags even with no assets
+            let tags = [];   // TODO: show all tags even with no assets
             currentAccount.externalPubAddress.map(addr => {
                 if (addr.tags && addr.tags.length){
-                    tags2.add(addr.tags)
+                    tags = [...tags,...addr.tags]
                 }
-            })
-            setAvailableTags(Array.from(tags2));
+            });
+            setAvailableTags(Array.from(tags));
 
             // Get/show tags based on addresses in utxos array
             // Select tags from where get the ada and assets,
@@ -207,33 +199,48 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     const mergeAssets = () => {
 
-        // Just utxos without tags
-        if (selectNotTagged && !selectedTags.length){
-            const filterUtxos = utxos.filter((utxo) => !utxo.tags.length);
-            const mergedAssetsFromUtxos = mergeAssetsFromUtxos(filterUtxos);
-            setMergedUtxos(mergedAssetsFromUtxos);
-            setAvailableAda(BigInt(mergedAssetsFromUtxos.lovelace).over(1000000).toString())
+        console.log('\n\nmergeAssets');
+        console.log('utxos');
+        console.log(utxos);
+
+
+        // TODO:
+        let currentOutput = (outputs.filter(output => output.label === activeTab))[0];
+        console.log('currentOutput');
+        console.log(currentOutput);
+
+        const taggedUtxos = utxos.filter((utxo) => utxo.tags.length);
+        console.log('taggedUtxos');
+        console.log(taggedUtxos);
+        const utxosFromSelectedTag = taggedUtxos.filter((utxo) => utxo.tags.length && utxo.tags.some(t =>
+            currentOutput.fromTags.includes(t)
+        ));
+
+        console.log('utxosFromSelectedTag');
+        console.log(utxosFromSelectedTag);
+        let joinUtxos = utxosFromSelectedTag;
+        if (currentOutput.notTagged){
+            const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
+            joinUtxos = [...joinUtxos,...notTaggedUtxos]
         }
-        else if (!selectedTags.length){
-            setMergedUtxos({});
-            setAvailableAda('0');
-        } else if (selectNotTagged && selectedTags.length === availableTags.length) {
-            const mergedAssetsFromUtxos = mergeAssetsFromUtxos(utxos);
-            setMergedUtxos(mergedAssetsFromUtxos);
-            setAvailableAda(BigInt(mergedAssetsFromUtxos.lovelace).over(1000000).toString())
-        }
-        else if (selectNotTagged && selectedTags.length !== availableTags.length){
-            const filterUtxos = utxos.filter((utxo) => !utxo.tags.length || utxo.tags.some(t => selectedTags.includes(t)));
-            const mergedAssetsFromUtxos = mergeAssetsFromUtxos(filterUtxos);
-            setMergedUtxos(mergedAssetsFromUtxos);
-            setAvailableAda(BigInt(mergedAssetsFromUtxos.lovelace).over(1000000).toString())
-        }
-        else {
-            const filterUtxos = utxos.filter((utxo) => utxo.tags.some(t => selectedTags.includes(t)));
-            const mergedAssetsFromUtxos = mergeAssetsFromUtxos(filterUtxos);
-            setMergedUtxos(mergedAssetsFromUtxos);
-            setAvailableAda(BigInt(mergedAssetsFromUtxos.lovelace).over(1000000).toString())
-        }
+        console.log('joinUtxos');
+        console.log(joinUtxos);
+
+        const mergedAssetsFromUtxos = mergeAssetsFromUtxos(joinUtxos);
+        console.log('mergedAssetsFromUtxos');
+        console.log(mergedAssetsFromUtxos);
+
+        setMergedUtxos(mergedAssetsFromUtxos);
+        let availableAdaOnSelectedUtxos =
+            mergedAssetsFromUtxos
+            && mergedAssetsFromUtxos.lovelace
+            && mergedAssetsFromUtxos.lovelace.length
+            && mergedAssetsFromUtxos.lovelace !== '0' ?
+            BigInt(mergedAssetsFromUtxos.lovelace).over(1000000).toString() : '0';
+
+        console.log('availableAdaOnSelectedUtxos');
+        console.log(availableAdaOnSelectedUtxos);
+        setAvailableAda(availableAdaOnSelectedUtxos)
 
         const filterOutputs = outputs.map(output => {
             output.assets = Object.entries(output.assets).reduce((acc, [k, v]) => v ? {...acc, [k]:v} : acc , {})
@@ -340,24 +347,27 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     useEffect(() => {
         mergeAssets();
-    }, [selectedTags.length, selectNotTagged, outputs.length]);
+    }, [currentTabData.fromTags, selectedTags.length, selectNotTagged, outputs.length]);
 
     const onSelectTag = (tag) => {
-        console.log()
-        if (selectedTags.includes(tag)){
-            const updatedTags = selectedTags.filter(t => t !== tag);
-            setSelectedTags(updatedTags);
-        } else {
-            setSelectedTags([...selectedTags, tag])
-        }
+        const updatedOutputs = outputs.map(out => {
+            if (out.label === activeTab){
+                out.fromTags = [tag]
+            }
+            return out;
+        })
+        setOutputs(updatedOutputs);
     };
 
     const onSelectNotTagged = () => {
-        if (selectNotTagged){
-            setSelectNotTagged(false);
-        } else {
-            setSelectNotTagged(true);
-        }
+        const updatedOutputs = outputs.map(out => {
+            if (out.label === activeTab){
+                out.notTagged = !out.notTagged;
+            }
+            return out;
+        })
+        setOutputs(updatedOutputs);
+        mergeAssets();
     };
     const onAddRecipient = () => {
         if (outputs.length < 12){
@@ -367,6 +377,8 @@ const Send: FC<CreateTokenProps> = (props) => {
                 label: (parseInt(newLabel.label)+1).toString(),
                 validAddress: true,
                 assets: {lovelace: ''},
+                fromTags: (outputs.filter(out => out.label === newLabel.label))[0].fromTags,
+                notTagged: (outputs.filter(out => out.label === newLabel.label))[0].notTagged,
                 toAddress: ''
             };
 
@@ -520,13 +532,12 @@ const Send: FC<CreateTokenProps> = (props) => {
                                 onPress={onSelectNotTagged}
                                 containerStyle={{
                                     marginRight: 4,
-                                    borderWidth:  selectNotTagged ? 2 : 1,
-                                    borderColor: selectNotTagged ? '#603EDA' : 'gray',
+                                    borderWidth:  currentTabData && currentTabData.notTagged ? 2 : 1,
+                                    borderColor: currentTabData && currentTabData.notTagged ? '#603EDA' : 'gray',
                                 }}
                                 badgeProps={{
-                                    label: totalUtxos,
-                                    backgroundColor: '#603EDA',
-                                    fontFamily: 'AvenirNextCyr-Medium'
+                                    label: totalNotTagged,
+                                    backgroundColor: '#603EDA'
                                 }}
                             />
                             {
@@ -537,8 +548,8 @@ const Send: FC<CreateTokenProps> = (props) => {
                                        onPress={() => onSelectTag(tag)}
                                        containerStyle={{
                                            marginRight: 4,
-                                           borderWidth: selectedTags.includes(tag) ? 2 : 1,
-                                           borderColor: selectedTags.includes(tag) ? '#F338C2' : 'black',
+                                           borderWidth: currentTabData && currentTabData.fromTags.includes(tag) ? 2 : 1,
+                                           borderColor: currentTabData && currentTabData.fromTags.includes(tag) ? '#F338C2' : 'black',
                                        }}
                                        labelStyle={{fontFamily: 'AvenirNextCyr-Medium'}}
                                    />
