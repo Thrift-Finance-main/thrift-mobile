@@ -33,6 +33,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [availableTags, setAvailableTags] = useState([]);
     const [selectedTags, setSelectedTags] = useState(currentAccount.selectedAddress.tags);
     const [selectAll, setSelectAll] = useState(false);
+    const [selectNotTagged, setSelectNotTagged] = useState(false);
 
     const [outputs, setOutputs] = useState([
         {
@@ -69,6 +70,15 @@ const Send: FC<CreateTokenProps> = (props) => {
          3.
      */
 
+    const selectAddr = currentAccount.externalPubAddress.filter(a => a.address === currentAccount.selectedAddress.address);  // TODO: refactor
+    console.log('selectAddr');
+    console.log(selectAddr);
+    if (selectAddr[0].tags.length === 0){
+        console.log("Hey, the selected address has no tag, lets select the global one")
+    } else {
+        console.log("Hey, the selected address has a tag")
+    }
+
 
 
 
@@ -92,16 +102,10 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     useEffect(() =>{
 
-        let tags = new Set();
+
         const updatedUtxos = currentAccount.utxos.map(utxo => {
             const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
-            const len = utxo.utxos.length;
             if (data){
-                data.tags.map(tag => {
-                    if (len){
-                        tags.add(tag)
-                    }
-                });
                 utxo = {...utxo, ...data};
                 return utxo;
             }
@@ -112,6 +116,12 @@ const Send: FC<CreateTokenProps> = (props) => {
 
         setMergedUtxos(currentUtxos => ({...currentUtxos, ...mergedAssetsFromUtxos}));
 
+        let tags = new Set();   // TODO: show all tags even with no assets
+        currentAccount.externalPubAddress.map(addr => {
+            if (addr.tags && addr.tags.length){
+                tags.add(addr.tags)
+            }
+        })
         setAvailableTags(Array.from(tags));
 
         const fetchData = async () => {
@@ -121,9 +131,6 @@ const Send: FC<CreateTokenProps> = (props) => {
             setAccountState(accountState);
             endpoint = endpoint + "/addresses";
             const relatedAddresses = await fetchBlockfrost(endpoint);
-            console.log('relatedAddresses');
-            console.log(relatedAddresses.length);
-            console.log(relatedAddresses);
             if (relatedAddresses.error){
                 return;
             }
@@ -152,6 +159,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                 }
             }).filter(r => r !== undefined || r.utxos.length);
             setUtxos(updatedUtxos);
+            /*
             console.log('\n\nupdatedUtxos');
             console.log(updatedUtxos.length);
             console.log(updatedUtxos[0]);
@@ -159,11 +167,19 @@ const Send: FC<CreateTokenProps> = (props) => {
             console.log(updatedUtxos[2]);
             console.log(updatedUtxos[3]);
 
+             */
+
             const mergedAssetsFromUtxos = mergeAssetsFromUtxos(updatedUtxos);
 
             setMergedUtxos(currentUtxos => ({...currentUtxos, mergedAssetsFromUtxos}));
 
-            setAvailableTags(Array.from(tags));
+            let tags2 = new Set();   // TODO: show all tags even with no assets
+            currentAccount.externalPubAddress.map(addr => {
+                if (addr.tags && addr.tags.length){
+                    tags2.add(addr.tags)
+                }
+            })
+            setAvailableTags(Array.from(tags2));
 
             // Get/show tags based on addresses in utxos array
             // Select tags from where get the ada and assets,
@@ -192,7 +208,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     const mergeAssets = () => {
 
         // Just utxos without tags
-        if (selectAll && !selectedTags.length){
+        if (selectNotTagged && !selectedTags.length){
             const filterUtxos = utxos.filter((utxo) => !utxo.tags.length);
             const mergedAssetsFromUtxos = mergeAssetsFromUtxos(filterUtxos);
             setMergedUtxos(mergedAssetsFromUtxos);
@@ -201,12 +217,12 @@ const Send: FC<CreateTokenProps> = (props) => {
         else if (!selectedTags.length){
             setMergedUtxos({});
             setAvailableAda('0');
-        } else if (selectAll && selectedTags.length === availableTags.length) {
+        } else if (selectNotTagged && selectedTags.length === availableTags.length) {
             const mergedAssetsFromUtxos = mergeAssetsFromUtxos(utxos);
             setMergedUtxos(mergedAssetsFromUtxos);
             setAvailableAda(BigInt(mergedAssetsFromUtxos.lovelace).over(1000000).toString())
         }
-        else if (selectAll && selectedTags.length !== availableTags.length){
+        else if (selectNotTagged && selectedTags.length !== availableTags.length){
             const filterUtxos = utxos.filter((utxo) => !utxo.tags.length || utxo.tags.some(t => selectedTags.includes(t)));
             const mergedAssetsFromUtxos = mergeAssetsFromUtxos(filterUtxos);
             setMergedUtxos(mergedAssetsFromUtxos);
@@ -324,9 +340,10 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     useEffect(() => {
         mergeAssets();
-    }, [selectedTags.length, selectAll, outputs.length]);
+    }, [selectedTags.length, selectNotTagged, outputs.length]);
 
     const onSelectTag = (tag) => {
+        console.log()
         if (selectedTags.includes(tag)){
             const updatedTags = selectedTags.filter(t => t !== tag);
             setSelectedTags(updatedTags);
@@ -334,13 +351,12 @@ const Send: FC<CreateTokenProps> = (props) => {
             setSelectedTags([...selectedTags, tag])
         }
     };
-    const onSelectAllTags = () => {
-        if (selectAll){
-            setSelectedTags([]);
-            setSelectAll(false);
+
+    const onSelectNotTagged = () => {
+        if (selectNotTagged){
+            setSelectNotTagged(false);
         } else {
-            setSelectedTags(availableTags);
-            setSelectAll(true);
+            setSelectNotTagged(true);
         }
     };
     const onAddRecipient = () => {
@@ -500,12 +516,12 @@ const Send: FC<CreateTokenProps> = (props) => {
                         >
                             <Chip
                                 key={'all'}
-                                label={'All'}
-                                onPress={onSelectAllTags}
+                                label={'Not Tagged'}
+                                onPress={onSelectNotTagged}
                                 containerStyle={{
                                     marginRight: 4,
-                                    borderWidth:  selectAll ? 2 : 1,
-                                    borderColor: selectAll ? '#603EDA' : 'gray',
+                                    borderWidth:  selectNotTagged ? 2 : 1,
+                                    borderColor: selectNotTagged ? '#603EDA' : 'gray',
                                 }}
                                 badgeProps={{
                                     label: totalUtxos,

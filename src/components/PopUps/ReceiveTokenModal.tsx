@@ -76,9 +76,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
   };
   const onCreateTag = (value: string) => {
     apiDb.getAccountTagsByAddress(currentAccount.accountName, selectedAddress.address).then((tags:string[]) => {
-      console.log('onCreateTag');
-      console.log(tags);
-      if (tags.length === 0){
+
         let updatedTags = [...tags, value];
         console.log('add tag');
         apiDb.setAccountTagsByAddress(currentAccount.accountName, selectedAddress.address, updatedTags).then(r=>{
@@ -86,8 +84,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
             dispatch(setCurrentAccount(acc));
           });
         });
-      }
-    })
+    });
     return {label: value};
   }
   const onTagPress = (tagIndex: number, markedTagIndex: number) => {
