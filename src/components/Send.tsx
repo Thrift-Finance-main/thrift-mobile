@@ -53,6 +53,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     })
     const notTaggedUtxos = (utxos.filter((utxo) => !utxo.tags.length)).length;
     const [totalNotTagged, setTotalNotTagged] = useState(notTaggedUtxos);
+    const [selectedUtxos, setSelectedUtxos] = useState(utxos);
     /*
          1. if Selected address has tag, show and select its tag. Change from selected address and others(if selected) to selected address.
          2. if Selected address has NOOO tag, show and select Global tag. Change from global & others(if selected) to global.
@@ -221,10 +222,11 @@ const Send: FC<CreateTokenProps> = (props) => {
         let joinUtxos = utxosFromSelectedTag;
         if (currentOutput.notTagged){
             const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
-            joinUtxos = [...joinUtxos,...notTaggedUtxos]
+            joinUtxos = [...joinUtxos,...notTaggedUtxos];
         }
         console.log('joinUtxos');
         console.log(joinUtxos);
+        setSelectedUtxos(joinUtxos);
 
         const mergedAssetsFromUtxos = mergeAssetsFromUtxos(joinUtxos);
         console.log('mergedAssetsFromUtxos');
@@ -252,15 +254,6 @@ const Send: FC<CreateTokenProps> = (props) => {
     }
     const sendTransaction = async () => {
         const protocolParameters =  await getProtocolParams();
-        // filter utxos
-        let filterUtxos = utxos;
-        if (!selectAll){
-            filterUtxos = utxos.filter((utxo) =>{
-                return utxo.tags.some(tag => {
-                    return selectedTags.includes(tag)
-                });
-            });
-        }
 
         // Remove empty assets and filter outputs with no assets
         const filterOutputs = outputs.map(output => {
@@ -268,6 +261,19 @@ const Send: FC<CreateTokenProps> = (props) => {
             return output;
         }).filter(output => !isDictEmpty(output.assets));
 
+        console.log('\n\n\nsendTransaction');
+
+        console.log(utxos);
+        let filterUtxos = utxos.filter((utxo) => utxo.tags.length && utxo.tags.some(t =>
+            outputs.some(out => out.fromTags.includes(t))
+        ));
+
+        if (outputs.some(out => out.notTagged)){
+            const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
+            filterUtxos = [...filterUtxos,...notTaggedUtxos]
+        }
+        console.log('filterUtxos');
+        console.log(filterUtxos);
         const tx = await buildTransaction(currentAccount, accountState, filterUtxos, filterOutputs, protocolParameters);
         if (tx && tx.error){
             console.log(tx.error);
