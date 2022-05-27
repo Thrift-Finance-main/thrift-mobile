@@ -62,6 +62,21 @@ const Send: FC<CreateTokenProps> = (props) => {
     let currentTabData = outputs.filter(output => output.label === activeTab);
     currentTabData = currentTabData[0];
 
+
+    /*
+         1. if Selected address has tag, show and select its tag. Change from selected address and others(if selected) to selected address.
+         2. if Selected address has NOOO tag, show and select Global tag. Change from global & others(if selected) to global.
+         3.
+     */
+
+
+
+
+
+
+
+
+
   // TODO: Get utxos from currentAccount, set in wallet
     const useIsMounted = () => {
         const isMounted = useRef(false);

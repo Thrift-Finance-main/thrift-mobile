@@ -195,7 +195,7 @@ export const createAccount = async (
 
     let tags = [];
     if (i === 0){
-      tags = ['Main']
+      tags = ['Global']
     }
     if (externalPubAddressM && externalPubAddressM.length) {
       externalPubAddress.push({
