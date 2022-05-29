@@ -80,9 +80,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     let currentTabData = outputs.filter(output => output.label === activeTab);
     currentTabData = currentTabData[0];
 
-    console.log('BigInt(mergedOutputs.lovelace).over(1000000).toString()');
-    console.log(BigInt(mergedOutputs.lovelace).over(1000000).toString());
-    console.log(BigInt(mergedOutputs.lovelace).over(1000000).toString() === '0');
+    const isBlackTheme = props.isBlackTheme;
 
   // TODO: Get utxos from currentAccount, set in wallet
     const useIsMounted = () => {
@@ -209,34 +207,16 @@ const Send: FC<CreateTokenProps> = (props) => {
         setOutputs(updatedOutputs);
     }
     const validateOutput = (output) => {
-        console.log('\n\n\nvalidateOutput: '+output.label);
-        // Create a set.
-        // 1. get all outputs that share tags with the given output
         let commonOutputs = outputs.filter(out => out.fromTags.some(tag => output.fromTags.includes(tag)) || (output.notTagged && out.notTagged === output.notTagged));
-        console.log('commonOutputs');
-        console.log(commonOutputs);
 
         let filterUtxos = utxos.filter(utxo => utxo.tags.some(tag => commonOutputs.some(out => out.fromTags.includes(tag))));
         if (output.notTagged){
             const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
             filterUtxos = [...filterUtxos,...notTaggedUtxos]
         }
-
-        //console.log('commonUtxos');
-        //console.log(filterUtxos);
-
         const mergedAssetsFromUtxos = mergeAssetsFromUtxos(filterUtxos);
-        console.log('mergedAssetsFromUtxos');
-        console.log(mergedAssetsFromUtxos);
         const mergedAssetsFromOutputs = mergeAssetsFromOutputs(commonOutputs);
-        console.log('mergedAssetsFromOutputs');
-        console.log(mergedAssetsFromOutputs);
         const outputsAreValid = validOutputs(mergedAssetsFromUtxos,mergedAssetsFromOutputs);
-        console.log('outputsAreValid '+ output.label);
-        console.log(outputsAreValid);
-        // 2. Once we have all the common outputs, keep juts the ones which match notTagged property
-        // 3. merge utxos. merge outputs, check validity.
-
         output.valid = outputsAreValid;
 
         updateOutput(output);
@@ -540,7 +520,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                 pannableHeaderProps={{}}
             >
                 <ScrollView>
-                    <Text style={{...styles.addressList, ...styles.addressListTitle}}>
+                    <Text style={{...styles.addressList, ...styles.addressListTitle, color: props.isBlackTheme ? Colors.white : Colors.black}}>
                         Select Asset
                     </Text>
                     <View
@@ -597,7 +577,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                     Colors.black,
                             }}
                             onPress={() => setAmount(mergedLovelaceLeft+'.'+mergedLovelaceRight)}
-                        >From <Text style={{fontFamily: 'AvenirNextCyr-Demi'}}>{currentAccount.accountName} {mergedLovelaceLeft+'.'+mergedLovelaceRight}</Text> Ada</Text>
+                        >From <Text style={{fontFamily: 'AvenirNextCyr-Demi', fontSize: 18}}>{currentAccount.accountName} {mergedLovelaceLeft+'.'+mergedLovelaceRight}</Text> Ada</Text>
                         <View
                             style={{flexDirection:'row', flexWrap:'wrap', marginTop: 8, marginLeft: 12}}
                         >
@@ -608,12 +588,14 @@ const Send: FC<CreateTokenProps> = (props) => {
                                 containerStyle={{
                                     marginRight: 4,
                                     marginVertical: 2,
+                                    backgroundColor: 'white',
                                     borderWidth:  currentTabData && currentTabData.notTagged ? 2 : 1,
-                                    borderColor: currentTabData && currentTabData.notTagged ? '#603EDA' : 'gray',
+                                    borderColor:
+                                        currentTabData && currentTabData.notTagged ? '#603EDA' : 'gray',
                                 }}
                                 badgeProps={{
                                     label: totalNotTagged,
-                                    backgroundColor: '#603EDA'
+                                    backgroundColor: '#603EDA',
                                 }}
                             />
                             {
@@ -626,6 +608,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                        containerStyle={{
                                            marginVertical: 2,
                                            marginRight: 4,
+                                           backgroundColor: 'white',
                                            borderWidth: currentTabData && currentTabData.fromTags.includes(tag) ? 2 : 1,
                                            borderColor: currentTabData && currentTabData.fromTags.includes(tag) ? '#F338C2' : 'black',
                                        }}
@@ -691,7 +674,14 @@ const Send: FC<CreateTokenProps> = (props) => {
                     <TextField
                         text70
                         containerStyle={{marginBottom: 1, marginLeft: 12}}
-                        style={{textAlign: 'center', marginLeft: 20, marginRight: 20, fontSize: 10, fontFamily: 'AvenirNextCyr-Medium'}}
+                        style={{
+                                textAlign: 'center',
+                                marginLeft: 20,
+                                marginRight: 20,
+                                fontSize: 10,
+                                fontFamily: 'AvenirNextCyr-Medium',
+                                color: props.isBlackTheme ? Colors.white : Colors.black
+                        }}
                         value={currentTabData && currentTabData.toAddress || null}
                         placeholder={"Address"}
                         onChangeText={(text) =>{setToAddr(text).then(r => {})}}
@@ -715,7 +705,12 @@ const Send: FC<CreateTokenProps> = (props) => {
                     <TextField
                         text70
                         containerStyle={{marginBottom: 1, marginLeft: 12}}
-                        style={{textAlign: 'center', fontSize: 28, fontFamily: 'AvenirNextCyr-Medium'}}
+                        style={{
+                            textAlign: 'center',
+                            fontSize: 28,
+                            fontFamily: 'AvenirNextCyr-Medium',
+                            color: props.isBlackTheme ? Colors.white : Colors.black
+                        }}
                         value={currentTabData
                             && currentTabData.assets
                             && currentTabData.assets.lovelace
@@ -739,13 +734,14 @@ const Send: FC<CreateTokenProps> = (props) => {
                         style={{marginBottom: 1, marginLeft: 12}}
                     >
                         <Picker
-                            placeholder={'Add Asset'}
+                            placeholder={filterAssets && filterAssets.length ? 'Add Asset('+filterAssets.length+')' : 'No Assets'}
                             onChange={item => {
                                 updateSelectedAssets(item).then(r => {})
                             }}
                             mode={Picker.modes.SINGLE}
                             rightIconSource={swapIcon}
                             renderCustomModal={renderDialog}
+                            editable={filterAssets && filterAssets.length > 0}
                             style={{color: 'black', fontSize: 14, textAlign: 'center', marginLeft: 28, fontFamily: 'AvenirNextCyr-Medium'}}
                         >
                             {filterAssets && filterAssets.length ? filterAssets.map((asset,index) => (
@@ -764,12 +760,14 @@ const Send: FC<CreateTokenProps> = (props) => {
 
                                                 <Text style={{
                                                     ...styles.addressList,
+                                                    color: isBlackTheme? Colors.white : Colors.black
                                                 }}>
 
                                                     {Buffer.from(assetName, 'hex').toString()}
                                                 </Text>
                                                 <Text style={{
                                                     ...styles.addressListTags,
+                                                    color: isBlackTheme ? Colors.white : Colors.black
                                                 }}>
                                                     {asset.quantity}
                                                 </Text>
