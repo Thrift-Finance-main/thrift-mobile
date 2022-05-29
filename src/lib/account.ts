@@ -34,6 +34,8 @@ export const CONFIG = {
   MNEMONIC_STRENGTH: 160,
 };
 
+export const GLOBAL_TAG = "Global🌍";
+
 export type AddressType = 'Internal' | 'External';
 
 /**
@@ -195,7 +197,7 @@ export const createAccount = async (
 
     let tags = [];
     if (i === 0){
-      tags = ['Global']
+      tags = [GLOBAL_TAG]
     }
     if (externalPubAddressM && externalPubAddressM.length) {
       externalPubAddress.push({
