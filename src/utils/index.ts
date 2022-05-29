@@ -46,3 +46,20 @@ export const displayUnit = (quantity, decimals = 6) => {
 export const isDictEmpty = (obj) => {
   return Object.keys(obj).length === 0;
 }
+
+export const groupBy2Props = (arr, prop1, prop2) => {
+  return arr.reduce((map, obj) => {
+    if (!map[obj[prop1]]) map[obj[prop1]] = {};
+    [].concat(obj[prop2]).forEach(subEl => {
+      if (!map[obj[prop1]][subEl]) map[obj[prop1]][subEl] = [];
+      map[obj[prop1]][subEl].push(obj);
+    });
+    return map;
+  }, {});
+}
+
+function groupBy(arr, prop) {
+  const map = new Map(Array.from(arr, obj => [obj[prop], []]));
+  arr.forEach(obj => map.get(obj[prop]).push(obj));
+  return Array.from(map.values());
+}

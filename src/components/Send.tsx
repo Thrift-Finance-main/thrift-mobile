@@ -10,7 +10,7 @@ import {Button, Chip, Colors, Dialog, PanningProvider, Picker, PickerProps, Text
 import swapIcon from "../assets/plus.png";
 import removeIcon from "../assets/remove.png";
 import pasteIcon from "../assets/paste.png";
-import {buildTransaction, mergeAssetsFromOutputs, mergeAssetsFromUtxos} from "../lib/transactions";
+import {buildTransaction, mergeAssetsFromOutputs, mergeAssetsFromUtxos, validOutputs} from "../lib/transactions";
 import {fetchBlockfrost, getProtocolParams, getTxUTxOsByAddress} from "../api/Blockfrost";
 import {validateAddress} from "../lib/account";
 import {isDictEmpty} from "../utils";
@@ -72,6 +72,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             assets: {lovelace: ''},
             fromTags: selectedTags,
             notTagged: selectNotTagged,
+            valid: true,
             label: '1'
         }
     ]);
@@ -79,13 +80,9 @@ const Send: FC<CreateTokenProps> = (props) => {
     let currentTabData = outputs.filter(output => output.label === activeTab);
     currentTabData = currentTabData[0];
 
-    console.log('selectedTags');
-    console.log(selectedTags);
-    console.log('currentTabData');
-    console.log(currentTabData);
-
-    console.log('availableTags');
-    console.log(availableTags);
+    console.log('BigInt(mergedOutputs.lovelace).over(1000000).toString()');
+    console.log(BigInt(mergedOutputs.lovelace).over(1000000).toString());
+    console.log(BigInt(mergedOutputs.lovelace).over(1000000).toString() === '0');
 
   // TODO: Get utxos from currentAccount, set in wallet
     const useIsMounted = () => {
@@ -197,38 +194,85 @@ const Send: FC<CreateTokenProps> = (props) => {
         }
     }
 
+    const validateOutputs = () => {
+        for (const output of outputs) {
+            validateOutput(output)
+        }
+    }
+    const updateOutput = (output) => {
+        let updatedOutputs = outputs.map(out =>{
+            if (out.label === output.label){
+                out = output;
+            }
+            return out;
+        });
+        setOutputs(updatedOutputs);
+    }
+    const validateOutput = (output) => {
+        console.log('\n\n\nvalidateOutput: '+output.label);
+        // Create a set.
+        // 1. get all outputs that share tags with the given output
+        let commonOutputs = outputs.filter(out => out.fromTags.some(tag => output.fromTags.includes(tag)) || (output.notTagged && out.notTagged === output.notTagged));
+        console.log('commonOutputs');
+        console.log(commonOutputs);
+
+        let filterUtxos = utxos.filter(utxo => utxo.tags.some(tag => commonOutputs.some(out => out.fromTags.includes(tag))));
+        if (output.notTagged){
+            const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
+            filterUtxos = [...filterUtxos,...notTaggedUtxos]
+        }
+
+        //console.log('commonUtxos');
+        //console.log(filterUtxos);
+
+        const mergedAssetsFromUtxos = mergeAssetsFromUtxos(filterUtxos);
+        console.log('mergedAssetsFromUtxos');
+        console.log(mergedAssetsFromUtxos);
+        const mergedAssetsFromOutputs = mergeAssetsFromOutputs(commonOutputs);
+        console.log('mergedAssetsFromOutputs');
+        console.log(mergedAssetsFromOutputs);
+        const outputsAreValid = validOutputs(mergedAssetsFromUtxos,mergedAssetsFromOutputs);
+        console.log('outputsAreValid '+ output.label);
+        console.log(outputsAreValid);
+        // 2. Once we have all the common outputs, keep juts the ones which match notTagged property
+        // 3. merge utxos. merge outputs, check validity.
+
+        output.valid = outputsAreValid;
+
+        updateOutput(output);
+    };
     const mergeAssets = () => {
 
-        console.log('\n\nmergeAssets');
-        console.log('utxos');
-        console.log(utxos);
+        //console.log('\n\nmergeAssets');
+        //console.log('utxos');
+        //console.log(utxos);
 
 
         // TODO:
         let currentOutput = (outputs.filter(output => output.label === activeTab))[0];
-        console.log('currentOutput');
-        console.log(currentOutput);
+        //console.log('currentOutput');
+        //console.log(currentOutput);
 
         const taggedUtxos = utxos.filter((utxo) => utxo.tags.length);
-        console.log('taggedUtxos');
-        console.log(taggedUtxos);
+        //console.log('taggedUtxos');
+        //console.log(taggedUtxos);
         const utxosFromSelectedTag = taggedUtxos.filter((utxo) => utxo.tags.length && utxo.tags.some(t =>
             currentOutput.fromTags.includes(t)
         ));
 
-        console.log('utxosFromSelectedTag');
-        console.log(utxosFromSelectedTag);
+        //console.log('utxosFromSelectedTag');
+        //console.log(utxosFromSelectedTag);
         let joinUtxos = utxosFromSelectedTag;
         if (currentOutput.notTagged){
             const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
             joinUtxos = [...joinUtxos,...notTaggedUtxos];
         }
-        console.log('joinUtxos');
-        console.log(joinUtxos);
+        //console.log('joinUtxos');
+        //console.log(joinUtxos);
 
         const mergedAssetsFromUtxos = mergeAssetsFromUtxos(joinUtxos);
-        console.log('mergedAssetsFromUtxos');
-        console.log(mergedAssetsFromUtxos);
+        //console.log('mergedAssetsFromUtxos');
+        //console.log(mergedAssetsFromUtxos);
 
         setMergedUtxos(mergedAssetsFromUtxos);
         let availableAdaOnSelectedUtxos =
@@ -238,8 +282,8 @@ const Send: FC<CreateTokenProps> = (props) => {
             && mergedAssetsFromUtxos.lovelace !== '0' ?
             BigInt(mergedAssetsFromUtxos.lovelace).over(1000000).toString() : '0';
 
-        console.log('availableAdaOnSelectedUtxos');
-        console.log(availableAdaOnSelectedUtxos);
+        //console.log('availableAdaOnSelectedUtxos');
+        //console.log(availableAdaOnSelectedUtxos);
         setAvailableAda(availableAdaOnSelectedUtxos)
 
         const filterOutputs = outputs.map(output => {
@@ -248,6 +292,8 @@ const Send: FC<CreateTokenProps> = (props) => {
         }).filter(output => !isDictEmpty(output.assets));
         const mergedAssetsFromOutputs = mergeAssetsFromOutputs(filterOutputs);
         setMergedOutputs(mergedAssetsFromOutputs);
+
+        validateOutputs();
 
     }
     const sendTransaction = async () => {
@@ -392,6 +438,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                 assets: {lovelace: ''},
                 fromTags: (outputs.filter(out => out.label === newLabel.label))[0].fromTags,
                 notTagged: (outputs.filter(out => out.label === newLabel.label))[0].notTagged,
+                valid: true,
                 toAddress: ''
             };
 
@@ -607,6 +654,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                                     ? styles._active_tab_text
                                                     : styles._tab_text,
                                             fontSize: 14,
+                                            color: !tab.valid ? 'red' : 'black',
                                             fontFamily: 'AvenirNextCyr-Medium'
                                         }}>
                                         {tab.label}
@@ -772,7 +820,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                         <Button
                             backgroundColor={"#F338C2"}
                             onPress={() => sendTransaction()}
-
+                            disabled={outputs.some(out => !out.valid) || BigInt(mergedOutputs.lovelace).over(1000000).toString() === '0'}
                         >
                             <Text style={{color: 'white', padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
                                 <Text style={{color: 'white', padding:4, textAlign: 'center', fontSize: 20, fontWeight: 'bold'}}>
