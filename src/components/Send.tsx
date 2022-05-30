@@ -636,7 +636,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                                 activeTab === tab.label
                                                     ? styles._active_tab_text
                                                     : styles._tab_text,
-                                            fontSize: 14,
+                                            fontSize: !tab.valid ? 16 : 14,
                                             color: !tab.valid ? 'red' : 'black',
                                             fontFamily: 'AvenirNextCyr-Medium'
                                         }}>
