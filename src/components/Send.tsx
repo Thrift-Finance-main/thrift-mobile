@@ -482,14 +482,18 @@ const Send: FC<CreateTokenProps> = (props) => {
     const setInputAmount= (amount) => {
 
         console.log('\n\nsetInputAmount');
+        console.log('validAmount');
         const validAmount = !isNaN(amount);
+        console.log(validAmount);
         if (!validAmount && amount !== ''){
             setAmountError(true);
         } else {
             setAmountError(false);
             let outputAux = outputs.filter(output => output.label === activeTab);
             outputAux = outputAux[0];
+            console.log('hey1');
             outputAux.assets.lovelace = BigInt(amount).multiply(1000000).toString();
+            console.log('hey2');
             outputs.map(output => {
                 if (output.label === activeTab){
                     output = outputAux;
