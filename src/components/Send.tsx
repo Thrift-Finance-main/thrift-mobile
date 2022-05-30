@@ -13,7 +13,8 @@ import pasteIcon from "../assets/paste.png";
 import {buildTransaction, mergeAssetsFromOutputs, mergeAssetsFromUtxos, validOutputs} from "../lib/transactions";
 import {fetchBlockfrost, getProtocolParams, getTxUTxOsByAddress} from "../api/Blockfrost";
 import {validateAddress} from "../lib/account";
-import {isDictEmpty} from "../utils";
+import {float2int, isDictEmpty, strFloat2int} from "../utils";
+import {BigFloat32, BigFloat53} from "bigfloat";
 
 interface CreateTokenProps {
     // onContinuePress: () => void
@@ -81,6 +82,9 @@ const Send: FC<CreateTokenProps> = (props) => {
     currentTabData = currentTabData[0];
 
     const isBlackTheme = props.isBlackTheme;
+
+    console.log("test BigInt")
+    console.log(BigInt("789123456").over(1000000).toString());
 
   // TODO: Get utxos from currentAccount, set in wallet
     const useIsMounted = () => {
@@ -479,12 +483,13 @@ const Send: FC<CreateTokenProps> = (props) => {
         });
         setOutputs(outputs);
     };
-    const setInputAmount= (amount) => {
+    const setInputAmount= (amount, decimals) => {
 
         console.log('\n\nsetInputAmount');
         console.log('validAmount');
+
         const validAmount = !isNaN(amount);
-        console.log(validAmount);
+
         if (!validAmount && amount !== ''){
             setAmountError(true);
         } else {
@@ -492,17 +497,27 @@ const Send: FC<CreateTokenProps> = (props) => {
             let outputAux = outputs.filter(output => output.label === activeTab);
             outputAux = outputAux[0];
             console.log('hey1');
-            outputAux.assets.lovelace = BigInt(amount).multiply(1000000).toString();
-            console.log('hey2');
-            outputs.map(output => {
-                if (output.label === activeTab){
-                    output = outputAux;
-                }
-                return output;
-            });
-            // setOutputs(prevTabs => ([...prevTabs, ...[{label: (parseInt(newLabel.label)+1).toString()}]]));
-            setOutputs(outputs);
-            mergeAssets();
+            try {
+                console.log(strFloat2int(amount,6));
+                const float = parseFloat(amount)*1000000;
+                //outputAux.assets.lovelace = new BigFloat53(amount).mul(1000000).toString();
+
+                //outputAux.assets.lovelace = BigInt(strFloat2int(amount,6)).over(1000000).toString();
+                //outputAux.assets.lovelace = strFloat2int(amount,6)
+                outputAux.assets.lovelace = float.toString();
+                console.log('hey2');
+                outputs.map(output => {
+                    if (output.label === activeTab){
+                        output = outputAux;
+                    }
+                    return output;
+                });
+                // setOutputs(prevTabs => ([...prevTabs, ...[{label: (parseInt(newLabel.label)+1).toString()}]]));
+                setOutputs(outputs);
+                mergeAssets();
+            } catch (e) {
+
+            }
         }
     };
     const renderDialog: PickerProps['renderCustomModal'] = modalProps => {
@@ -723,9 +738,9 @@ const Send: FC<CreateTokenProps> = (props) => {
                         }
 
                         placeholder={'$Ada'}
-                        onChangeText={(text) => setInputAmount(text)}
+                        onChangeText={(text) => setInputAmount(text, 6)}
                         useBottomErrors
-                        validate={['required', (text) => !isNaN(text)]}
+                        validate={['required', (text) => !isNaN(text), (text) => parseFloat(amount)*1000000]}
                         errorMessage={"Invalid amount"}
                     />
                     <Text

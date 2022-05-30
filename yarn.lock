@@ -2539,6 +2539,11 @@ big-integer@1.6.x, big-integer@^1.6.51:
   resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.51.tgz#0df92a5d9880560d3ff2d5fd20245c889d130686"
   integrity sha512-GPEid2Y9QU1Exl1rpO9B2IPJGHPSupF5GnVIP0blYvNOMer2bTvSWs1jGOUg04hTmu67nmLsQ9TBo1puaotBHg==
 
+bigfloat@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/bigfloat/-/bigfloat-0.1.1.tgz#ba9bd60305c527ed0814ee40f75f6de9034e13c5"
+  integrity sha512-kKEqZxc86qgQ6xe8+sN1qQ4XzgksND5QKn6CPrFyQcq/oih+Xk7CaqOD0PKjqar8oO7v4ont5bOHox+LYxD6sQ==
+
 binary-extensions@^1.0.0:
   version "1.13.1"
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-1.13.1.tgz#598afe54755b2868a5330d2aff9d4ebb53209b65"

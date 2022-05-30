@@ -63,3 +63,24 @@ function groupBy(arr, prop) {
   arr.forEach(obj => map.get(obj[prop]).push(obj));
   return Array.from(map.values());
 }
+
+export function strFloat2int (value:string, decimals:number) {
+
+  if (value.includes('.')) {
+    let r;
+    const num = value.split('.');
+    const d = decimals-num[1].length;
+    if (d >= 0){
+      let zeros = '';
+      for (let i = 0; i < d; i++) {
+        zeros += '0';
+      }
+      r = num[1]+zeros;
+    } else if (num[1].length > decimals){
+      r = num[1].substr(0,6)
+    }
+    value = num[0]+r
+  }
+
+  return value;
+}
