@@ -79,7 +79,8 @@
     "toggle-switch-react-native": "^3.3.0",
     "url": "^0.11.0",
     "util": "0.12.4",
-    "vm-browserify": "1.1.2"
+    "vm-browserify": "1.1.2",
+    "bignumber.js": "^9.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

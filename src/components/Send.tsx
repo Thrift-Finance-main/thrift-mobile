@@ -9,12 +9,12 @@ import {useSelector} from "react-redux";
 import {Button, Chip, Colors, Dialog, PanningProvider, Picker, PickerProps, TextField} from "react-native-ui-lib";
 import swapIcon from "../assets/plus.png";
 import removeIcon from "../assets/remove.png";
-import pasteIcon from "../assets/paste.png";
 import {buildTransaction, mergeAssetsFromOutputs, mergeAssetsFromUtxos, validOutputs} from "../lib/transactions";
 import {fetchBlockfrost, getProtocolParams, getTxUTxOsByAddress} from "../api/Blockfrost";
 import {validateAddress} from "../lib/account";
-import {float2int, isDictEmpty, strFloat2int} from "../utils";
-import {BigFloat32, BigFloat53} from "bigfloat";
+import {isDictEmpty} from "../utils";
+import BigNumber from "bignumber.js";
+
 
 interface CreateTokenProps {
     // onContinuePress: () => void
@@ -82,9 +82,6 @@ const Send: FC<CreateTokenProps> = (props) => {
     currentTabData = currentTabData[0];
 
     const isBlackTheme = props.isBlackTheme;
-
-    console.log("test BigInt")
-    console.log(BigInt("789123456").over(1000000).toString());
 
   // TODO: Get utxos from currentAccount, set in wallet
     const useIsMounted = () => {
@@ -264,7 +261,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             && mergedAssetsFromUtxos.lovelace
             && mergedAssetsFromUtxos.lovelace.length
             && mergedAssetsFromUtxos.lovelace !== '0' ?
-            BigInt(mergedAssetsFromUtxos.lovelace).over(1000000).toString() : '0';
+            new BigNumber(mergedAssetsFromUtxos.lovelace || 0).dividedBy(1000000).toString() : '0';
 
         //console.log('availableAdaOnSelectedUtxos');
         //console.log(availableAdaOnSelectedUtxos);
@@ -488,7 +485,18 @@ const Send: FC<CreateTokenProps> = (props) => {
         console.log('\n\nsetInputAmount');
         console.log('validAmount');
 
-        const validAmount = !isNaN(amount);
+        if (amount === ''){
+            return;
+        }
+        if (amount.includes('.')){
+            let c = amount.split('.');
+            if (c[1].length > 6){
+                return;
+            }
+        }
+        amount = (parseFloat(amount) * 1).toString();
+        let f = new BigNumber(amount);
+        const validAmount = !f.isNaN(amount) && f.isFinite(amount);
 
         if (!validAmount && amount !== ''){
             setAmountError(true);
@@ -498,13 +506,15 @@ const Send: FC<CreateTokenProps> = (props) => {
             outputAux = outputAux[0];
             console.log('hey1');
             try {
-                console.log(strFloat2int(amount,6));
-                const float = parseFloat(amount)*1000000;
-                //outputAux.assets.lovelace = new BigFloat53(amount).mul(1000000).toString();
+                console.log('amount');
+                console.log(amount);
+                 // patch remove zero in the left
 
-                //outputAux.assets.lovelace = BigInt(strFloat2int(amount,6)).over(1000000).toString();
-                //outputAux.assets.lovelace = strFloat2int(amount,6)
-                outputAux.assets.lovelace = float.toString();
+                const float = f.multipliedBy(1000000).toString();
+                console.log('float');
+                console.log(float);
+
+                outputAux.assets.lovelace = float;
                 console.log('hey2');
                 outputs.map(output => {
                     if (output.label === activeTab){
@@ -554,9 +564,9 @@ const Send: FC<CreateTokenProps> = (props) => {
         );
     };
 
-    const mergedLovelace = BigInt(mergedUtxos.lovelace).divmod(1000000);
-    const mergedLovelaceLeft = mergedLovelace.quotient;
-    const mergedLovelaceRight = mergedLovelace.remainder;
+    console.log('\n\nmergedUtxos.lovelace');
+    console.log(mergedUtxos.lovelace);
+    const mergedLovelace =  new BigNumber(mergedUtxos.lovelace || 0).dividedBy(1000000).toString();
 
     const listOfAssets = Object.entries(mergedUtxos).filter(a => a[0] !== 'lovelace');
     const filterAssets = assets.filter(a => listOfAssets.some(l => l[0] === a.unit));
@@ -595,8 +605,8 @@ const Send: FC<CreateTokenProps> = (props) => {
                                 ...styles.fromAccount, color: props.isBlackTheme ? Colors.white :
                                     Colors.black,
                             }}
-                            onPress={() => setAmount(mergedLovelaceLeft+'.'+mergedLovelaceRight)}
-                        >From <Text style={{fontFamily: 'AvenirNextCyr-Demi', fontSize: 18}}>{currentAccount.accountName} {mergedLovelaceLeft+'.'+mergedLovelaceRight}</Text> Ada</Text>
+                            onPress={() => setAmount(mergedLovelace)}
+                        >From <Text style={{fontFamily: 'AvenirNextCyr-Demi', fontSize: 18}}>{currentAccount.accountName} {mergedLovelace}</Text> Ada</Text>
                         <View
                             style={{flexDirection:'row', flexWrap:'wrap', marginTop: 8, marginLeft: 12}}
                         >
@@ -733,7 +743,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                         value={currentTabData
                             && currentTabData.assets
                             && currentTabData.assets.lovelace
-                            && BigInt(currentTabData.assets.lovelace).over(1000000).toString()
+                            && new BigNumber(currentTabData.assets.lovelace || 0).dividedBy(1000000).toString()
                             || null
                         }
 
@@ -837,14 +847,14 @@ const Send: FC<CreateTokenProps> = (props) => {
                         <Button
                             backgroundColor={"#F338C2"}
                             onPress={() => sendTransaction()}
-                            disabled={outputs.some(out => !out.valid) || BigInt(mergedOutputs.lovelace).over(1000000).toString() === '0'}
+                            disabled={outputs.some(out => !out.valid) || new BigNumber(mergedOutputs.lovelace || 0).dividedBy(1000000).toString() === '0'}
                         >
                             <Text style={{color: 'white', padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
                                 <Text style={{color: 'white', padding:4, textAlign: 'center', fontSize: 20, fontWeight: 'bold'}}>
                                     Send{'\n'}
                                 </Text>
                                 <Text style={{color: 'white', padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
-                                    Ada{' '}{BigInt(mergedOutputs.lovelace).over(1000000).toString()}{' | '}
+                                    Ada{' '}{new BigNumber(mergedOutputs.lovelace || 0).dividedBy(1000000).toString()}{' | '}
                                 </Text>
                                 {
                                     Object.keys(mergedOutputs).length-1 > 0 ?

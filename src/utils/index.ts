@@ -66,10 +66,10 @@ function groupBy(arr, prop) {
 
 export function strFloat2int (value:string, decimals:number) {
 
+  let r;
   if (value.includes('.')) {
-    let r;
     const num = value.split('.');
-    const d = decimals-num[1].length;
+    const d = decimals-num[1];
     if (d >= 0){
       let zeros = '';
       for (let i = 0; i < d; i++) {
@@ -77,9 +77,16 @@ export function strFloat2int (value:string, decimals:number) {
       }
       r = num[1]+zeros;
     } else if (num[1].length > decimals){
-      r = num[1].substr(0,6)
+      r = num[1].substr(0, decimals)
     }
     value = num[0]+r
+  } else {
+    let zeros = '';
+    for (let i = 0; i < decimals; i++) {
+      zeros += '0';
+    }
+    r = value + zeros;
+    value = r
   }
 
   return value;
