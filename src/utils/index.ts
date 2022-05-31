@@ -91,3 +91,13 @@ export function strFloat2int (value:string, decimals:number) {
 
   return value;
 }
+
+export function maxDecimals (value:string, decimals:number) {
+  if (value.includes('.')){
+    let c = value.split('.');
+    if (c[1].length <= 6){
+      return true;
+    }
+  }
+  return false;
+}

@@ -81,6 +81,19 @@ const Send: FC<CreateTokenProps> = (props) => {
     let currentTabData = outputs.filter(output => output.label === activeTab);
     currentTabData = currentTabData[0];
 
+    let currentAmountInput = new BigNumber(
+            currentTabData
+            && currentTabData.assets
+            && currentTabData.assets.lovelace || '0'
+          ).dividedBy(1000000).toString();
+    currentAmountInput = currentAmountInput === '0' ? '' : currentAmountInput;
+
+    console.log('currentAmountInput');
+    console.log(currentAmountInput);
+
+    console.log('currentTabData');
+    console.log(currentTabData);
+
     const isBlackTheme = props.isBlackTheme;
 
   // TODO: Get utxos from currentAccount, set in wallet
@@ -147,15 +160,6 @@ const Send: FC<CreateTokenProps> = (props) => {
                 }
             }).filter(r => r !== undefined || r.utxos.length);
             setUtxos(updatedUtxos);
-            /*
-            console.log('\n\nupdatedUtxos');
-            console.log(updatedUtxos.length);
-            console.log(updatedUtxos[0]);
-            console.log(updatedUtxos[1]);
-            console.log(updatedUtxos[2]);
-            console.log(updatedUtxos[3]);
-
-             */
 
             const mergedAssetsFromUtxos = mergeAssetsFromUtxos(updatedUtxos);
 
@@ -193,6 +197,13 @@ const Send: FC<CreateTokenProps> = (props) => {
         }
     }
 
+    const validateDecimals= (text, decimals) => {
+        if (text.includes('.')) {
+            text = text.split('.');
+            return text[text.length-1].length <= decimals // get last element
+        }
+        return true;
+    }
     const validateOutputs = () => {
         for (const output of outputs) {
             validateOutput(output)
@@ -288,7 +299,6 @@ const Send: FC<CreateTokenProps> = (props) => {
 
         console.log('\n\n\nsendTransaction');
 
-        console.log(utxos);
         let filterUtxos = utxos.filter((utxo) => utxo.tags.length && utxo.tags.some(t =>
             outputs.some(out => out.fromTags.includes(t))
         ));
@@ -297,8 +307,6 @@ const Send: FC<CreateTokenProps> = (props) => {
             const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
             filterUtxos = [...filterUtxos,...notTaggedUtxos]
         }
-        console.log('filterUtxos');
-        console.log(filterUtxos);
         const tx = await buildTransaction(currentAccount, accountState, filterUtxos, filterOutputs, protocolParameters);
         if (tx && tx.error){
             console.log(tx.error);
@@ -480,11 +488,7 @@ const Send: FC<CreateTokenProps> = (props) => {
         });
         setOutputs(outputs);
     };
-    const setInputAmount= (amount, decimals) => {
-
-        console.log('\n\nsetInputAmount');
-        console.log('validAmount');
-
+    const setInputAmount= (amount) => {
         if (amount === ''){
             return;
         }
@@ -494,7 +498,6 @@ const Send: FC<CreateTokenProps> = (props) => {
                 return;
             }
         }
-        amount = (parseFloat(amount) * 1).toString();
         let f = new BigNumber(amount);
         const validAmount = !f.isNaN(amount) && f.isFinite(amount);
 
@@ -504,25 +507,16 @@ const Send: FC<CreateTokenProps> = (props) => {
             setAmountError(false);
             let outputAux = outputs.filter(output => output.label === activeTab);
             outputAux = outputAux[0];
-            console.log('hey1');
             try {
-                console.log('amount');
-                console.log(amount);
                  // patch remove zero in the left
-
                 const float = f.multipliedBy(1000000).toString();
-                console.log('float');
-                console.log(float);
-
                 outputAux.assets.lovelace = float;
-                console.log('hey2');
                 outputs.map(output => {
                     if (output.label === activeTab){
                         output = outputAux;
                     }
                     return output;
                 });
-                // setOutputs(prevTabs => ([...prevTabs, ...[{label: (parseInt(newLabel.label)+1).toString()}]]));
                 setOutputs(outputs);
                 mergeAssets();
             } catch (e) {
@@ -564,8 +558,6 @@ const Send: FC<CreateTokenProps> = (props) => {
         );
     };
 
-    console.log('\n\nmergedUtxos.lovelace');
-    console.log(mergedUtxos.lovelace);
     const mergedLovelace =  new BigNumber(mergedUtxos.lovelace || 0).dividedBy(1000000).toString();
 
     const listOfAssets = Object.entries(mergedUtxos).filter(a => a[0] !== 'lovelace');
@@ -740,17 +732,11 @@ const Send: FC<CreateTokenProps> = (props) => {
                             fontFamily: 'AvenirNextCyr-Medium',
                             color: props.isBlackTheme ? Colors.white : Colors.black
                         }}
-                        value={currentTabData
-                            && currentTabData.assets
-                            && currentTabData.assets.lovelace
-                            && new BigNumber(currentTabData.assets.lovelace || 0).dividedBy(1000000).toString()
-                            || null
-                        }
-
+                        value={currentAmountInput || null}
                         placeholder={'$Ada'}
-                        onChangeText={(text) => setInputAmount(text, 6)}
+                        onChangeText={(text) => {setInputAmount(text)}}
                         useBottomErrors
-                        validate={['required', (text) => !isNaN(text), (text) => parseFloat(amount)*1000000]}
+                        validate={['required', (text) => !isNaN(text), (text) => parseFloat(amount)*1000000, (text) => validateDecimals(text,6)]}
                         errorMessage={"Invalid amount"}
                     />
                     <Text
