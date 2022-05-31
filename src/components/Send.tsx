@@ -327,6 +327,9 @@ const Send: FC<CreateTokenProps> = (props) => {
     };
     const updateQuantityFromSelectedAsset = async (asset, quantity) => {
 
+        if (amount === ''){
+            return;
+        }
         console.log('\n\nupdateQuantityFromSelectedAsset');
         console.log(quantity);
         let q = new BigNumber(quantity);
@@ -334,7 +337,11 @@ const Send: FC<CreateTokenProps> = (props) => {
         const validDecimals = validateDecimals(quantity,6);
 
         if (!validAmount || !validDecimals){
-            console.log("not valid format for "+asset.asset_name)
+            console.log("not valid format for "+asset.asset_name);
+            let currentTab = currentTabData;
+            currentTab.valid = false;
+            updateOutput(currentTab);
+            return;
         }
 
         let outputAux = outputs.filter(output => output.label === activeTab);
