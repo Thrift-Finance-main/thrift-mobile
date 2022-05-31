@@ -4,6 +4,7 @@ import {apiDb} from "../db/LiteDb";
 import {getProtocolParams, getTxUTxOsByAddress, IAccountState} from "../api/Blockfrost";
 import {decryptData} from "./cryptoLib";
 import {BigNum, Bip32PrivateKey, LinearFee, TransactionBuilder} from "@emurgo/react-native-haskell-shelley";
+import BigNumber from "bignumber.js";
 export const RECEIVE_TX = 'RECEIVE_TX';
 export const SEND_TX = 'SEND_TX';
 export const SELF_TX = 'SELF_TX';
@@ -249,17 +250,15 @@ export const mergeAssetsFromUtxos = (utxos) => {
     console.log(utxos.length)
     let assets: { [key: string]: string } = {};
     utxos.map(utxo => {//  {"address": {"address": "addr_test1qp699gyph5gj8c4whp62048z7w7kte2w5ghkpl36wwh5z84t9gat4d3njffvnlde55dwtqyev48z8ywwqask7rsmwd9s0pxmc2", "index": 0, "network": "0", "reference": "", "tags": ["Main"]}, "utxos": [{"amount": [Array], "block": "ab69e2a0c1b8089875439210130bd60327738e1a8ef3fb36dfe05f8d018783c0", "data_hash": null, "output_index": 0, "tx_hash": "69d72b7e73b03c9dcd3f8ce6b185bdab8f85c5d989dffed51edc3f3c482beef0", "tx_index": 0}]}
-        console.log('utxo')
-        console.log(utxo)
+
         utxo.utxos.map( u => {
             u.amount.map( a => {
                 if (assets[a.unit] === undefined) {
                     assets[a.unit] = a.quantity;
                 } else {
-                    //const sum = await addBigNum(assets[a.unit], a.quantity);
-                    let x = BigInt(assets[a.unit]);
-                    let y = BigInt(a.quantity);
-                    const sum = (x.add(y)).toString();
+                    let x = new BigNumber(assets[a.unit]);
+                    let y = new BigNumber(a.quantity);
+                    const sum = (x.plus(y)).toString();
                     assets[a.unit] = sum;
                 }
             });
@@ -278,9 +277,9 @@ export const mergeAssetsFromOutputs = (outputs: {address:string, assets:any[]}[]
             if (assets[unit] === undefined) {
                 assets[unit] = keyValuePair[1];
             } else {
-                let x = BigInt(assets[unit]);
-                let y = BigInt(keyValuePair[1]);
-                const sum = (x.add(y)).toString();
+                let x = new BigNumber(assets[unit]);
+                let y = new BigNumber(keyValuePair[1]);
+                const sum = (x.plus(y)).toString();
                 assets[unit] = sum;
             }
         });
