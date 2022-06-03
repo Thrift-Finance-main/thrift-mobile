@@ -256,9 +256,11 @@ export const buildTransaction = async (
     // for all tags involved in
 
     console.log("\n\n\n\n")
+
     const taggedUtxos = utxos.filter((utxo) => utxo.tags.length);
     let initialAssetsFromUtxos = mergeAssetsFromUtxos(taggedUtxos);
 
+    let assetsFromAllUtxos = mergeAssetsFromUtxos(utxos);
     for (const output of outputs) {
         console.log('output');
         console.log(output);
@@ -279,18 +281,40 @@ export const buildTransaction = async (
             joinUtxos = [...joinUtxos,...notTaggedUtxos];
         }
 
+        // CoinSelection algorithm here. update joinUtxos ..
+
         // Calc the diff joinUtxos-output.assets, send diff to change
+        const mergedAssetsFromUtxos = mergeAssetsFromUtxos(joinUtxos);
         // we just need to create the outputs+change, the inputs are -> utxos param
 
+
         // Set output: address-assets
+        const changeAddress = fromAddresses[0];
+
+        const assets = output.assets;
+        console.log('assets in output');
+        console.log(assets);
+        // This is the assets change from the current output
+        const diff = calcDiffAssets(mergedAssetsFromUtxos, assets);
+        console.log('changeAddress');
+        console.log(changeAddress);
+        console.log('assets in change');
+        console.log(diff);
 
         // merge all assets from outputs
+        // now, lets diff that change from the total utxos
+
+        console.log('output address');
+        console.log(output.toAddress);
+        console.log('output assets');
+        console.log(assets);
+        assetsFromAllUtxos = calcDiffAssets(assetsFromAllUtxos, assets);
 
 
-        const mergedAssetsFromUtxos = mergeAssetsFromUtxos(joinUtxos);
     }
 
-    const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
+    console.log('global Change');
+    console.log(assetsFromAllUtxos);
 
 
 }
@@ -344,6 +368,22 @@ export const validOutputs = (mergedAssetsFromUtxos, mergedAssetsFromOutputs ) =>
         }
     }
     return true;
+}
+export const calcDiffAssets = (assetsA:{ [unit: string]: string }, assetsB:{ [unit: string]: string } ) => {
+    let assets: { [unit: string]: string } = {};
+    for (let key in assetsA) {
+        if (assetsA[key] === undefined) {
+            assets[key] = assetsA[key];
+        } else {
+            let x = new BigNumber(assetsA[key]);
+            let y = new BigNumber(assetsB[key]);
+            if (y) {
+                const diff = x.minus(y).toString();
+                assets[key] = diff;
+            }
+        }
+    }
+    return assets;
 }
 
 export const getTransactionBuilder = async (protocolParams): Promise<TransactionBuilder> => {

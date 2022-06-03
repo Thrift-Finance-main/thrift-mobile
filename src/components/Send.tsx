@@ -221,6 +221,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             filterUtxos = [...filterUtxos,...notTaggedUtxos]
         }
         const mergedAssetsFromUtxos = mergeAssetsFromUtxos(filterUtxos);
+        // @ts-ignore
         const mergedAssetsFromOutputs = mergeAssetsFromOutputs(commonOutputs);
         const outputsAreValid = validOutputs(mergedAssetsFromUtxos,mergedAssetsFromOutputs);
         output.valid = outputsAreValid;
@@ -243,13 +244,13 @@ const Send: FC<CreateTokenProps> = (props) => {
         //console.log('taggedUtxos');
         //console.log(taggedUtxos);
         const utxosFromSelectedTag = taggedUtxos.filter((utxo) => utxo.tags.length && utxo.tags.some(t =>
-            currentOutput.fromTags.includes(t)
+            currentOutput && currentOutput.fromTags.includes(t)
         ));
 
         //console.log('utxosFromSelectedTag');
         //console.log(utxosFromSelectedTag);
         let joinUtxos = utxosFromSelectedTag;
-        if (currentOutput.notTagged){
+        if (currentOutput && currentOutput.notTagged){
             const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
             joinUtxos = [...joinUtxos,...notTaggedUtxos];
         }
