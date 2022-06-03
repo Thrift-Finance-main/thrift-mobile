@@ -198,6 +198,8 @@ export const buildTransaction = async (
     password: string | null = null,
 ) => {
 
+    console.log('outputs.length');
+    console.log(outputs.length);
     console.log('pParams');
     console.log(parameters);
 
@@ -294,8 +296,16 @@ export const buildTransaction = async (
         const assets = output.assets;
         console.log('assets in output');
         console.log(assets);
+
+        // TODO remove asset name
+
+
+        const processedAssets = removeAssetNameFromKey(assets);
+
+        console.log('processedAssets');
+        console.log(processedAssets);
         // This is the assets change from the current output
-        const diff = calcDiffAssets(mergedAssetsFromUtxos, assets);
+        const diff = calcDiffAssets(mergedAssetsFromUtxos, processedAssets);
         console.log('changeAddress');
         console.log(changeAddress);
         console.log('assets in change');
@@ -308,7 +318,7 @@ export const buildTransaction = async (
         console.log(output.toAddress);
         console.log('output assets');
         console.log(assets);
-        assetsFromAllUtxos = calcDiffAssets(assetsFromAllUtxos, assets);
+        assetsFromAllUtxos = calcDiffAssets(assetsFromAllUtxos, processedAssets);
 
 
     }
@@ -369,6 +379,21 @@ export const validOutputs = (mergedAssetsFromUtxos, mergedAssetsFromOutputs ) =>
     }
     return true;
 }
+export const removeAssetNameFromKey = (assets) => {
+    const processedAssets = {};
+    for (let key in assets) {
+        let assetValue = assets[key];
+        if (key !== 'lovelace'){
+            const unit = key.split('.')[0];
+            // @ts-ignore
+            processedAssets[unit] = assetValue;
+        } else {
+            // @ts-ignore
+            processedAssets[key] = assetValue;
+        }
+    }
+    return processedAssets;
+}
 export const validateAssets = (mergedAssetsFromUtxos, mergedAssetsFromOutputs ) => {
     for (let key in mergedAssetsFromOutputs) {
         // check if the property/key is defined in the object itself, not in parent
@@ -380,15 +405,24 @@ export const validateAssets = (mergedAssetsFromUtxos, mergedAssetsFromOutputs ) 
     return true;
 }
 export const calcDiffAssets = (assetsA:{ [unit: string]: string }, assetsB:{ [unit: string]: string } ) => {
+    console.log('calcDiffAssets');
+    console.log(assetsA);
+    console.log(assetsB);
     let assets: { [unit: string]: string } = {};
     for (let key in assetsA) {
         if (assetsA[key] === undefined) {
             assets[key] = assetsA[key];
         } else {
             let x = new BigNumber(assetsA[key]);
+            console.log('x');
+            console.log(x)
             let y = new BigNumber(assetsB[key]);
+            console.log('y');
+            console.log(y)
             if (y) {
                 const diff = x.minus(y).toString();
+                console.log('diff');
+                console.log(diff)
                 assets[key] = diff;
             }
         }

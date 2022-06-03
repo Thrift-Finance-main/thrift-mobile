@@ -9,7 +9,13 @@ import {useSelector} from "react-redux";
 import {Button, Chip, Colors, Dialog, PanningProvider, Picker, PickerProps, TextField} from "react-native-ui-lib";
 import swapIcon from "../assets/plus.png";
 import removeIcon from "../assets/remove.png";
-import {buildTransaction, mergeAssetsFromOutputs, mergeAssetsFromUtxos, validOutputs} from "../lib/transactions";
+import {
+    buildTransaction,
+    mergeAssetsFromOutputs,
+    mergeAssetsFromUtxos,
+    removeAssetNameFromKey,
+    validOutputs
+} from "../lib/transactions";
 import {fetchBlockfrost, getProtocolParams, getTxUTxOsByAddress} from "../api/Blockfrost";
 import {validateAddress} from "../lib/account";
 import {isDictEmpty} from "../utils";
@@ -201,6 +207,8 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     const validateOutputs = () => {
 
+        console.log('\n\nvalidateOutputs');
+
         let updatedOutputs = [];
         for (let output of outputs) {
             // outputs that have tags in common
@@ -213,7 +221,12 @@ const Send: FC<CreateTokenProps> = (props) => {
             }
 
             const mergedAssetsFromUtxosCurrentOutput = mergeAssetsFromUtxos(filterUtxosFromCurrentOutput);
-            const isolatedOutputIsValid = validOutputs(mergedAssetsFromUtxosCurrentOutput, output.assets);
+            console.log('mergedAssetsFromUtxosCurrentOutput');
+            console.log(mergedAssetsFromUtxosCurrentOutput);
+            const processedAssets = removeAssetNameFromKey(output.assets);
+            const isolatedOutputIsValid = validOutputs(mergedAssetsFromUtxosCurrentOutput, processedAssets);
+            console.log('isolatedOutputIsValid');
+            console.log(isolatedOutputIsValid);
             if (!isolatedOutputIsValid){
                 output.valid = false;
             } else {
@@ -251,7 +264,7 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     const mergeAssets = () => {
 
-        console.log('\n\nmergeAssets');
+        console.log('\n\n\nmergeAssets');
         //console.log('utxos');
         //console.log(utxos);
 
@@ -340,6 +353,9 @@ const Send: FC<CreateTokenProps> = (props) => {
     };
     const updateQuantityFromSelectedAsset = async (asset, quantity) => {
 
+        console.log('updateQuantityFromSelectedAsset');
+        console.log(asset);
+        console.log(quantity);
         if (amount === ''){
             return;
         }
@@ -398,7 +414,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             return output;
         });
         setOutputs(updatedOutputs);
-
+        validateOutputs();
     };
     const fetchCopiedText = async () => {
         const text = await Clipboard.getString();
@@ -413,7 +429,7 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     useEffect(() => {
         mergeAssets();
-    }, [currentTabData, selectedTags.length, selectNotTagged, outputs.length]);
+    }, [currentTabData, currentTabData.fromTags, selectedTags.length, selectNotTagged, outputs.length]);
 
     const onSelectTag = (tag) => {
         const updatedOutputs = outputs.map(out => {
@@ -840,7 +856,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                             containerStyle={{width: 330, marginHorizontal: 6,  fontFamily: 'AvenirNextCyr-Medium'}}
                                             floatingPlaceholder
                                             placeholder={Buffer.from(assetName, 'hex').toString() }
-                                            onChangeText={(text) => updateQuantityFromSelectedAsset({asset_name: assetName, unit}, text)}
+                                            onChangeText={(value) => updateQuantityFromSelectedAsset({asset_name: assetName, unit}, value)}
                                             helperText="this is an helper text"
                                             rightButtonProps={{
                                                 iconSource: removeIcon,
@@ -864,7 +880,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                         <Button
                             backgroundColor={"#F338C2"}
                             onPress={() => sendTransaction()}
-                            disabled={outputs.some(out => !out.valid) || new BigNumber(mergedOutputs.lovelace || 0).dividedBy(1000000).toString() === '0'}
+                            //disabled={outputs.some(out => !out.valid) || new BigNumber(mergedOutputs.lovelace || 0).dividedBy(1000000).toString() === '0'}
                         >
                             <Text style={{color: 'white', padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
                                 <Text style={{color: 'white', padding:4, textAlign: 'center', fontSize: 20, fontWeight: 'bold'}}>
