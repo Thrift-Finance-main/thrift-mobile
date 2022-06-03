@@ -205,24 +205,36 @@ const Send: FC<CreateTokenProps> = (props) => {
         for (let output of outputs) {
             // outputs that have tags in common
             const commonOutputs = outputs.filter(out => out.fromTags.some(tag => output.fromTags.includes(tag)) || (output.notTagged && out.notTagged === output.notTagged));
-
-            // utxos from commonOutputs
-            let filterUtxos = utxos.filter(utxo => utxo.tags.some(tag => commonOutputs.some(out => out.fromTags.includes(tag))));
-
-            let includeNoTagged = commonOutputs.some(out => out.notTagged);
-
-            // if the current output has notTagged selected
-
-            if (includeNoTagged){
+            // utxos from currentOutput
+            let filterUtxosFromCurrentOutput = utxos.filter(utxo => utxo.tags.some(tag => output.fromTags.includes(tag)));
+            if (output.notTagged){
                 const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
-                filterUtxos = [...filterUtxos,...notTaggedUtxos]
+                filterUtxosFromCurrentOutput = [...filterUtxosFromCurrentOutput,...notTaggedUtxos]
             }
 
-            const mergedAssetsFromCommonOutputs = mergeAssetsFromOutputs(commonOutputs);
-            const mergedAssetsFromUtxos = mergeAssetsFromUtxos(filterUtxos);
-            const outputsAreValid = validOutputs(mergedAssetsFromUtxos, mergedAssetsFromCommonOutputs);
-            output.valid = outputsAreValid;
+            const mergedAssetsFromUtxosCurrentOutput = mergeAssetsFromUtxos(filterUtxosFromCurrentOutput);
+            const isolatedOutputIsValid = validOutputs(mergedAssetsFromUtxosCurrentOutput, output.assets);
+            if (!isolatedOutputIsValid){
+                output.valid = false;
+            } else {
 
+                let filterUtxos = utxos.filter(utxo => utxo.tags.some(tag => commonOutputs.some(out => out.fromTags.includes(tag))));
+
+                // utxos from commonOutputs
+
+                const mergedAssetsFromCommonOutputs = mergeAssetsFromOutputs(commonOutputs);
+                // if the current output has notTagged selected
+
+                let includeNoTagged = commonOutputs.some(out => out.notTagged);
+                if (includeNoTagged){
+                    const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
+                    filterUtxos = [...filterUtxos,...notTaggedUtxos]
+                }
+
+                const mergedAssetsFromUtxos = mergeAssetsFromUtxos(filterUtxos);
+                const outputsAreValid = validOutputs(mergedAssetsFromUtxos, mergedAssetsFromCommonOutputs);
+                output.valid = outputsAreValid;
+            }
             updatedOutputs.push(output)
         }
         setOutputs(updatedOutputs);
