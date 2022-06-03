@@ -28,20 +28,14 @@ const Send: FC<CreateTokenProps> = (props) => {
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
     const [availableAda, setAvailableAda] = useState(currentAccount.balance);
     const [assets, setAssets] = useState(currentAccount.assets || []);
-    const [selectedAssets, setSelectedAssets] = useState([]);
     const [accountState, setAccountState] = useState({});
     const [utxos, setUtxos] = useState(currentAccount.utxos);
     const [availableTags, setAvailableTags] = useState([]);
 
-    const [selectAll, setSelectAll] = useState(false);
     const [selectNotTagged, setSelectNotTagged] = useState(false);
 
     const [mergedUtxos, setMergedUtxos] = useState({});
     const [mergedOutputs, setMergedOutputs] = useState({});
-    const [mergedDiff, setMergedDiff] = useState({});
-
-    const [toAddress, setToAddress] = useState('addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u');
-    const [toAddressError, setToAddressError] = useState(false);
     const [amount, setAmount] = useState('6');
     const [amountError, setAmountError] = useState(false);
     const [activeTab, setActiveTab] = useState('1');
@@ -330,14 +324,11 @@ const Send: FC<CreateTokenProps> = (props) => {
         if (amount === ''){
             return;
         }
-        console.log('\n\nupdateQuantityFromSelectedAsset');
-        console.log(quantity);
         let q = new BigNumber(quantity);
         const validAmount = !q.isNaN() && q.isFinite();
         const validDecimals = validateDecimals(quantity,6);
 
         if (!validAmount || !validDecimals){
-            console.log("not valid format for "+asset.asset_name);
             let currentTab = currentTabData;
             currentTab.valid = false;
             updateOutput(currentTab);
@@ -403,7 +394,7 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     useEffect(() => {
         mergeAssets();
-    }, [currentTabData.fromTags, selectedTags.length, selectNotTagged, outputs.length]);
+    }, [currentTabData && currentTabData.fromTags, selectedTags.length, selectNotTagged, outputs.length]);
 
     const onSelectTag = (tag) => {
         const updatedOutputs = outputs.map(out => {

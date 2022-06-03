@@ -244,6 +244,55 @@ export const buildTransaction = async (
     }
 
     // After verify there is enough amount in utxos to cover the outputs
+
+    // group by tags
+    // 1. Create input, set output and send change back to input
+    //      1.1
+    //      1.2 if notTagged === false: add notTagged utxos as inputs and send change to Global
+
+    // group  outputs by
+    //
+
+    // for all tags involved in
+
+    console.log("\n\n\n\n")
+    const taggedUtxos = utxos.filter((utxo) => utxo.tags.length);
+    let initialAssetsFromUtxos = mergeAssetsFromUtxos(taggedUtxos);
+
+    for (const output of outputs) {
+        console.log('output');
+        console.log(output);
+        const utxosFromSelectedTag = taggedUtxos.filter((utxo) => utxo.tags.length
+            && utxo.tags.some(t => output.fromTags.includes(t)
+        ));
+        console.log('utxosFromSelectedTag');
+        console.log(utxosFromSelectedTag);
+
+        // Candidates to receive the change
+        const fromAddresses = utxosFromSelectedTag.map(utxo => utxo.address);
+        console.log('fromAddresses');
+        console.log(fromAddresses);
+        // inputs
+        let joinUtxos = utxosFromSelectedTag;
+        if (output.notTagged){
+            const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
+            joinUtxos = [...joinUtxos,...notTaggedUtxos];
+        }
+
+        // Calc the diff joinUtxos-output.assets, send diff to change
+        // we just need to create the outputs+change, the inputs are -> utxos param
+
+        // Set output: address-assets
+
+        // merge all assets from outputs
+
+
+        const mergedAssetsFromUtxos = mergeAssetsFromUtxos(joinUtxos);
+    }
+
+    const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
+
+
 }
 export const mergeAssetsFromUtxos = (utxos) => {
     console.log('mergeAssetsFromUtxos')
@@ -290,7 +339,7 @@ export const validOutputs = (mergedAssetsFromUtxos, mergedAssetsFromOutputs ) =>
     for (let key in mergedAssetsFromOutputs) {
         // check if the property/key is defined in the object itself, not in parent
         if (!(mergedAssetsFromUtxos.hasOwnProperty(key)
-            && parseInt(mergedAssetsFromUtxos[key]) >= parseInt(mergedAssetsFromOutputs[key]))) {
+            && new BigNumber(mergedAssetsFromUtxos[key]).isGreaterThanOrEqualTo(new BigNumber(mergedAssetsFromOutputs[key])))) {
            return false;
         }
     }
