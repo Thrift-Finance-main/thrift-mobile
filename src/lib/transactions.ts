@@ -369,6 +369,16 @@ export const validOutputs = (mergedAssetsFromUtxos, mergedAssetsFromOutputs ) =>
     }
     return true;
 }
+export const validateAssets = (mergedAssetsFromUtxos, mergedAssetsFromOutputs ) => {
+    for (let key in mergedAssetsFromOutputs) {
+        // check if the property/key is defined in the object itself, not in parent
+        if (!(mergedAssetsFromUtxos.hasOwnProperty(key)
+            && new BigNumber(mergedAssetsFromUtxos[key]).isGreaterThanOrEqualTo(new BigNumber(mergedAssetsFromOutputs[key])))) {
+           return false;
+        }
+    }
+    return true;
+}
 export const calcDiffAssets = (assetsA:{ [unit: string]: string }, assetsB:{ [unit: string]: string } ) => {
     let assets: { [unit: string]: string } = {};
     for (let key in assetsA) {

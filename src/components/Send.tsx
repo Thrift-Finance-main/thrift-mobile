@@ -198,10 +198,34 @@ const Send: FC<CreateTokenProps> = (props) => {
         }
         return true;
     }
+
     const validateOutputs = () => {
-        for (const output of outputs) {
-            validateOutput(output)
+
+        let updatedOutputs = [];
+        for (let output of outputs) {
+            // outputs that have tags in common
+            const commonOutputs = outputs.filter(out => out.fromTags.some(tag => output.fromTags.includes(tag)) || (output.notTagged && out.notTagged === output.notTagged));
+
+            // utxos from commonOutputs
+            let filterUtxos = utxos.filter(utxo => utxo.tags.some(tag => commonOutputs.some(out => out.fromTags.includes(tag))));
+
+            let includeNoTagged = commonOutputs.some(out => out.notTagged);
+
+            // if the current output has notTagged selected
+
+            if (includeNoTagged){
+                const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
+                filterUtxos = [...filterUtxos,...notTaggedUtxos]
+            }
+
+            const mergedAssetsFromCommonOutputs = mergeAssetsFromOutputs(commonOutputs);
+            const mergedAssetsFromUtxos = mergeAssetsFromUtxos(filterUtxos);
+            const outputsAreValid = validOutputs(mergedAssetsFromUtxos, mergedAssetsFromCommonOutputs);
+            output.valid = outputsAreValid;
+
+            updatedOutputs.push(output)
         }
+        setOutputs(updatedOutputs);
     }
     const updateOutput = (output) => {
         let updatedOutputs = outputs.map(out =>{
@@ -212,31 +236,13 @@ const Send: FC<CreateTokenProps> = (props) => {
         });
         setOutputs(updatedOutputs);
     }
-    const validateOutput = (output) => {
-        let commonOutputs = outputs.filter(out => out.fromTags.some(tag => output.fromTags.includes(tag)) || (output.notTagged && out.notTagged === output.notTagged));
 
-        let filterUtxos = utxos.filter(utxo => utxo.tags.some(tag => commonOutputs.some(out => out.fromTags.includes(tag))));
-        if (output.notTagged){
-            const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
-            filterUtxos = [...filterUtxos,...notTaggedUtxos]
-        }
-        const mergedAssetsFromUtxos = mergeAssetsFromUtxos(filterUtxos);
-        // @ts-ignore
-        const mergedAssetsFromOutputs = mergeAssetsFromOutputs(commonOutputs);
-        const outputsAreValid = validOutputs(mergedAssetsFromUtxos,mergedAssetsFromOutputs);
-        output.valid = outputsAreValid;
-
-        updateOutput(output);
-    };
     const mergeAssets = () => {
 
-        //console.log('\n\nmergeAssets');
+        console.log('\n\nmergeAssets');
         //console.log('utxos');
         //console.log(utxos);
 
-
-        // TODO:
-        let currentOutput = (outputs.filter(output => output.label === activeTab))[0];
         //console.log('currentOutput');
         //console.log(currentOutput);
 
@@ -244,13 +250,13 @@ const Send: FC<CreateTokenProps> = (props) => {
         //console.log('taggedUtxos');
         //console.log(taggedUtxos);
         const utxosFromSelectedTag = taggedUtxos.filter((utxo) => utxo.tags.length && utxo.tags.some(t =>
-            currentOutput && currentOutput.fromTags.includes(t)
+            currentTabData && currentTabData.fromTags.includes(t)
         ));
 
         //console.log('utxosFromSelectedTag');
         //console.log(utxosFromSelectedTag);
         let joinUtxos = utxosFromSelectedTag;
-        if (currentOutput && currentOutput.notTagged){
+        if (currentTabData && currentTabData.notTagged){
             const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
             joinUtxos = [...joinUtxos,...notTaggedUtxos];
         }
@@ -258,8 +264,8 @@ const Send: FC<CreateTokenProps> = (props) => {
         //console.log(joinUtxos);
 
         const mergedAssetsFromUtxos = mergeAssetsFromUtxos(joinUtxos);
-        //console.log('mergedAssetsFromUtxos');
-        //console.log(mergedAssetsFromUtxos);
+        console.log('mergedAssetsFromUtxos');
+        console.log(mergedAssetsFromUtxos);
 
         setMergedUtxos(mergedAssetsFromUtxos);
         let availableAdaOnSelectedUtxos =
@@ -395,7 +401,7 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     useEffect(() => {
         mergeAssets();
-    }, [currentTabData && currentTabData.fromTags, selectedTags.length, selectNotTagged, outputs.length]);
+    }, [currentTabData, selectedTags.length, selectNotTagged, outputs.length]);
 
     const onSelectTag = (tag) => {
         const updatedOutputs = outputs.map(out => {
