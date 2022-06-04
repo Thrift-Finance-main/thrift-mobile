@@ -314,11 +314,13 @@ export const buildTransaction = async (
         // merge all assets from outputs
         // now, lets diff that change from the total utxos
 
+        /*
         console.log('output address');
         console.log(output.toAddress);
         console.log('output assets');
         console.log(assets);
         assetsFromAllUtxos = calcDiffAssets(assetsFromAllUtxos, processedAssets);
+         */
 
 
     }
@@ -419,11 +421,11 @@ export const calcDiffAssets = (assetsA:{ [unit: string]: string }, assetsB:{ [un
             let y = new BigNumber(assetsB[key]);
             console.log('y');
             console.log(y)
-            if (y) {
+            if (!y.isNaN()) {
                 const diff = x.minus(y).toString();
-                console.log('diff');
-                console.log(diff)
                 assets[key] = diff;
+            } else {
+                assets[key] = x.toString();
             }
         }
     }

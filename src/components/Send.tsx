@@ -856,6 +856,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                             containerStyle={{width: 330, marginHorizontal: 6,  fontFamily: 'AvenirNextCyr-Medium'}}
                                             floatingPlaceholder
                                             placeholder={Buffer.from(assetName, 'hex').toString() }
+                                            value={keyValuePair[1]}
                                             onChangeText={(value) => updateQuantityFromSelectedAsset({asset_name: assetName, unit}, value)}
                                             helperText="this is an helper text"
                                             rightButtonProps={{
@@ -880,7 +881,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                         <Button
                             backgroundColor={"#F338C2"}
                             onPress={() => sendTransaction()}
-                            //disabled={outputs.some(out => !out.valid) || new BigNumber(mergedOutputs.lovelace || 0).dividedBy(1000000).toString() === '0'}
+                            disabled={outputs.some(out => !out.valid) || new BigNumber(mergedOutputs.lovelace || 0).dividedBy(1000000).toString() === '0'}
                         >
                             <Text style={{color: 'white', padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
                                 <Text style={{color: 'white', padding:4, textAlign: 'center', fontSize: 20, fontWeight: 'bold'}}>
