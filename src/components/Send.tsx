@@ -665,6 +665,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                     label: totalNotTagged,
                                     backgroundColor: '#603EDA',
                                 }}
+                                labelStyle={{fontFamily: 'AvenirNextCyr-Medium', fontSize: 14}}
                             />
                             {
                                 availableTags.map((tag,index) => {
@@ -680,7 +681,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                            borderWidth: currentTabData && currentTabData.fromTags.includes(tag) ? 2 : 1,
                                            borderColor: currentTabData && currentTabData.fromTags.includes(tag) ? '#F338C2' : 'black',
                                        }}
-                                       labelStyle={{fontFamily: 'AvenirNextCyr-Medium'}}
+                                       labelStyle={{fontFamily: 'AvenirNextCyr-Medium', fontSize: 14}}
                                    />
                                })
 
