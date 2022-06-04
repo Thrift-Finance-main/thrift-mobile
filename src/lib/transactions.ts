@@ -294,39 +294,38 @@ export const buildTransaction = async (
         const changeAddress = fromAddresses[0];
 
         const assets = output.assets;
-        console.log('assets in output');
+        console.log('\n\nassets in output');
         console.log(assets);
-
-        // TODO remove asset name
-
+        console.log(output.toAddress);
 
         const processedAssets = removeAssetNameFromKey(assets);
-
-        console.log('processedAssets');
-        console.log(processedAssets);
         // This is the assets change from the current output
         const diff = calcDiffAssets(mergedAssetsFromUtxos, processedAssets);
+        // si diff es mayor que mergedAssetsFromUtxos
+        //
         console.log('changeAddress');
         console.log(changeAddress);
         console.log('assets in change');
         console.log(diff);
 
-        // merge all assets from outputs
-        // now, lets diff that change from the total utxos
 
-        /*
-        console.log('output address');
-        console.log(output.toAddress);
-        console.log('output assets');
-        console.log(assets);
-        assetsFromAllUtxos = calcDiffAssets(assetsFromAllUtxos, processedAssets);
-         */
+        // set logic for change
+
+        // notTaggedUtxos change should go to Global
+
+        // si notTagged está en el output
+        // necesitamos separar notTaggedUtxos de joinUtxos
+        // validamos si joinUtxos es suficiente para los assets del output actual.
+        // Que pasa si tenemos 2(A,B) outputs de 'Car', uno con notTagged(A) y otro sin él(B).
+        // Max. 25 Ada para 'Car'. B pone 22 Adas y A pone 5 Adas, 27 en total. Faltan 2 Adas que se cogen de notTaggedUtxos, el cambio se envia a Global.
+        // Hay que validar los utxos (sin notTagged) contra los outputs, para saber si debemos coger de notTaggedUtxos en algunos de los outputs.
+        // en caso de que no se valide, cogemos la diferencia para saber cuanto necesitamos de notTaggedUtxos.
+        // hacemos merge de los utxos sin notTaggedUtxos, y obtenemos su diff con los outputs
+        // Repasamos los outputs con notTaggedUtxos => rellenamos cada output hasta llegar a diff
 
 
+        // sino lo es, metemos los assets del output y lo que queda lo cogemos de los notTaggedUtxos, el cambio va a Global
     }
-
-    console.log('global Change');
-    console.log(assetsFromAllUtxos);
 
 
 }
@@ -407,20 +406,13 @@ export const validateAssets = (mergedAssetsFromUtxos, mergedAssetsFromOutputs ) 
     return true;
 }
 export const calcDiffAssets = (assetsA:{ [unit: string]: string }, assetsB:{ [unit: string]: string } ) => {
-    console.log('calcDiffAssets');
-    console.log(assetsA);
-    console.log(assetsB);
     let assets: { [unit: string]: string } = {};
     for (let key in assetsA) {
         if (assetsA[key] === undefined) {
             assets[key] = assetsA[key];
         } else {
             let x = new BigNumber(assetsA[key]);
-            console.log('x');
-            console.log(x)
             let y = new BigNumber(assetsB[key]);
-            console.log('y');
-            console.log(y)
             if (!y.isNaN()) {
                 const diff = x.minus(y).toString();
                 assets[key] = diff;

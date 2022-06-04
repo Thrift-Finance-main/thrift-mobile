@@ -471,7 +471,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                 fromTags: (outputs.filter(out => out.label === newLabel.label))[0].fromTags,
                 notTagged: (outputs.filter(out => out.label === newLabel.label))[0].notTagged,
                 valid: true,
-                toAddress: ''
+                toAddress: 'addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u'
             };
 
             setOutputs(prevTabs => ([...prevTabs, ...[
