@@ -37,6 +37,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [accountState, setAccountState] = useState({});
     const [utxos, setUtxos] = useState(currentAccount.utxos);
     const [availableTags, setAvailableTags] = useState([]);
+    const [onClickNotTagged, setOnClickNotTagged] = useState(false);
 
     const [selectNotTagged, setSelectNotTagged] = useState(false);
 
@@ -429,7 +430,7 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     useEffect(() => {
         mergeAssets();
-    }, [currentTabData, currentTabData.fromTags, selectedTags.length, selectNotTagged, outputs.length]);
+    }, [currentTabData && currentTabData.fromTags, currentTabData.notTagged, selectedTags.length, selectNotTagged, outputs.length]);
 
     const onSelectTag = (tag) => {
         const updatedOutputs = outputs.map(out => {
@@ -457,8 +458,8 @@ const Send: FC<CreateTokenProps> = (props) => {
             }
             return out;
         })
-        setOutputs(updatedOutputs);
         mergeAssets();
+        setOutputs(updatedOutputs);
     };
     const onAddRecipient = () => {
         if (outputs.length < 12){
@@ -486,7 +487,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             for(let i=0; i < updatedOutputs.length; i++){
                 updatedOutputs[i].label = (i+1).toString();
             }
-            let nextTab = '1';
+            let nextTab;
 
             if (activeTab !== label){
                 if (label === '1'){
