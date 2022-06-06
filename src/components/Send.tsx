@@ -95,6 +95,9 @@ const Send: FC<CreateTokenProps> = (props) => {
     console.log('currentTabData');
     console.log(currentTabData);
 
+    const fromTags = currentTabData && currentTabData.fromTags;
+    const notTagged = currentTabData && currentTabData.notTagged;
+
     const isBlackTheme = props.isBlackTheme;
 
   // TODO: Get utxos from currentAccount, set in wallet
@@ -430,7 +433,7 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     useEffect(() => {
         mergeAssets();
-    }, [currentTabData && currentTabData.fromTags, currentTabData.notTagged, selectedTags.length, selectNotTagged, outputs.length]);
+    }, [fromTags, notTagged, selectedTags.length, selectNotTagged, outputs.length]);
 
     const onSelectTag = (tag) => {
         const updatedOutputs = outputs.map(out => {
@@ -517,10 +520,8 @@ const Send: FC<CreateTokenProps> = (props) => {
         let outputAux = outputs.filter(output => output.label === activeTab);
         outputAux = outputAux[0];
         if (!validAddress && address !== ''){
-            setToAddressError(true);
             outputAux.validAddress = false;
         } else {
-            setToAddressError(false);
             outputAux.validAddress = true;
         }
         outputAux.toAddress = address;

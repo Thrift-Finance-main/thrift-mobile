@@ -291,7 +291,13 @@ export const buildTransaction = async (
 
 
         // Set output: address-assets
-        const changeAddress = fromAddresses[0];
+        let changeAddress;
+        // if fromAddresses.lenght === 0, changeAddress = Global
+        if (!fromAddresses.length){
+            changeAddress = currentAccount.externalPubAddress[0].address;
+        } else {
+            changeAddress = fromAddresses[0];
+        }
 
         const assets = output.assets;
         console.log('\n\nassets in output');

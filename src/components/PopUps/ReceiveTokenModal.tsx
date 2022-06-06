@@ -1,5 +1,16 @@
 import React, {FC, useState} from 'react';
-import {View, Text, StyleSheet, Image, FlatList, Linking, TouchableOpacity, Alert, ScrollView} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  FlatList,
+  Linking,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+  Share
+} from 'react-native';
 import Colors from '../../constants/CustomColors';
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimensions';
 import QRCodeScanner from 'react-native-qrcode-scanner';
@@ -46,28 +57,18 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
   const customChipsInput = React.createRef<ChipsInput>();
 
   const selectedAddress = currentAccount.selectedAddress;
-  console.log('selectedAddress');
-  console.log(selectedAddress);
   let addrs = currentAccount.externalPubAddress.filter(addr => addr.address === selectedAddress.address);
-  console.log('addrs');
-  console.log(addrs);
   let relatedTags = addrs[0].tags;
 
-  console.log('relatedTags');
-  console.log(relatedTags);
 
   relatedTags = relatedTags.map(tag => {
     return {label: tag}
   })
 
-  const copyToClipboard = async text => {
-    console.log('copyToClipboard');
-    console.log(text);
-    //await Clipboard.setString(text);
+  const copyToClipboard = async (text:string) => {
+    await Clipboard.setString(text);
   };
   const updateSelectedAddress = async addr => {
-    console.log('updateSelectedAddress');
-    console.log(addr);
     if (addr && addr.address) {
       await apiDb.setAccountSelectedAddress(currentAccount.accountName, addr);
       const acc = await apiDb.getAccount(currentAccount.accountName);
@@ -78,7 +79,6 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
     apiDb.getAccountTagsByAddress(currentAccount.accountName, selectedAddress.address).then((tags:string[]) => {
 
         let updatedTags = [...tags, value];
-        console.log('add tag');
         apiDb.setAccountTagsByAddress(currentAccount.accountName, selectedAddress.address, updatedTags).then(r=>{
           apiDb.getAccount(currentAccount.accountName).then(acc => {
             dispatch(setCurrentAccount(acc));
@@ -99,9 +99,34 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
       })
     }
 
-
     customChipsInput.current?.markTagIndex(tagIndex === markedTagIndex ? undefined : tagIndex);
   };
+  const onShare = async () => {
+    console.log('onShare')
+    try {
+      /*
+      const result = await Share.share({
+        title: 'App link',
+        message: 'Please install this app and stay safe , AppLink :https://play.google.com/store/apps/details?id=nic.goi.aarogyasetu&hl=en',
+        url: 'https://play.google.com/store/apps/details?id=nic.goi.aarogyasetu&hl=en'
+      });*/
+      const result = await Share.share({
+        message: 'Public Address:   '+selectedAddress.address,
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   const dialogHeader: DialogProps['renderPannableHeader'] = props => {
     const {title} = props;
     return (
@@ -220,7 +245,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                               result: {scanText}
                             </Text>
                             <TouchableOpacity
-                              //onPress={() => {}}
+                              onPress={() => copyToClipboard(selectedAddress.address)}
                               style={{
                                 alignSelf: "center", marginTop: heightPercentageToDP(1),
                                 height: heightPercentageToDP(4.5),
@@ -258,7 +283,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                       justifyContent: "center",
                       marginBottom: heightPercentageToDP(2)
                     }}
-                    onPress={() => {Clipboard.setString(selectedAddress.address)}}
+                    onPress={() => copyToClipboard(selectedAddress.address)}
                 >
                   <Text
 
@@ -269,6 +294,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                 <View style={{width : widthPercentageToDP(10)}} />
                 <TouchableOpacity
                     //  onPress={props.onBackIconPress}
+                    onPress={()=> onShare()}
                     style={{
                       alignSelf: "center", marginTop: heightPercentageToDP(1),
                       height: heightPercentageToDP(4.5),
@@ -282,6 +308,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                     }}
                 >
                   <Text
+
                       style={{ textAlign: "center", color: '#F338C2', fontFamily: 'AvenirNextCyr-Medium', }}
                   >Share</Text>
 
