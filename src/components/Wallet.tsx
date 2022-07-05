@@ -36,6 +36,8 @@ import {
     Button
 } from 'react-native-ui-lib';
 import {getPrices} from "../api";
+import {getCurrentBalanceForAddress} from "../api/graphql/queries";
+import {DANDELION_URL_TESTNET} from "../constants/endpoints";
 
 interface WalletProps {
     onSavingsPress: () => void
@@ -87,6 +89,9 @@ const Wallet: FC<WalletProps> = (props) => {
                 console.log(accountState);
                 endpoint =  "accounts/" + saddress + "/addresses";
                 const relatedAddresses = await fetchBlockfrost(endpoint);
+                const relatedAddressesList = relatedAddresses.map(a => a.address);
+                console.log('relatedAddresses');
+                console.log(relatedAddresses);
                 if (relatedAddresses.error){
                     return;
                 }
@@ -110,6 +115,29 @@ const Wallet: FC<WalletProps> = (props) => {
                         return utxo;
                     }
                 }).filter(r => r !== undefined);
+
+                console.log('utxos 0');
+                console.log(updatedUtxos[0].utxos[0]);
+                console.log(updatedUtxos[0].utxos[0].amount);
+
+                let extendedUxtosFromAddresses = await getCurrentBalanceForAddress(relatedAddressesList, DANDELION_URL_TESTNET);
+
+                console.log('updatedUtxos v2 graphql');
+                console.log(extendedUxtosFromAddresses.utxos[0]);
+
+                const enrichedUtxos = updatedUtxos.map(utxo =>{
+                    const extendUtxo = extendedUxtosFromAddresses.utxos.filter(e => e.address === utxo.address)[0];
+
+                    console.log('utxo');
+                    console.log(utxo.utxos[0]);
+                    console.log('extendUtxo');
+                    console.log(extendUtxo);
+                    if (extendUtxo){
+
+                    }
+                })
+
+                // enrich each
 
                 let currentAccountInLocal = await apiDb.getAccount(currentAccount.accountName);
                 currentAccountInLocal.utxos = updatedUtxos;

@@ -1,39 +1,23 @@
 /**
  * Get UTXOs from Address
  */
-// eslint-disable-next-line import/prefer-default-export
 export function getCurrentBalanceForAddressBody() {
   return `
     query currentBalanceForAddress (
-    $address: String!
+    $addresses: [String!]
     ){
         utxos(
-            where: { address: { _eq: $address }}
+             where: { address: { _in: $addresses }}
         ) {
+            address
             value
-            transaction {
-              block {
-                number
-                slotNo
-                epochNo
-                hash
-              }
-            }
+            index
             tokens{
                 quantity
                 asset {
                   assetName
                   policyId
-                  assetId
-                  fingerprint
-                  name
-                  decimals
-                  description
-                  metadataHash
-                  url
-                  logo
-                  ticker 
-                }
+            }
           }
         }
     }
