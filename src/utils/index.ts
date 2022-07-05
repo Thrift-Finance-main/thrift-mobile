@@ -58,12 +58,6 @@ export const groupBy2Props = (arr, prop1, prop2) => {
   }, {});
 }
 
-function groupBy(arr, prop) {
-  const map = new Map(Array.from(arr, obj => [obj[prop], []]));
-  arr.forEach(obj => map.get(obj[prop]).push(obj));
-  return Array.from(map.values());
-}
-
 export function strFloat2int (value:string, decimals:number) {
 
   let r;
@@ -101,3 +95,10 @@ export function maxDecimals (value:string, decimals:number) {
   }
   return false;
 }
+
+export const groupBy = function(xs, key) {
+  return xs.reduce(function(rv, x) {
+    (rv[x[key]] = rv[x[key]] || []).push(x);
+    return rv;
+  }, {});
+};

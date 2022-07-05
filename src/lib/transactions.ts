@@ -3,8 +3,16 @@ import {addBigNum, divBigNum, subBigNum} from "./utils";
 import {apiDb} from "../db/LiteDb";
 import {getProtocolParams, getTxUTxOsByAddress, IAccountState} from "../api/Blockfrost";
 import {decryptData} from "./cryptoLib";
-import {BigNum, Bip32PrivateKey, LinearFee, TransactionBuilder} from "@emurgo/react-native-haskell-shelley";
+import {
+    BigNum,
+    Bip32PrivateKey,
+    LinearFee,
+    MultiAsset, ScriptHash,
+    TransactionBuilder,
+    Value
+} from "@emurgo/react-native-haskell-shelley";
 import BigNumber from "bignumber.js";
+import {groupBy} from "../utils";
 export const RECEIVE_TX = 'RECEIVE_TX';
 export const SEND_TX = 'SEND_TX';
 export const SELF_TX = 'SELF_TX';
@@ -208,26 +216,6 @@ export const buildTransaction = async (
     console.log('currentAccount.selectedAddress');
     console.log(currentAccount.selectedAddress);
 
-    let paymentKey = null;
-    let accountKey = null;
-    if (password && password.length){
-        let decryptedPassw = await decryptData(password, currentAccount.encryptedMasterKey);
-
-        accountKey = await Bip32PrivateKey.from_bytes(
-            // @ts-ignore
-            Buffer.from(decryptedPassw, 'hex')
-        );
-
-        paymentKey = (await (await accountKey.derive(0)).derive(0)).to_raw_key();
-    }
-
-    console.log('txBuilder');
-    const txBuilder = await getTransactionBuilder(parameters);
-    const txBuilderDraft = await getTransactionBuilder(parameters);
-
-    console.log(txBuilder);
-    console.log(txBuilderDraft);
-
     const mergedAssetsFromUtxos = mergeAssetsFromUtxos(utxos);
     console.log('mergedAssetsFromUtxos');
     console.log(mergedAssetsFromUtxos);
@@ -245,25 +233,26 @@ export const buildTransaction = async (
         }
     }
 
-    // After verify there is enough amount in utxos to cover the outputs
 
-    // group by tags
-    // 1. Create input, set output and send change back to input
-    //      1.1
-    //      1.2 if notTagged === false: add notTagged utxos as inputs and send change to Global
 
-    // group  outputs by
-    //
-
-    // for all tags involved in
-
-    console.log("\n\n\n\n")
 
     const taggedUtxos = utxos.filter((utxo) => utxo.tags.length);
-    let initialAssetsFromUtxos = mergeAssetsFromUtxos(taggedUtxos);
+    const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
+    console.log('taggedUtxos');
+    console.log(taggedUtxos);
+    console.log('notTaggedUtxos');
+    console.log(notTaggedUtxos);
+    let notTaggedUtxosAux = notTaggedUtxos;
 
+    let initialAssetsFromUtxos = mergeAssetsFromUtxos(taggedUtxos);
+    let initialAssetsFromNotTaggedUtxos = mergeAssetsFromUtxos(notTaggedUtxos);
+    console.log('initialAssetsFromNotTaggedUtxos');
+    console.log(initialAssetsFromNotTaggedUtxos);
     let assetsFromAllUtxos = mergeAssetsFromUtxos(utxos);
+
+    let changeList = [];
     for (const output of outputs) {
+        console.log("\n\n\n\n")
         console.log('output');
         console.log(output);
         const utxosFromSelectedTag = taggedUtxos.filter((utxo) => utxo.tags.length
@@ -276,63 +265,122 @@ export const buildTransaction = async (
         const fromAddresses = utxosFromSelectedTag.map(utxo => utxo.address);
         console.log('fromAddresses');
         console.log(fromAddresses);
-        // inputs
-        let joinUtxos = utxosFromSelectedTag;
-        if (output.notTagged){
-            const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
-            joinUtxos = [...joinUtxos,...notTaggedUtxos];
+        // Set output: address-assets
+        let changeAddress;
+        // if there is not any utxo in the selected tag
+        if (!fromAddresses.length){
+            changeAddress = currentAccount.externalPubAddress[0].address;   // Global address
+        } else {
+            changeAddress = fromAddresses[0];
         }
 
+        // inputs
+        let joinUtxos = utxosFromSelectedTag;
         // CoinSelection algorithm here. update joinUtxos ..
 
         // Calc the diff joinUtxos-output.assets, send diff to change
         const mergedAssetsFromUtxos = mergeAssetsFromUtxos(joinUtxos);
         // we just need to create the outputs+change, the inputs are -> utxos param
 
-
-        // Set output: address-assets
-        let changeAddress;
-        // if fromAddresses.lenght === 0, changeAddress = Global
-        if (!fromAddresses.length){
-            changeAddress = currentAccount.externalPubAddress[0].address;
-        } else {
-            changeAddress = fromAddresses[0];
-        }
-
         const assets = output.assets;
         console.log('\n\nassets in output');
         console.log(assets);
         console.log(output.toAddress);
 
-        const processedAssets = removeAssetNameFromKey(assets);
+        const processedAssets = removeAssetNameFromKey(assets); // X policyId.assetName
         // This is the assets change from the current output
         const diff = calcDiffAssets(mergedAssetsFromUtxos, processedAssets);
         // si diff es mayor que mergedAssetsFromUtxos
         //
         console.log('changeAddress');
         console.log(changeAddress);
-        console.log('assets in change');
+        console.log('DIFF assets in change');
         console.log(diff);
 
+        // if notTaggedUtxos are selected
+         if (output.notTagged){
+             // joinUtxos = [...utxosFromSelectedTag,...notTaggedUtxos];
+             // get the negative assets, {"3fb0efd17304d74896130d9ea419a9883a2ef3c8bf9f9e39478dc21074574d54": "900", "lovelace": "-19000000"}
+             // Assets to take from initialAssetsFromNotTaggedUtxos
+             const assetsNeededFromNotTaggedUtxos = {};
+             const assetsForCurrentChange = {};
 
-        // set logic for change
+             for (const [key, value] of Object.entries(diff)) {
+                 console.log(key, value);
+                 let bigValue = new BigNumber(value);
+                 if (bigValue.isLessThan(new BigNumber(0))) {
+                     assetsNeededFromNotTaggedUtxos[key] = bigValue.multipliedBy(new BigNumber(-1)).toString();
+                 } else {
+                     assetsForCurrentChange[key] = bigValue.toString();
+                 }
+             }
 
-        // notTaggedUtxos change should go to Global
+             console.log('assetsForCurrentChange');
+             console.log(assetsForCurrentChange);
+             if (Object.entries(assetsForCurrentChange).length){
+                 changeList.push({address: changeAddress, assets: assetsForCurrentChange});
+             }
+             console.log('assetsNeededFromNotTaggedUtxos');
+             console.log(assetsNeededFromNotTaggedUtxos);
 
-        // si notTagged está en el output
-        // necesitamos separar notTaggedUtxos de joinUtxos
-        // validamos si joinUtxos es suficiente para los assets del output actual.
-        // Que pasa si tenemos 2(A,B) outputs de 'Car', uno con notTagged(A) y otro sin él(B).
-        // Max. 25 Ada para 'Car'. B pone 22 Adas y A pone 5 Adas, 27 en total. Faltan 2 Adas que se cogen de notTaggedUtxos, el cambio se envia a Global.
-        // Hay que validar los utxos (sin notTagged) contra los outputs, para saber si debemos coger de notTaggedUtxos en algunos de los outputs.
-        // en caso de que no se valide, cogemos la diferencia para saber cuanto necesitamos de notTaggedUtxos.
-        // hacemos merge de los utxos sin notTaggedUtxos, y obtenemos su diff con los outputs
-        // Repasamos los outputs con notTaggedUtxos => rellenamos cada output hasta llegar a diff
+             if (Object.keys(assetsNeededFromNotTaggedUtxos).length){
+                 const updatedInitialAssetsFromNotTaggedUtxos = calcDiffAssets(initialAssetsFromNotTaggedUtxos, assetsNeededFromNotTaggedUtxos);
+                 console.log('updatedInitialAssetsFromNotTaggedUtxos');
+                 console.log(updatedInitialAssetsFromNotTaggedUtxos);
+                 initialAssetsFromNotTaggedUtxos = updatedInitialAssetsFromNotTaggedUtxos;
+             }
+             // diff and update initialAssetsFromNotTaggedUtxos
+             // positive values go to the current changeAddress
+         }
 
 
-        // sino lo es, metemos los assets del output y lo que queda lo cogemos de los notTaggedUtxos, el cambio va a Global
+         // BUILD TX
+        let paymentKey = null;
+        let accountKey = null;
+        if (password && password.length){
+            let decryptedPassw = await decryptData(password, currentAccount.encryptedMasterKey);
+
+            accountKey = await Bip32PrivateKey.from_bytes(
+                // @ts-ignore
+                Buffer.from(decryptedPassw, 'hex')
+            );
+
+            paymentKey = (await (await accountKey.derive(0)).derive(0)).to_raw_key();
+        }
+
+        console.log('txBuilder');
+        const txBuilder = await getTransactionBuilder(parameters);
+        const txBuilderDraft = await getTransactionBuilder(parameters);
+
+        console.log(txBuilder);
+        console.log(txBuilderDraft);
     }
 
+    console.log('asset left fron notTaggedUtxos initialAssetsFromNotTaggedUtxos, going to global address');
+    console.log(initialAssetsFromNotTaggedUtxos);
+    changeList.push({address: currentAccount.externalPubAddress[0].address, assets: initialAssetsFromNotTaggedUtxos})
+    console.log('changeList');
+    console.log(changeList);
+    const groupedChangeList = groupBy(changeList, "address");
+    console.log('groupedChangeList');
+    console.log(groupedChangeList);
+    let mergedChangeList = [];
+    for (const [key, value] of Object.entries(groupedChangeList)) {
+        console.log('value');
+        console.log(value);
+        const mergedAssets = mergeAssetsFromOutputs(value);
+        mergedChangeList.push({address: key, assets: mergedAssets})
+    }
+
+    console.log('Inputs');
+    let inputs = [];
+    utxos.map(utxo => inputs = [...inputs,...utxo.utxos])
+    console.log(inputs[0]);
+    console.log('Final outputs');
+    console.log(outputs);
+    console.log('Final change');
+    console.log(mergedChangeList);
+    // Merge changeList
 
 }
 export const mergeAssetsFromUtxos = (utxos) => {
@@ -358,7 +406,30 @@ export const mergeAssetsFromUtxos = (utxos) => {
     })
     return assets;
 }
-export const mergeAssetsFromOutputs = (outputs: {address:string, assets:any[]}[]) => {
+export const mergeAssetsFromUtxosByPolicyAndName = (utxos) => {
+    console.log('mergeAssetsFromUtxos')
+    console.log(utxos.length)
+    let assets: { [key: string]: string } = {};
+    utxos.map(utxo => {//  {"address": {"address": "addr_test1qp699gyph5gj8c4whp62048z7w7kte2w5ghkpl36wwh5z84t9gat4d3njffvnlde55dwtqyev48z8ywwqask7rsmwd9s0pxmc2", "index": 0, "network": "0", "reference": "", "tags": ["Main"]}, "utxos": [{"amount": [Array], "block": "ab69e2a0c1b8089875439210130bd60327738e1a8ef3fb36dfe05f8d018783c0", "data_hash": null, "output_index": 0, "tx_hash": "69d72b7e73b03c9dcd3f8ce6b185bdab8f85c5d989dffed51edc3f3c482beef0", "tx_index": 0}]}
+
+        utxo.utxos.map( u => {
+            u.amount.map( a => {
+                if (assets[a.unit] === undefined) {
+                    assets[a.unit] = a.quantity;
+                } else {
+                    let x = new BigNumber(assets[a.unit]);
+                    let y = new BigNumber(a.quantity);
+                    const sum = (x.plus(y)).toString();
+                    assets[a.unit] = sum;
+                }
+            });
+            console.log(u);
+        });
+
+    })
+    return assets;
+}
+export const mergeAssetsFromOutputs = (outputs: {address:string, assets:any}[]) => {
     let assets: { [unit: string]: string } = {};
     outputs.map(output =>
     {
@@ -450,11 +521,42 @@ export const getTransactionBuilder = async (protocolParams): Promise<Transaction
     );
 }
 
+export const toValue = async (assets): Promise<Value> => {
 
+    const value = await Value.new(
+        await BigNum.from_str('0')
+    );
+    const multiAss = await buildMultiAssets(assets);
+    await value.set_multiasset(multiAss);
 
+    return value;
+}
+export const buildMultiAssets = async (assets): Promise<Value> => {
 
+    let multiAsset = await MultiAsset.new();
 
+    /*
+    assets.forEach((asset,i) => {
+        try{
+            const policyId = ScriptHash.from_bytes(
+                Buffer.from(asset.asset.policyId, "hex")
+            )
+            let assetObj = multiAsset.get(policyId) ?? CardanoModule.wasmV4.Assets.new();
+            const script = CardanoModule.wasmV4.ScriptHash.from_bytes(Buffer.from(asset.asset.policyId, 'hex'));
 
+            const assetName = CardanoModule.wasmV4.AssetName.new(Buffer.from(asset.asset.assetName, 'hex'));
+            assetObj.insert(assetName, CardanoModule.wasmV4.BigNum.from_str(asset.quantity.toString()));
+            multiAsset.insert(script, assetObj);
+        } catch (e){
+            // console.log(e);
+        }
+
+    });
+
+     */
+
+    //return multiAsset;
+}
 
 
 
