@@ -390,32 +390,57 @@ export const buildTransaction = async (
         const address = input.address;
         const utxos = input.utxos;
         for (const utxo of utxos) {
-            const inputHash = await TransactionHash.from_bytes(Buffer.from(utxo.tx_hash, 'hex'));
-            const txInput = await TransactionInput.new(inputHash, utxo.tx_index);
-            const inputValue = await toValue(utxo.amount);
-            const inputAddress = await Address.from_bech32(address);
-            await txBuilder.add_input(inputAddress,txInput,inputValue);
+            try {
+                const inputHash = await TransactionHash.from_bytes(Buffer.from(utxo.tx_hash, 'hex'));
+                const txInput = await TransactionInput.new(inputHash, utxo.tx_index);
+                const inputValue = await toValue(utxo.amount);
+                const inputAddress = await Address.from_bech32(address);
+                await txBuilder.add_input(inputAddress,txInput,inputValue);
+            } catch (e) {
+                return {
+                    error: e
+                }
+            }
+
         }
     }
 
     console.log('add outputs');
     for (const output of outputs) {
-        const outputValue = await toValueFromDict(output.assets);
-        const outputAddress = await Address.from_bech32(output.toAddress);
-        const txOutput = await TransactionOutput.new(outputAddress, outputValue);
-        await txBuilder.add_output(txOutput);
+        try {
+            const outputValue = await toValueFromDict(output.assets);
+            const outputAddress = await Address.from_bech32(output.toAddress);
+            const txOutput = await TransactionOutput.new(outputAddress, outputValue);
+            await txBuilder.add_output(txOutput);
+        } catch (e) {
+            return {
+                error: e
+            }
+        }
     }
 
     console.log('add change');
     for (const outputAsChange of mergedChangeList) {
-        const outputValue = await toValueFromDict(outputAsChange.assets);
-        const outputAddress = await Address.from_bech32(outputAsChange.address);
-        const txOutput = await TransactionOutput.new(outputAddress, outputValue);
-        await txBuilder.add_output(txOutput);
+        try {
+            const outputValue = await toValueFromDict(outputAsChange.assets);
+            const outputAddress = await Address.from_bech32(outputAsChange.address);
+            const txOutput = await TransactionOutput.new(outputAddress, outputValue);
+            await txBuilder.add_output(txOutput);
+        } catch (e) {
+            return {
+                error: e
+            }
+        }
     }
 
     console.log("min fee: ")
     console.log(await (await txBuilder.min_fee()).to_str());
+
+    const minFee = await (await txBuilder.min_fee()).to_str();
+
+    return {
+        fee: minFee
+    }
 }
 export const mergeAssetsFromUtxos = (utxos) => {
     let assets: { [key: string]: string } = {};

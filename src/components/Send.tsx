@@ -47,6 +47,8 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [amountError, setAmountError] = useState(false);
     const [activeTab, setActiveTab] = useState('1');
 
+    const [currentFee, setCurrentFee] = useState('0');
+
     let totalUtxos = 0;
     utxos.map(acc => {
         if (acc.utxos && acc.utxos.length){
@@ -100,6 +102,10 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     const isBlackTheme = props.isBlackTheme;
 
+    const fee = new BigNumber(
+        currentFee
+    ).dividedBy(1000000).toString();
+
   // TODO: Get utxos from currentAccount, set in wallet
     const useIsMounted = () => {
         const isMounted = useRef(false);
@@ -138,6 +144,7 @@ const Send: FC<CreateTokenProps> = (props) => {
 
         const fetchData = async () => {
             console.log('fetchData');
+
             let endpoint = "accounts/" + currentAccount.rewardAddress;
             let accountState = await fetchBlockfrost(endpoint);
             setAccountState(accountState);
@@ -266,6 +273,9 @@ const Send: FC<CreateTokenProps> = (props) => {
         setOutputs(updatedOutputs);
     }
 
+    const outputsAreValid = () => {
+        return !(outputs.some(out => !out.valid) || new BigNumber(mergedOutputs.lovelace || 0).dividedBy(1000000).toString() === '0');
+    }
     const mergeAssets = () => {
 
         console.log('\n\n\nmergeAssets');
@@ -317,10 +327,39 @@ const Send: FC<CreateTokenProps> = (props) => {
 
         validateOutputs();
 
+        if (outputsAreValid()){
+            buildTx();
+        }
+
+    }
+    const buildTx = async () => {
+        const protocolParameters =  await getProtocolParams();
+        // Remove empty assets and filter outputs with no assets
+        const filterOutputs = outputs.map(output => {
+            output.assets = Object.entries(output.assets).reduce((acc, [k, v]) => v ? {...acc, [k]:v} : acc , {})
+            return output;
+        }).filter(output => !isDictEmpty(output.assets));
+
+        console.log('\n\n\nsendTransaction');
+
+        let filterUtxos = utxos.filter((utxo) => utxo.tags.length && utxo.tags.some(t =>
+            outputs.some(out => out.fromTags.includes(t))
+        ));
+
+        if (outputs.some(out => out.notTagged)){
+            const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
+            filterUtxos = [...filterUtxos,...notTaggedUtxos]
+        }
+        const tx = await buildTransaction(currentAccount, accountState, filterUtxos, filterOutputs, protocolParameters);
+        if (tx && tx.error){
+            console.log(tx.error);
+            return;
+        }
+
+        setCurrentFee(tx.fee);
     }
     const sendTransaction = async () => {
         const protocolParameters =  await getProtocolParams();
-
         // Remove empty assets and filter outputs with no assets
         const filterOutputs = outputs.map(output => {
             output.assets = Object.entries(output.assets).reduce((acc, [k, v]) => v ? {...acc, [k]:v} : acc , {})
@@ -419,16 +458,6 @@ const Send: FC<CreateTokenProps> = (props) => {
         });
         setOutputs(updatedOutputs);
         validateOutputs();
-    };
-    const fetchCopiedText = async () => {
-        const text = await Clipboard.getString();
-        const validAddress = await validateAddress(text);
-        if (validAddress){
-            setToAddressError(false)
-            await setToAddr(text);
-        } else {
-            setToAddressError(true);
-        }
     };
 
     useEffect(() => {
@@ -884,7 +913,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                         <Button
                             backgroundColor={"#F338C2"}
                             onPress={() => sendTransaction()}
-                            disabled={outputs.some(out => !out.valid) || new BigNumber(mergedOutputs.lovelace || 0).dividedBy(1000000).toString() === '0'}
+                            disabled={!outputsAreValid()}
                         >
                             <Text style={{color: 'white', padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
                                 <Text style={{color: 'white', padding:4, textAlign: 'center', fontSize: 20, fontWeight: 'bold'}}>
@@ -901,7 +930,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                     : null
                                 }
                                 <Text style={{color: 'white', padding:4, fontSize: 16, fontFamily: 'AvenirNextCyr-Medium'}}>
-                                    Fee 0.17
+                                    Fee {fee}
                                 </Text>
 
                             </Text>
