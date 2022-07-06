@@ -395,6 +395,7 @@ export const buildTransaction = async (
     for (const input of inputs) {
         const address = input.address;
         const utxos = input.utxos;
+        // TODO: coinSelection, select which utxos to use
         for (const utxo of utxos) {
             const inputHash = await TransactionHash.from_bytes(Buffer.from(utxo.tx_hash, 'hex'));
             const inputInput = await TransactionInput.new(inputHash, utxo.tx_index);
@@ -405,11 +406,8 @@ export const buildTransaction = async (
             console.log(await (await txBuilder.min_fee()).to_str());
         }
     }
-
 }
 export const mergeAssetsFromUtxos = (utxos) => {
-    console.log('mergeAssetsFromUtxos')
-    console.log(utxos.length)
     let assets: { [key: string]: string } = {};
     utxos.map(utxo => {//  {"address": {"address": "addr_test1qp699gyph5gj8c4whp62048z7w7kte2w5ghkpl36wwh5z84t9gat4d3njffvnlde55dwtqyev48z8ywwqask7rsmwd9s0pxmc2", "index": 0, "network": "0", "reference": "", "tags": ["Main"]}, "utxos": [{"amount": [Array], "block": "ab69e2a0c1b8089875439210130bd60327738e1a8ef3fb36dfe05f8d018783c0", "data_hash": null, "output_index": 0, "tx_hash": "69d72b7e73b03c9dcd3f8ce6b185bdab8f85c5d989dffed51edc3f3c482beef0", "tx_index": 0}]}
 
@@ -424,7 +422,6 @@ export const mergeAssetsFromUtxos = (utxos) => {
                     assets[a.unit] = sum;
                 }
             });
-            console.log(u);
         });
 
     })
@@ -547,11 +544,7 @@ export const getTransactionBuilder = async (protocolParams): Promise<Transaction
 
 export const toValue = async (assets:{quantity: string, unit: string}[]): Promise<Value> => {
 
-    console.log('toValue');
-    console.log(assets);
     const lovelace = assets.filter(a => a.unit === "lovelace")[0];
-    console.log('lovelace');
-    console.log(lovelace);
     const value = await Value.new(
         await BigNum.from_str(lovelace.quantity)
     );
