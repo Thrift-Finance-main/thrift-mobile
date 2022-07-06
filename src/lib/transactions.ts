@@ -11,7 +11,7 @@ import {
     Bip32PrivateKey,
     LinearFee,
     MultiAsset, ScriptHash,
-    TransactionBuilder, TransactionHash, TransactionInput,
+    TransactionBuilder, TransactionHash, TransactionInput, TransactionOutput,
     Value
 } from "@emurgo/react-native-haskell-shelley";
 import BigNumber from "bignumber.js";
@@ -385,27 +385,37 @@ export const buildTransaction = async (
     console.log(txBuilder);
     console.log(txBuilderDraft);
 
-    console.log('inputs[0]');
-    console.log(inputs[0]);
-    const value = await toValue(inputs[0].utxos[0].amount);
-
-    console.log("ToValue result");
-    console.log(value);
-
+    // TODO: coinSelection, select which utxos(inputs) to use
     for (const input of inputs) {
         const address = input.address;
         const utxos = input.utxos;
-        // TODO: coinSelection, select which utxos to use
         for (const utxo of utxos) {
             const inputHash = await TransactionHash.from_bytes(Buffer.from(utxo.tx_hash, 'hex'));
-            const inputInput = await TransactionInput.new(inputHash, utxo.tx_index);
+            const txInput = await TransactionInput.new(inputHash, utxo.tx_index);
             const inputValue = await toValue(utxo.amount);
             const inputAddress = await Address.from_bech32(address);
-            await txBuilder.add_input(inputAddress,inputInput,inputValue);
-            console.log("min fee: ")
-            console.log(await (await txBuilder.min_fee()).to_str());
+            await txBuilder.add_input(inputAddress,txInput,inputValue);
         }
     }
+
+    console.log('add outputs');
+    for (const output of outputs) {
+        const outputValue = await toValueFromDict(output.assets);
+        const outputAddress = await Address.from_bech32(output.toAddress);
+        const txOutput = await TransactionOutput.new(outputAddress, outputValue);
+        await txBuilder.add_output(txOutput);
+    }
+
+    console.log('add change');
+    for (const outputAsChange of mergedChangeList) {
+        const outputValue = await toValueFromDict(outputAsChange.assets);
+        const outputAddress = await Address.from_bech32(outputAsChange.address);
+        const txOutput = await TransactionOutput.new(outputAddress, outputValue);
+        await txBuilder.add_output(txOutput);
+    }
+
+    console.log("min fee: ")
+    console.log(await (await txBuilder.min_fee()).to_str());
 }
 export const mergeAssetsFromUtxos = (utxos) => {
     let assets: { [key: string]: string } = {};
@@ -553,24 +563,32 @@ export const toValue = async (assets:{quantity: string, unit: string}[]): Promis
 
     return value;
 }
+
+export const toValueFromDict = async (assets: { [key: string]: string}): Promise<Value> => {
+
+    const value = await Value.new(
+        await BigNum.from_str(assets["lovelace"])
+    );
+    console.log("hello1.1");
+    const multiAss = await buildMultiAssetsFromDict(assets);
+    console.log("hello1.2");
+    await value.set_multiasset(multiAss);
+
+    return value;
+}
 export const buildMultiAssets = async (assets:{quantity: string, unit: string}[]): Promise<MultiAsset> => {
 
     let multiAsset = await MultiAsset.new();
 
     for (const asset of assets) {
         if (asset.unit !== "lovelace"){
-            console.log('asset.unit');
-            console.log(asset.unit);
-            const assetName = asset.unit.substr(asset.unit.length - 8);  // unit: policyId+assetName
-            const policyId = asset.unit.split(assetName)[0];
-            console.log(policyId);
-            console.log(assetName);
-
+            const policyId = asset.unit.slice(0,56);
+            const assetName = asset.unit.split(policyId)[1];  // unit: policyId+assetName
             try{
-                const policyId = await ScriptHash.from_bytes(
-                    Buffer.from(asset.asset.policyId, "hex")
+                const polId = await ScriptHash.from_bytes(
+                    Buffer.from(policyId, "hex")
                 )
-                let assetObj = await multiAsset.get(policyId) ?? await Assets.new();
+                let assetObj = await multiAsset.get(polId) ?? await Assets.new();
                 const script = await ScriptHash.from_bytes(Buffer.from(policyId, 'hex'));
 
                 const aName = await AssetName.new(Buffer.from(assetName, 'hex'));
@@ -579,6 +597,30 @@ export const buildMultiAssets = async (assets:{quantity: string, unit: string}[]
             } catch (e){
                 // console.log(e);
             }
+        }
+    }
+
+    return multiAsset;
+}
+
+export const buildMultiAssetsFromDict = async (assets: { [key: string]: string}): Promise<MultiAsset> => {
+
+    let multiAsset = await MultiAsset.new();
+
+    for (const [key, value] of Object.entries(assets)) {
+        const policyId = key.slice(0,56);
+        const assetName = key.split(policyId)[1];  // unit: policyId+assetName
+
+        if (key !== "lovelace"){
+            const polId = await ScriptHash.from_bytes(
+                Buffer.from(policyId, "hex")
+            )
+            let assetObj = await multiAsset.get(polId) ?? await Assets.new();
+            const script = await ScriptHash.from_bytes(Buffer.from(policyId, 'hex'));
+
+            const aName = await AssetName.new(Buffer.from(assetName, 'hex'));
+            await assetObj.insert(aName, await BigNum.from_str(value.toString()));
+            await multiAsset.insert(script, assetObj);
         }
     }
 
