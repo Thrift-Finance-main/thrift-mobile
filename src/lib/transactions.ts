@@ -4,6 +4,8 @@ import {apiDb} from "../db/LiteDb";
 import {getProtocolParams, getTxUTxOsByAddress, IAccountState} from "../api/Blockfrost";
 import {decryptData} from "./cryptoLib";
 import {
+    AssetName,
+    Assets,
     BigNum,
     Bip32PrivateKey,
     LinearFee,
@@ -333,27 +335,6 @@ export const buildTransaction = async (
              // positive values go to the current changeAddress
          }
 
-
-         // BUILD TX
-        let paymentKey = null;
-        let accountKey = null;
-        if (password && password.length){
-            let decryptedPassw = await decryptData(password, currentAccount.encryptedMasterKey);
-
-            accountKey = await Bip32PrivateKey.from_bytes(
-                // @ts-ignore
-                Buffer.from(decryptedPassw, 'hex')
-            );
-
-            paymentKey = (await (await accountKey.derive(0)).derive(0)).to_raw_key();
-        }
-
-        console.log('txBuilder');
-        const txBuilder = await getTransactionBuilder(parameters);
-        const txBuilderDraft = await getTransactionBuilder(parameters);
-
-        console.log(txBuilder);
-        console.log(txBuilderDraft);
     }
 
     console.log('asset left fron notTaggedUtxos initialAssetsFromNotTaggedUtxos, going to global address');
@@ -375,13 +356,38 @@ export const buildTransaction = async (
     console.log('Inputs');
     let inputs = [];
     utxos.map(utxo => inputs = [...inputs,...utxo.utxos])
-    console.log(inputs[0]);
+    console.log(inputs);
     console.log('Final outputs');
     console.log(outputs);
     console.log('Final change');
     console.log(mergedChangeList);
     // Merge changeList
 
+    // BUILD TX
+    let paymentKey = null;
+    let accountKey = null;
+    if (password && password.length){
+        let decryptedPassw = await decryptData(password, currentAccount.encryptedMasterKey);
+
+        accountKey = await Bip32PrivateKey.from_bytes(
+            // @ts-ignore
+            Buffer.from(decryptedPassw, 'hex')
+        );
+
+        paymentKey = (await (await accountKey.derive(0)).derive(0)).to_raw_key();
+    }
+
+    console.log('txBuilder');
+    const txBuilder = await getTransactionBuilder(parameters);
+    const txBuilderDraft = await getTransactionBuilder(parameters);
+
+    console.log(txBuilder);
+    console.log(txBuilderDraft);
+
+
+    const value = await toValue(inputs[0].amount);
+    console.log("ToValue result");
+    console.log(value);
 }
 export const mergeAssetsFromUtxos = (utxos) => {
     console.log('mergeAssetsFromUtxos')
@@ -521,41 +527,51 @@ export const getTransactionBuilder = async (protocolParams): Promise<Transaction
     );
 }
 
-export const toValue = async (assets): Promise<Value> => {
+export const toValue = async (assets:{quantity: string, unit: string}[]): Promise<Value> => {
 
+    console.log('toValue');
+    console.log(assets);
+    const lovelace = assets.filter(a => a.unit === "lovelace")[0];
+    console.log('lovelace');
+    console.log(lovelace);
     const value = await Value.new(
-        await BigNum.from_str('0')
+        await BigNum.from_str(lovelace.quantity)
     );
     const multiAss = await buildMultiAssets(assets);
     await value.set_multiasset(multiAss);
 
     return value;
 }
-export const buildMultiAssets = async (assets): Promise<Value> => {
+export const buildMultiAssets = async (assets:{quantity: string, unit: string}[]): Promise<MultiAsset> => {
 
     let multiAsset = await MultiAsset.new();
 
-    /*
-    assets.forEach((asset,i) => {
-        try{
-            const policyId = ScriptHash.from_bytes(
-                Buffer.from(asset.asset.policyId, "hex")
-            )
-            let assetObj = multiAsset.get(policyId) ?? CardanoModule.wasmV4.Assets.new();
-            const script = CardanoModule.wasmV4.ScriptHash.from_bytes(Buffer.from(asset.asset.policyId, 'hex'));
+    for (const asset of assets) {
+        if (asset.unit !== "lovelace"){
+            console.log('asset.unit');
+            console.log(asset.unit);
+            const assetName = asset.unit.substr(asset.unit.length - 8);  // unit: policyId+assetName
+            const policyId = asset.unit.split(assetName)[0];
+            console.log(policyId);
+            console.log(assetName);
 
-            const assetName = CardanoModule.wasmV4.AssetName.new(Buffer.from(asset.asset.assetName, 'hex'));
-            assetObj.insert(assetName, CardanoModule.wasmV4.BigNum.from_str(asset.quantity.toString()));
-            multiAsset.insert(script, assetObj);
-        } catch (e){
-            // console.log(e);
+            try{
+                const policyId = await ScriptHash.from_bytes(
+                    Buffer.from(asset.asset.policyId, "hex")
+                )
+                let assetObj = await multiAsset.get(policyId) ?? await Assets.new();
+                const script = await ScriptHash.from_bytes(Buffer.from(policyId, 'hex'));
+
+                const aName = await AssetName.new(Buffer.from(assetName, 'hex'));
+                await assetObj.insert(aName, await BigNum.from_str(asset.quantity.toString()));
+                await multiAsset.insert(script, assetObj);
+            } catch (e){
+                // console.log(e);
+            }
         }
+    }
 
-    });
-
-     */
-
-    //return multiAsset;
+    return multiAsset;
 }
 
 
