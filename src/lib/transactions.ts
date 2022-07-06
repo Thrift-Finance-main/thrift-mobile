@@ -4,13 +4,14 @@ import {apiDb} from "../db/LiteDb";
 import {getProtocolParams, getTxUTxOsByAddress, IAccountState} from "../api/Blockfrost";
 import {decryptData} from "./cryptoLib";
 import {
+    Address,
     AssetName,
     Assets,
     BigNum,
     Bip32PrivateKey,
     LinearFee,
     MultiAsset, ScriptHash,
-    TransactionBuilder,
+    TransactionBuilder, TransactionHash, TransactionInput,
     Value
 } from "@emurgo/react-native-haskell-shelley";
 import BigNumber from "bignumber.js";
@@ -355,7 +356,7 @@ export const buildTransaction = async (
 
     console.log('Inputs');
     let inputs = [];
-    utxos.map(utxo => inputs = [...inputs,...utxo.utxos])
+    utxos.map(utxo => inputs.push({address: utxo.address, utxos: utxo.utxos}))
     console.log(inputs);
     console.log('Final outputs');
     console.log(outputs);
@@ -384,10 +385,27 @@ export const buildTransaction = async (
     console.log(txBuilder);
     console.log(txBuilderDraft);
 
+    console.log('inputs[0]');
+    console.log(inputs[0]);
+    const value = await toValue(inputs[0].utxos[0].amount);
 
-    const value = await toValue(inputs[0].amount);
     console.log("ToValue result");
     console.log(value);
+
+    for (const input of inputs) {
+        const address = input.address;
+        const utxos = input.utxos;
+        for (const utxo of utxos) {
+            const inputHash = await TransactionHash.from_bytes(Buffer.from(utxo.tx_hash, 'hex'));
+            const inputInput = await TransactionInput.new(inputHash, utxo.tx_index);
+            const inputValue = await toValue(utxo.amount);
+            const inputAddress = await Address.from_bech32(address);
+            await txBuilder.add_input(inputAddress,inputInput,inputValue);
+            console.log("min fee: ")
+            console.log(await (await txBuilder.min_fee()).to_str());
+        }
+    }
+
 }
 export const mergeAssetsFromUtxos = (utxos) => {
     console.log('mergeAssetsFromUtxos')
