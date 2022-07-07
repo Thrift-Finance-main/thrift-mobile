@@ -384,7 +384,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     const updateSelectedAssets = async asset => {
         let outputAux = outputs.filter(output => output.label === activeTab);
         outputAux = outputAux[0];
-        outputAux.assets[asset.unit+'.'+asset.asset_name] = '';
+        outputAux.assets[asset.unit] = '';
         const updatedOutputs = outputs.map(output => {
             if (output.label === activeTab){
                 output = outputAux;
@@ -394,10 +394,9 @@ const Send: FC<CreateTokenProps> = (props) => {
 
         setOutputs(updatedOutputs);
     };
-    const updateQuantityFromSelectedAsset = async (asset, quantity) => {
+    const updateQuantityFromSelectedAsset = async (unit, quantity) => {
 
         console.log('updateQuantityFromSelectedAsset');
-        console.log(asset);
         console.log(quantity);
         if (amount === ''){
             return;
@@ -417,7 +416,7 @@ const Send: FC<CreateTokenProps> = (props) => {
         outputAux = outputAux[0];
 
         const updatedAssets = Object.entries(outputAux.assets).map(keyValuePair => {
-            if (keyValuePair[0] === asset.unit+'.'+asset.asset_name) {
+            if (keyValuePair[0] === unit) {
                 keyValuePair[1] = quantity;
             }
             return keyValuePair;
@@ -437,12 +436,12 @@ const Send: FC<CreateTokenProps> = (props) => {
         setOutputs(outputs);
         mergeAssets();
     };
-    const removeSelectedAssets = async asset => {
+    const removeSelectedAssets = async unit => {
 
         let outputAux = outputs.filter(output => output.label === activeTab);
         outputAux = outputAux[0];
         const updatedAssets = Object.entries(outputAux.assets).filter(keyValuePair => {
-            return keyValuePair[0] !== asset.unit+'.'+asset.asset_name;
+            return keyValuePair[0] !== unit;
         });
         const dict = {};
         updatedAssets.map(asset =>{
@@ -876,11 +875,16 @@ const Send: FC<CreateTokenProps> = (props) => {
 
                     {   currentTabData && currentTabData.assets ?
                         Object.entries(currentTabData.assets).map(keyValuePair => {
-                                const assetName =  keyValuePair[0].includes('.') ? keyValuePair[0].split('.')[1] : keyValuePair[0];
-                                const unit = keyValuePair[0].includes('.') ? keyValuePair[0].split('.')[0] : keyValuePair[0];
+                            console.log('keyValuePair')
+                            console.log(keyValuePair[0])
+                            if (keyValuePair[0] !== 'lovelace')
+                            {
+                                const assetName =  keyValuePair[0].slice(56,keyValuePair[0].length)
+                                console.log('assetName')
+                                console.log(assetName)
+                                const unit = keyValuePair[0];
 
-                                if (assetName !== 'lovelace')
-                                {
+
                                     return <View
                                         style={{flexDirection:'row', flexWrap:'wrap', paddingHorizontal: widthPercentageToDP(3)}}
                                     >
@@ -889,11 +893,11 @@ const Send: FC<CreateTokenProps> = (props) => {
                                             floatingPlaceholder
                                             placeholder={Buffer.from(assetName, 'hex').toString() }
                                             value={keyValuePair[1]}
-                                            onChangeText={(value) => updateQuantityFromSelectedAsset({asset_name: assetName, unit}, value)}
+                                            onChangeText={(value) => updateQuantityFromSelectedAsset(unit, value)}
                                             helperText="this is an helper text"
                                             rightButtonProps={{
                                                 iconSource: removeIcon,
-                                                onPress: () => removeSelectedAssets({asset_name: assetName, unit}),
+                                                onPress: () => removeSelectedAssets(unit),
                                                 accessibilityLabel: 'TextField Info',
                                                 iconColor: Colors.red10
                                             }}
