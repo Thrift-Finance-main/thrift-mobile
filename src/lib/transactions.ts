@@ -309,6 +309,7 @@ export const buildTransaction = async (
              const assetsForCurrentChange = {};
 
              for (const [key, value] of Object.entries(diff)) {
+                 console.log('key, value');
                  console.log(key, value);
                  let bigValue = new BigNumber(value);
                  if (bigValue.isLessThan(new BigNumber(0))) {
@@ -318,7 +319,7 @@ export const buildTransaction = async (
                  }
              }
 
-             console.log('assetsForCurrentChange');
+             console.log('\n\nassetsForCurrentChange');
              console.log(assetsForCurrentChange);
              if (Object.entries(assetsForCurrentChange).length){
                  changeList.push({address: changeAddress, assets: assetsForCurrentChange});
@@ -334,13 +335,24 @@ export const buildTransaction = async (
              }
              // diff and update initialAssetsFromNotTaggedUtxos
              // positive values go to the current changeAddress
+         } else {
+             if (Object.entries(diff).length){
+                 changeList.push({address: changeAddress, assets: diff});
+             }
          }
+
+         // Add change as outputs
 
     }
 
     console.log('asset left fron notTaggedUtxos initialAssetsFromNotTaggedUtxos, going to global address');
     console.log(initialAssetsFromNotTaggedUtxos);
-    changeList.push({address: currentAccount.externalPubAddress[0].address, assets: initialAssetsFromNotTaggedUtxos})
+
+
+    if (Object.entries(initialAssetsFromNotTaggedUtxos).length){
+        changeList.push({address: currentAccount.externalPubAddress[0].address, assets: initialAssetsFromNotTaggedUtxos})
+    }
+
     console.log('changeList');
     console.log(changeList);
     const groupedChangeList = groupBy(changeList, "address");
