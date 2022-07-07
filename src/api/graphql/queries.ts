@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {submitTransactionBody} from "./body";
 
 // eslint-disable-next-line import/prefer-default-export
 export const startQuery = async (query: any, params: any, url: string) => {
@@ -12,3 +13,11 @@ export const startQuery = async (query: any, params: any, url: string) => {
     return [e];
   }
 };
+
+
+export async function submitTransaction(url:string, signedTxBinary:any) {
+
+  let transactionQuery = submitTransactionBody();
+  const transactionResult = await axios.post(url, { query: transactionQuery, variables: { transaction: signedTxBinary } });
+  return transactionResult;
+}

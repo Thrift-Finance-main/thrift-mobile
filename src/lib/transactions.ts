@@ -1,21 +1,23 @@
 import {CONFIG} from "./account";
 import {addBigNum, divBigNum, subBigNum} from "./utils";
 import {apiDb} from "../db/LiteDb";
-import {getProtocolParams, getTxUTxOsByAddress, IAccountState} from "../api/Blockfrost";
+import {getProtocolParams, getTxUTxOsByAddress, IAccountState, submitTxBlockfrost} from "../api/Blockfrost";
 import {decryptData} from "./cryptoLib";
 import {
     Address,
     AssetName,
     Assets,
     BigNum,
-    Bip32PrivateKey,
-    LinearFee,
-    MultiAsset, ScriptHash,
-    TransactionBuilder, TransactionHash, TransactionInput, TransactionOutput,
-    Value
+    Bip32PrivateKey, hash_transaction,
+    LinearFee, make_vkey_witness,
+    MultiAsset, ScriptHash, Transaction,
+    TransactionBuilder, TransactionHash, TransactionInput, TransactionOutput, TransactionWitnessSet,
+    Value, Vkeywitnesses
 } from "@emurgo/react-native-haskell-shelley";
 import BigNumber from "bignumber.js";
 import {groupBy} from "../utils";
+import {BLOCKFROST_SUMBIT_TESTNET, DANDELION_URL_TESTNET, TX} from "../constants/tx";
+import {submitTransaction} from "../api/graphql/queries";
 export const RECEIVE_TX = 'RECEIVE_TX';
 export const SEND_TX = 'SEND_TX';
 export const SELF_TX = 'SELF_TX';
@@ -241,33 +243,24 @@ export const buildTransaction = async (
 
     const taggedUtxos = utxos.filter((utxo) => utxo.tags.length);
     const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
-    console.log('taggedUtxos');
-    console.log(taggedUtxos);
-    console.log('notTaggedUtxos');
-    console.log(notTaggedUtxos);
+
     let notTaggedUtxosAux = notTaggedUtxos;
 
     let initialAssetsFromUtxos = mergeAssetsFromUtxos(taggedUtxos);
     let initialAssetsFromNotTaggedUtxos = mergeAssetsFromUtxos(notTaggedUtxos);
-    console.log('initialAssetsFromNotTaggedUtxos');
-    console.log(initialAssetsFromNotTaggedUtxos);
+
     let assetsFromAllUtxos = mergeAssetsFromUtxos(utxos);
 
     let changeList = [];
     for (const output of outputs) {
-        console.log("\n\n\n\n")
-        console.log('output');
-        console.log(output);
+
         const utxosFromSelectedTag = taggedUtxos.filter((utxo) => utxo.tags.length
             && utxo.tags.some(t => output.fromTags.includes(t)
         ));
-        console.log('utxosFromSelectedTag');
-        console.log(utxosFromSelectedTag);
 
         // Candidates to receive the change
         const fromAddresses = utxosFromSelectedTag.map(utxo => utxo.address);
-        console.log('fromAddresses');
-        console.log(fromAddresses);
+
         // Set output: address-assets
         let changeAddress;
         // if there is not any utxo in the selected tag
@@ -286,19 +279,12 @@ export const buildTransaction = async (
         // we just need to create the outputs+change, the inputs are -> utxos param
 
         const assets = output.assets;
-        console.log('\n\nassets in output');
-        console.log(assets);
-        console.log(output.toAddress);
 
         const processedAssets = removeAssetNameFromKey(assets); // X policyId.assetName
         // This is the assets change from the current output
         const diff = calcDiffAssets(mergedAssetsFromUtxos, processedAssets);
         // si diff es mayor que mergedAssetsFromUtxos
         //
-        console.log('changeAddress');
-        console.log(changeAddress);
-        console.log('DIFF assets in change');
-        console.log(diff);
 
         // if notTaggedUtxos are selected
          if (output.notTagged){
@@ -309,8 +295,6 @@ export const buildTransaction = async (
              const assetsForCurrentChange = {};
 
              for (const [key, value] of Object.entries(diff)) {
-                 console.log('key, value');
-                 console.log(key, value);
                  let bigValue = new BigNumber(value);
                  if (bigValue.isLessThan(new BigNumber(0))) {
                      assetsNeededFromNotTaggedUtxos[key] = bigValue.multipliedBy(new BigNumber(-1)).toString();
@@ -319,18 +303,12 @@ export const buildTransaction = async (
                  }
              }
 
-             console.log('\n\nassetsForCurrentChange');
-             console.log(assetsForCurrentChange);
              if (Object.entries(assetsForCurrentChange).length){
                  changeList.push({address: changeAddress, assets: assetsForCurrentChange});
              }
-             console.log('assetsNeededFromNotTaggedUtxos');
-             console.log(assetsNeededFromNotTaggedUtxos);
 
              if (Object.keys(assetsNeededFromNotTaggedUtxos).length){
                  const updatedInitialAssetsFromNotTaggedUtxos = calcDiffAssets(initialAssetsFromNotTaggedUtxos, assetsNeededFromNotTaggedUtxos);
-                 console.log('updatedInitialAssetsFromNotTaggedUtxos');
-                 console.log(updatedInitialAssetsFromNotTaggedUtxos);
                  initialAssetsFromNotTaggedUtxos = updatedInitialAssetsFromNotTaggedUtxos;
              }
              // diff and update initialAssetsFromNotTaggedUtxos
@@ -448,10 +426,78 @@ export const buildTransaction = async (
     console.log("min fee: ")
     console.log(await (await txBuilder.min_fee()).to_str());
 
+    console.log('parameters');
+    console.log(parameters);
+    await txBuilder.set_ttl(parameters.slot + TX.invalid_hereafter);
+
     const minFee = await (await txBuilder.min_fee()).to_str();
 
+    await txBuilder.set_fee(await BigNum.from_str(minFee));
+    const txBody = await txBuilder.build();
+
+    const witnesses = await TransactionWitnessSet.new();
+
+    const txHash = await hash_transaction(txBody);
+
+    // add keyhash witnesses
+    const vkeyWitnesses = await Vkeywitnesses.new();
+
+    // if is submit tx
+    if ((currentAccount.encryptedMasterKey && password)
+        && currentAccount.encryptedMasterKey.length
+        && accountKey
+        && paymentKey
+    ){
+        console.log("Lets sign")
+        const vkeyWitness = await make_vkey_witness(txHash, (await paymentKey));
+        await vkeyWitnesses.add(vkeyWitness);
+
+        const prvKey2 = await accountKey.to_raw_key();
+
+        // TODO: second sign
+        const stakeKeyVitness = await make_vkey_witness(txHash, prvKey2)
+        await vkeyWitnesses.add(stakeKeyVitness);
+
+        // Set paymentKey
+        await witnesses.set_vkeys(vkeyWitnesses);
+        await (await paymentKey).free();
+    }
+
+    // create the finalized transaction with witnesses
+    const transaction = await Transaction.new(
+        txBody,
+        witnesses
+    );
+    const txHex:string = Buffer.from(await transaction.to_bytes()).toString("hex");
+
+
+    if (password && password.length){
+        const result = await submitTxBlockfrost(
+            txHex,
+            BLOCKFROST_SUMBIT_TESTNET
+        );
+
+
+        console.log('result');
+        console.log(result);
+
+        const txHashSubmitted = await submitTransaction(
+            DANDELION_URL_TESTNET,
+            txHex
+        );
+
+        if (txHashSubmitted.data.errors && txHashSubmitted.data.errors.length){
+            console.log('Dandelion errors:');
+            console.log(txHashSubmitted.data.errors);
+        }
+
+        console.log('txHashSubmitted');
+        console.log(txHashSubmitted.data);
+    }
+
     return {
-        fee: minFee
+        fee: minFee,
+        txHex
     }
 }
 export const mergeAssetsFromUtxos = (utxos) => {
@@ -475,8 +521,6 @@ export const mergeAssetsFromUtxos = (utxos) => {
     return assets;
 }
 export const mergeAssetsFromUtxosByPolicyAndName = (utxos) => {
-    console.log('mergeAssetsFromUtxos')
-    console.log(utxos.length)
     let assets: { [key: string]: string } = {};
     utxos.map(utxo => {//  {"address": {"address": "addr_test1qp699gyph5gj8c4whp62048z7w7kte2w5ghkpl36wwh5z84t9gat4d3njffvnlde55dwtqyev48z8ywwqask7rsmwd9s0pxmc2", "index": 0, "network": "0", "reference": "", "tags": ["Main"]}, "utxos": [{"amount": [Array], "block": "ab69e2a0c1b8089875439210130bd60327738e1a8ef3fb36dfe05f8d018783c0", "data_hash": null, "output_index": 0, "tx_hash": "69d72b7e73b03c9dcd3f8ce6b185bdab8f85c5d989dffed51edc3f3c482beef0", "tx_index": 0}]}
 
@@ -491,7 +535,6 @@ export const mergeAssetsFromUtxosByPolicyAndName = (utxos) => {
                     assets[a.unit] = sum;
                 }
             });
-            console.log(u);
         });
 
     })

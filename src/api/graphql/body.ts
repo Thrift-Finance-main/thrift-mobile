@@ -39,3 +39,15 @@ export function getCurrentBalanceForAddressBody() {
     }
    `;
 }
+
+export function submitTransactionBody(){
+    return `
+    mutation submitTransaction(
+        $transaction: String!
+    ) {
+        submitTransaction(transaction: $transaction) {
+            hash
+        }
+    }
+   `
+}

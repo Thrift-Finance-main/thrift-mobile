@@ -96,27 +96,30 @@ export const getTransactions = async (address:string, paginate = 1, count = 10) 
 
 export const submitTxBlockfrost = async (endpoint: string, data: any) => {
   console.log('submitTxBlockfrost');
-  const address = `/api/blockfrost${endpoint}`;
   const token = BLOCKFROST_API;
-  const urlb = BLOCKFROST_URL_TESTNET + address;
 
-  const result = await fetch(urlb, {
-    headers: {
-      Authorization: `Bearer \${${token}}`,
-      project_id: token,
-      'Content-Type': 'application/cbor',
-      'User-Agent': 'thrift-wallet',
-      'Cache-Control': 'no-cache',
-    },
-    method: Buffer.from(data, 'hex') ? 'POST' : 'GET',
-    body: Buffer.from(data, 'hex'),
-  }).then(res => res.json());
+  try{
+    const result = await fetch(endpoint, {
+      headers: {
+        Authorization: `Bearer \${${token}}`,
+        project_id: token,
+        'Content-Type': 'application/cbor',
+        'User-Agent': 'thrift-wallet',
+        'Cache-Control': 'no-cache',
+      },
+      method: Buffer.from(data, 'hex') ? 'POST' : 'GET',
+      body: Buffer.from(data, 'hex'),
+    });
 
-  if (result.status_code === 400) {
+    console.log('result.json()')
+    console.log(result.json())
+    return result;
+  } catch (e) {
     return {
-      error: result,
+      error: e,
     };
   }
 
-  return result;
+
+
 };

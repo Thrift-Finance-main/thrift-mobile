@@ -48,6 +48,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [activeTab, setActiveTab] = useState('1');
 
     const [currentFee, setCurrentFee] = useState('0');
+    const [password, setPassword] = useState('0');
 
     let totalUtxos = 0;
     utxos.map(acc => {
@@ -188,7 +189,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             // Select tags from where get the ada and assets,
             // verify in enough amount in selected utxos, alert
 
-            mergeAssets();
+            await mergeAssets();
         }
 
         if (isMounted.current) {
@@ -263,7 +264,9 @@ const Send: FC<CreateTokenProps> = (props) => {
         }
         setOutputs(updatedOutputs);
     }
-    const updateOutput = (output) => {
+    const updateOutput = async (output) => {
+        console.log('updateOutput');
+        console.log(output);
         let updatedOutputs = outputs.map(out =>{
             if (out.label === output.label){
                 out = output;
@@ -271,12 +274,20 @@ const Send: FC<CreateTokenProps> = (props) => {
             return out;
         });
         setOutputs(updatedOutputs);
+
+        validateOutputs();
+
+        if (outputsAreValid()){
+            console.log("updateOutput: lets build tx ")
+            await buildTx();
+        }
+
     }
 
     const outputsAreValid = () => {
         return !(outputs.some(out => !out.valid) || new BigNumber(mergedOutputs.lovelace || 0).dividedBy(1000000).toString() === '0');
     }
-    const mergeAssets = () => {
+    const mergeAssets = async () => {
 
         console.log('\n\n\nmergeAssets');
         //console.log('utxos');
@@ -328,11 +339,12 @@ const Send: FC<CreateTokenProps> = (props) => {
         validateOutputs();
 
         if (outputsAreValid()){
-            buildTx();
+            await buildTx();
         }
 
     }
     const buildTx = async () => {
+        console.log('buildTx');
         const protocolParameters =  await getProtocolParams();
         // Remove empty assets and filter outputs with no assets
         const filterOutputs = outputs.map(output => {
@@ -352,11 +364,15 @@ const Send: FC<CreateTokenProps> = (props) => {
         }
         const tx = await buildTransaction(currentAccount, accountState, filterUtxos, filterOutputs, protocolParameters);
         if (tx && tx.error){
+            console.log('tx.error');
             console.log(tx.error);
             return;
         }
 
+        console.log('buildTx fee');
         setCurrentFee(tx.fee);
+
+        console.log('buildTx ends');
     }
     const sendTransaction = async () => {
         const protocolParameters =  await getProtocolParams();
@@ -376,7 +392,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
             filterUtxos = [...filterUtxos,...notTaggedUtxos]
         }
-        const tx = await buildTransaction(currentAccount, accountState, filterUtxos, filterOutputs, protocolParameters);
+        const tx = await buildTransaction(currentAccount, accountState, filterUtxos, filterOutputs, protocolParameters, password);
         if (tx && tx.error){
             console.log(tx.error);
         }
@@ -408,7 +424,7 @@ const Send: FC<CreateTokenProps> = (props) => {
         if (!validAmount || !validDecimals){
             let currentTab = currentTabData;
             currentTab.valid = false;
-            updateOutput(currentTab);
+            await updateOutput(currentTab);
             return;
         }
 
@@ -434,7 +450,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             return output;
         });
         setOutputs(outputs);
-        mergeAssets();
+        await mergeAssets();
     };
     const removeSelectedAssets = async unit => {
 
@@ -460,7 +476,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     };
 
     useEffect(() => {
-        mergeAssets();
+        mergeAssets().then(()=>{});
     }, [fromTags, notTagged, selectedTags.length, selectNotTagged, outputs.length]);
 
     const onSelectTag = (tag) => {
@@ -489,8 +505,7 @@ const Send: FC<CreateTokenProps> = (props) => {
             }
             return out;
         })
-        mergeAssets();
-        setOutputs(updatedOutputs);
+        mergeAssets().then(()=>  setOutputs(updatedOutputs));
     };
     const onAddRecipient = () => {
         if (outputs.length < 12){
@@ -571,7 +586,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                 // Get current tab
                 let currentTab = currentTabData;
                 currentTab.valid = false;
-                updateOutput(currentTab);
+                updateOutput(currentTab).then(()=>{});
                 return;
             }
         }
@@ -595,11 +610,12 @@ const Send: FC<CreateTokenProps> = (props) => {
                     return output;
                 });
                 setOutputs(outputs);
-                mergeAssets();
+
             } catch (e) {
 
             }
         }
+        mergeAssets().then(()=>{});
     };
     const renderDialog: PickerProps['renderCustomModal'] = modalProps => {
         const {visible, children, toggleModal, onDone} = modalProps;
