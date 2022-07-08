@@ -95,7 +95,8 @@ export const classifyTx = async (transaction, accountAddresses) => {
                 outputs: processedOut,
                 amount: mergedOutputs,
                 fees,
-                type: txType
+                type: txType,
+                status: "confirmed"
             }
         default:
             return {
