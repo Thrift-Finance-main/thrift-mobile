@@ -7,6 +7,7 @@ import Modal from 'react-native-modal'
 import {RECEIVE_TX, SEND_TX} from "../../lib/transactions";
 import {addressSlice} from "../../utils";
 import {EXPLORER_TX_URL_MAINNET, EXPLORER_TX_URL_TESTNET} from "../../constants/explorer";
+import moment from "moment";
 interface TransactionDetailsModalProps {
   visible: boolean,
   hideModal: () => void,
@@ -128,7 +129,7 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
             <Text
               style={{ marginTop: heightPercentageToDP(0.5), color: props.isBlackTheme ? Colors.white : Colors.black }}
 
-            >23-11-2021</Text>
+            >{}{moment(props.data.blockTime).format("DD-MM-YYYY hh:mm")}</Text>
           </View>
           <View
             style={{ paddingHorizontal: widthPercentageToDP(10), width: "100%", paddingVertical: heightPercentageToDP(1) }}
