@@ -572,7 +572,9 @@ export const buildTransaction = async (
             finalHash = txHashSubmitted.data.data.submitTransaction.hash;
 
         } catch (e) {
+            console.log("Error on submit tx to dandelion")
             return {
+
                 error: e
             }
         }

@@ -401,6 +401,7 @@ const Send: FC<SendProps> = (props) => {
         if (tx && tx.error){
             console.log("Error on send tx")
             console.log(tx.error);
+            return;
         } else {
             console.log('tx.mergedOutputs');
             console.log(tx.mergedOutputs);

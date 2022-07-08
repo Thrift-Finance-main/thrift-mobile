@@ -129,7 +129,7 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
             <Text
               style={{ marginTop: heightPercentageToDP(0.5), color: props.isBlackTheme ? Colors.white : Colors.black }}
 
-            >{}{moment(props.data.blockTime).format("DD-MM-YYYY hh:mm")}</Text>
+            >{props.data && props.data.blockTime ? moment(props.data.blockTime).format("DD-MM-YYYY hh:mm") : ''}</Text>
           </View>
           <View
             style={{ paddingHorizontal: widthPercentageToDP(10), width: "100%", paddingVertical: heightPercentageToDP(1) }}
