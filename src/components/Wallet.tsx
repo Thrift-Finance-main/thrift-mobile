@@ -21,7 +21,7 @@ import {setCurrentAccount, setCurrentPrice} from "../store/Action";
 import {classifyTx, RECEIVE_TX, SEND_TX} from "../lib/transactions";
 import Ada from '../assets/Ada.svg'
 import moment from "moment";
-import {addressSlice} from "../utils";
+import {addressSlice, capitalizeFirstLetter} from "../utils";
 import {
     Icon,
     Dialog,
@@ -64,9 +64,13 @@ const Wallet: FC<WalletProps> = (props) => {
     console.log('currentAccount.pendingTxs');
     console.log(currentAccount.pendingTxs);
 
+    let pendingTxs = currentAccount.pendingTxs.filter(pendTx => {
+        return !(currentAccount.history.some(h => h.txHash === pendTx.txHash))
+    });
+
     console.log('currentAccount.history');
     console.log(currentAccount.history);
-    const txList = [...currentAccount.pendingTxs, ...currentAccount.history];
+    const txList = [...pendingTxs, ...currentAccount.history];
 
     console.log('txList');
     console.log(txList);
@@ -177,7 +181,7 @@ const Wallet: FC<WalletProps> = (props) => {
                 addressTxsList.map(addr => {
                     addr.txs.map(tx => {
                         tx.block_time = tx.block_time*1000; // TODO: hot fix, from Moment unix
-                        joinedTxsList.push({...tx, address: addr.address, status: "confirmed"});
+                        joinedTxsList.push({...tx, address: addr.address});
                     })
                 });
 
@@ -207,7 +211,7 @@ const Wallet: FC<WalletProps> = (props) => {
                         uniqueArrayTxsList.map(async tx => {
                             const txInfo = await getTxInfo(tx.tx_hash);
                             const utxos = await getTxUTxOs(tx.tx_hash);
-                            // const blockInfo = await getBlockInfo(tx.tx_hash);
+
                             if (!utxos.error){
                                 tx.utxos = utxos;
                                 tx.fees = txInfo.fees;
@@ -227,6 +231,9 @@ const Wallet: FC<WalletProps> = (props) => {
                             allTransactionsByAddr.push({address: addrObj.address, history: cTxs });
                         })
                     );
+
+                    console.log("allTransactionsByAddr");
+                    console.log(allTransactionsByAddr);
 
                     let mergedHistory = []; // All addresses
                     allTransactionsByAddr.map(async addr => {
@@ -287,7 +294,7 @@ const Wallet: FC<WalletProps> = (props) => {
         }
     }
 
-    const renderItemMenuList = ({item, index}) => {
+    const renderAssetsList = ({item, index}) => {
         return (
             <View
                 style={{
@@ -390,13 +397,11 @@ const Wallet: FC<WalletProps> = (props) => {
         }
     }
 
-
-
     const renderItemTransaction = ({item, index}) => {
 
         if(item){
-            const inputOtherAddresses = item.inputs.otherAddresses;
-            const outputOtherAddresses = item.outputs.otherAddresses;
+            const inputOtherAddresses = item.inputs && item.inputs.otherAddresses || [];
+            const outputOtherAddresses = item.outputs && item.outputs.otherAddresses || [];
             let showAddr = '';
             if (item.type === SEND_TX){
                 showAddr = outputOtherAddresses[0].address;
@@ -421,7 +426,7 @@ const Wallet: FC<WalletProps> = (props) => {
                         <View
                             style={{
                                 width: widthPercentageToDP(12),
-
+                                opacity: (item.status === "pending" ? 0.5 : 1),
                                 marginLeft: props.isBlackTheme ? widthPercentageToDP(3) : 0,
                             }}>
                             {getIconTxType(item.type)}
@@ -467,9 +472,10 @@ const Wallet: FC<WalletProps> = (props) => {
                                         fontSize: 8,
                                         textAlign: 'center',
                                         fontFamily: 'AvenirNextCyr-Medium',
-                                        color: props.isBlackTheme ? Colors.white : Colors.black,
+                                        fontWeight: item.status && item.status === "pending" ? "bold" : "",
+                                        color: item.status && item.status === "pending" ? "gray" : "green"
                                     }}>
-                                    Confirmed
+                                    {item.status ? capitalizeFirstLetter(item.status) : item.status}
                                 </Text>
                             </View>
                             <EntypoIcon
@@ -623,7 +629,7 @@ const Wallet: FC<WalletProps> = (props) => {
                 <FlatList
                     style={{marginTop: heightPercentageToDP(1)}}
                     data={currentAccount && currentAccount.assets || []}
-                    renderItem={renderItemMenuList}
+                    renderItem={renderAssetsList}
                     keyExtractor={(item, index) => index.toString()}
                 />
             ) : (

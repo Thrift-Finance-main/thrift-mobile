@@ -5,15 +5,15 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {heightPercentageToDP, widthPercentageToDP} from '../utils/dimensions'
 import Back from '../assets/back.svg'
 import DarkBack from '../assets//DarkBack.svg'
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {Button, Chip, Colors, Dialog, PanningProvider, Picker, PickerProps, TextField} from "react-native-ui-lib";
 import swapIcon from "../assets/plus.png";
 import removeIcon from "../assets/remove.png";
 import {
-    buildTransaction,
+    buildTransaction, classifyTx, dictToAssetsList,
     mergeAssetsFromOutputs,
     mergeAssetsFromUtxos,
-    removeAssetNameFromKey,
+    removeAssetNameFromKey, SEND_TX,
     validOutputs
 } from "../lib/transactions";
 import {fetchBlockfrost, getProtocolParams, getTxUTxOsByAddress} from "../api/Blockfrost";
@@ -23,17 +23,21 @@ import BigNumber from "bignumber.js";
 import CustomModal from "./PopUps/CustomModal";
 import {apiDb} from "../db/LiteDb";
 import {setCurrentAccount} from "../store/Action";
+import moment from "moment";
 
 
-interface CreateTokenProps {
+interface SendProps {
     // onContinuePress: () => void
     onBackIconPress: () => void
+    onContinuePress: (route:string) => void
     // fromScreen: any
     isBlackTheme: any
     address?: string
 }
 
-const Send: FC<CreateTokenProps> = (props) => {
+const Send: FC<SendProps> = (props) => {
+    const dispatch = useDispatch();
+
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
     const [availableAda, setAvailableAda] = useState(currentAccount.balance);
     const [assets, setAssets] = useState(currentAccount.assets || []);
@@ -398,6 +402,8 @@ const Send: FC<CreateTokenProps> = (props) => {
             console.log("Error on send tx")
             console.log(tx.error);
         } else {
+            console.log('tx.mergedOutputs');
+            console.log(tx.mergedOutputs);
             addTxToDb(tx, filterUtxos, filterOutputs).then(()=>
             {
                 handleHideModal();
@@ -410,25 +416,82 @@ const Send: FC<CreateTokenProps> = (props) => {
     const sendTransaction = async () => {
         handleHideModal();
     };
-    const addTxToDb = async (tx, utxos, outputs) => {
+    const addTxToDb = async (tx, inputs, outputs) => {
 
-        console.log('addTxToDb');
+        console.log('\n\naddTxToDb');
         let account = await apiDb.getAccount(currentAccount.accountName);
         let pendingTxs = account.pendingTxs || [];
         console.log('tx');
         console.log(tx);
-        pendingTxs.push({
-            hash: "jb",
-            txHash: tx.txHash,
-            blockTime: tx.date,
-            fee: tx.fee,
-            type: "pending",
-            inputs: utxos,
-            outputs
+
+        const allAddresses = [...currentAccount.externalPubAddress,...currentAccount.internalPubAddress]
+        console.log("Inputs");
+        let otherAddressesInput = [];
+        let usedAddressesInput: { address: any; amount: { quantity: string; unit: string; }[]; }[] = [];
+        inputs.map(input => console.log(input.utxos));
+
+        inputs.map(input => {
+            const isOwnAddress = allAddresses.some(addr => addr.address === input.address);
+            const amount = input.assets ? dictToAssetsList(input.assets) : {};
+            if (isOwnAddress){
+                usedAddressesInput.push({
+                    address: input.toAddress,
+                    amount
+                });
+            } else {
+                otherAddressesInput.push({
+                    address: input.toAddress,
+                    amount
+                });
+            }
         });
+
+        let otherAddressesOutput: { address: any; amount: { quantity: string; unit: string; }[]; }[] = [];
+        let usedAddressesOutput: { address: any; amount: { quantity: string; unit: string; }[]; }[] = [];
+        console.log("Outputs");
+        outputs.map(output => {
+            const isOwnAddress = allAddresses.some(addr => addr.address === output.toAddress);
+            const assets = output.assets || {};
+            const amount = dictToAssetsList(assets);
+            if (isOwnAddress){
+                usedAddressesOutput.push({
+                    address: output.toAddress,
+                    amount
+                });
+            } else {
+                otherAddressesOutput.push({
+                    address: output.toAddress,
+                    amount
+                });
+            }
+        });
+
+        let pendingTx = {
+            txHash: tx.txHash,
+            blockTime: moment().utc(),
+            fees: tx.fee,
+            status: "pending",
+            inputs: {
+                otherAddresses: otherAddressesOutput,
+                usedAddresses: usedAddressesInput
+            },
+            outputs: {
+                otherAddresses: otherAddressesOutput,
+                usedAddresses: usedAddressesOutput
+            },
+            amount: {
+                lovelace: tx.mergedOutputs["lovelace"]
+            },
+            type: SEND_TX
+        }
+
+        console.log('pendingTx');
+        console.log(pendingTx);
+        pendingTxs.push(pendingTx);
 
         account.pendingTxs = pendingTxs;
         await apiDb.updateAccount(account);
+        dispatch(setCurrentAccount(account));
     };
     const handleSetPassword = async (pass:string) => {
         setPassword(pass);

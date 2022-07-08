@@ -14,11 +14,15 @@ const SendScreen = ({ navigation, route }) => {
     const onBackIconPress = () => {
         navigation.goBack()
     }
+    const onContinuePress = (route) => {
+        navigation.navigate(route)
+    }
 
     return (
         <Send
             // onContinuePress={onContinuePress}
             onBackIconPress={onBackIconPress}
+            onContinuePress={(route) => onContinuePress(route)}
             isBlackTheme={isBlackTheme}
             address={route.params}
         // fromScreen={fromScreen}

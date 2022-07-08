@@ -15,6 +15,10 @@ export const addressSlice = (address: string, sliceLength: number = 10) => {
   return address;
 };
 
+export function capitalizeFirstLetter(string:string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 export const shuffle = (array:any[]) => {
   let currentIndex = array.length,  randomIndex;
 

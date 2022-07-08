@@ -78,7 +78,8 @@ export const classifyTx = async (transaction, accountAddresses) => {
                 outputs: processedOut,
                 amount: mergedOutputsAmount,
                 fees,
-                type: txType
+                type: txType,
+                status: "confirmed"
             }
 
         case RECEIVE_TX:
@@ -479,6 +480,7 @@ export const buildTransaction = async (
     console.log('\n\n\n');
     console.log('Final inputs');
     console.log(inputs);
+    console.log(inputs[0].utxos[0]);
     console.log('Final outputs');
     console.log(outputs);
     console.log('Final change');
@@ -539,6 +541,7 @@ export const buildTransaction = async (
 
     const txHex = Buffer.from(txBytes).toString('hex');
 
+    let finalHash = '';
     if (password && password.length){
         try {
             const result = await submitTxBlockfrost(
@@ -565,7 +568,8 @@ export const buildTransaction = async (
             }
 
             console.log('txHashSubmitted');
-            console.log(txHashSubmitted.data);
+            console.log(txHashSubmitted.data.data.submitTransaction);
+            finalHash = txHashSubmitted.data.data.submitTransaction.hash;
 
         } catch (e) {
             return {
@@ -576,8 +580,9 @@ export const buildTransaction = async (
 
     return {
         fee: f,
-        txHex,
-        date: moment().format("YYYY-MM-DD")
+        txHash: finalHash,
+        inputs,
+        mergedOutputs: mergedAssetsFromOutputs
     }
 }
 export const dictToAssetsList = (assets: { [key: string]: string}):{quantity: string, unit: string}[] => {
