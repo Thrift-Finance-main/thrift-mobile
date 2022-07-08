@@ -60,6 +60,14 @@ const Wallet: FC<WalletProps> = (props) => {
         //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
         //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
     });
+
+    console.log('currentAccount.pendingTxs');
+    console.log(currentAccount.pendingTxs);
+
+    console.log('currentAccount.history');
+    console.log(currentAccount.pendingTxs);
+    const txList = [...currentAccount.pendingTxs, ...currentAccount.history];
+
     const useIsMounted = () => {
         const isMounted = useRef(false);
         // @ts-ignore
@@ -83,8 +91,6 @@ const Wallet: FC<WalletProps> = (props) => {
                 if (accountState.error){
                     return;
                 }
-                console.log('accountState');
-                console.log(accountState);
                 endpoint =  "accounts/" + saddress + "/addresses";
                 const relatedAddresses = await fetchBlockfrost(endpoint);
                 if (relatedAddresses.error){
@@ -162,12 +168,13 @@ const Wallet: FC<WalletProps> = (props) => {
                     block_time: number,
                     tx_hash: string,
                     tx_index: number,
+                    status: string,
 
                 }[] = [];
                 addressTxsList.map(addr => {
                     addr.txs.map(tx => {
                         tx.block_time = tx.block_time*1000; // TODO: hot fix, from Moment unix
-                        joinedTxsList.push({...tx, address: addr.address});
+                        joinedTxsList.push({...tx, address: addr.address, status: "confirmed"});
                     })
                 });
 
@@ -193,8 +200,6 @@ const Wallet: FC<WalletProps> = (props) => {
 
                 if (uniqueArrayTxsList && uniqueArrayTxsList.length){
                     let addrsWithTxsList = [];
-
-
                     addrsWithTxsList = await Promise.all(
                         uniqueArrayTxsList.map(async tx => {
                             const txInfo = await getTxInfo(tx.tx_hash);
@@ -235,6 +240,10 @@ const Wallet: FC<WalletProps> = (props) => {
                         accHistory = mergedHistory
                     }
 
+                    let pendingTxs = currentAccount.pendingTxs.filter(pendTx => {
+                        return !(accHistory.some(h => h.txHash === pendTx.txHash))
+                    });
+
                     accHistory = accHistory.sort((a, b) => (a.blockTime < b.blockTime) ? 1 : -1);
 
                     // TODO: store everything
@@ -242,6 +251,9 @@ const Wallet: FC<WalletProps> = (props) => {
                         //await apiDb.setAccountTransactionsHashes(currentAccount.accountName, currentTxs);
                         await apiDb.setAccountHistory(currentAccount.accountName, accHistory);
 
+                    }
+                    if (pendingTxs.length) {
+                        await apiDb.setAccountPendingTxs(currentAccount.accountName, pendingTxs);
                     }
 
                     const account = await apiDb.getAccount(currentAccount.accountName);
@@ -614,7 +626,7 @@ const Wallet: FC<WalletProps> = (props) => {
             ) : (
                 <FlatList
                     style={{marginTop: heightPercentageToDP(1)}}
-                    data={currentAccount && currentAccount.history || []}
+                    data={txList}
                     renderItem={renderItemTransaction}
                     keyExtractor={(item, index) => index.toString()}
                 />

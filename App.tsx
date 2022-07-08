@@ -14,6 +14,7 @@ const rootReducer = combineReducers({
 });
 const setConfig = (store) => {
     //apiDb.removeDb().then(r=>{});
+
     apiDb.getCurrentConfig().then(currentConfig => {
         console.log('currentConfig');
         console.log(currentConfig);

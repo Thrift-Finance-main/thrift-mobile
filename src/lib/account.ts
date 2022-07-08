@@ -248,6 +248,7 @@ export const createAccount = async (
     balance: '0',
     assets: {},
     history: [],
+    pendingTxs: [],
     encryptedMasterKey,
     publicKeyHex,
     encryptedPublicKeyHex,

@@ -54,14 +54,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     const [password, setPassword] = useState('0');
     const [hideModal, setHideModal] = useState(true);
 
-    let totalUtxos = 0;
-    utxos.map(acc => {
-        if (acc.utxos && acc.utxos.length){
-            totalUtxos++;
-        }
-    })
-    const notTaggedUtxos = (utxos.filter((utxo) => !utxo.tags.length)).length;
-    const [totalNotTagged, setTotalNotTagged] = useState(notTaggedUtxos);
+    const [totalNotTagged, setTotalNotTagged] = useState('0');
     /*
          1. if Selected address has tag, show and select its tag. Change from selected address and others(if selected) to selected address.
          2. if Selected address has NOOO tag, show and select Global tag. Change from global & others(if selected) to global.
@@ -95,12 +88,6 @@ const Send: FC<CreateTokenProps> = (props) => {
             && currentTabData.assets.lovelace || '0'
           ).dividedBy(1000000).toString();
     currentAmountInput = currentAmountInput === '0' ? '' : currentAmountInput;
-
-    console.log('currentAmountInput');
-    console.log(currentAmountInput);
-
-    console.log('currentTabData');
-    console.log(currentTabData);
 
     const fromTags = currentTabData && currentTabData.fromTags;
     const notTagged = currentTabData && currentTabData.notTagged;
@@ -137,7 +124,7 @@ const Send: FC<CreateTokenProps> = (props) => {
 
         const mergedAssetsFromUtxos = mergeAssetsFromUtxos(updatedUtxos);
 
-        setMergedUtxos(currentUtxos => ({...currentUtxos, ...mergedAssetsFromUtxos}));
+        setMergedUtxos(mergedAssetsFromUtxos);
 
         let tags = [];   // TODO: show all tags even with no assets
         currentAccount.externalPubAddress.map(addr => {
@@ -168,18 +155,24 @@ const Send: FC<CreateTokenProps> = (props) => {
                 })
             );
 
-            const updatedUtxos = utxos.map(utxo => {
+            let updatedUtxos = utxos.map(utxo => {
                 const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
                 if (data){
                     utxo = {...utxo, ...data};
                     return utxo;
                 }
-            }).filter(r => r !== undefined || r.utxos.length);
+            }).filter(r => r !== undefined && r.utxos.length);
+
+            console.log('\n\nupdatedUtxos');
+            console.log(updatedUtxos);
             setUtxos(updatedUtxos);
 
             const mergedAssetsFromUtxos = mergeAssetsFromUtxos(updatedUtxos);
 
-            setMergedUtxos(currentUtxos => ({...currentUtxos, mergedAssetsFromUtxos}));
+            console.log('\n\nmergedUtxos');
+            console.log(mergedAssetsFromUtxos);
+
+            console.log(mergedUtxos);
 
             let tags = [];   // TODO: show all tags even with no assets
             currentAccount.externalPubAddress.map(addr => {
@@ -194,6 +187,18 @@ const Send: FC<CreateTokenProps> = (props) => {
             // verify in enough amount in selected utxos, alert
 
             await mergeAssets();
+
+            let totalUtxos = 0;
+            utxos.map(acc => {
+                if (acc.utxos && acc.utxos.length){
+                    totalUtxos++;
+                }
+            })
+            const notTaggedUtxos = utxos.filter((utxo) => utxo && utxo.tags && !utxo.tags.length && utxo.utxos);
+            console.log('notTaggedUtxos');
+            console.log(notTaggedUtxos);
+            console.log(notTaggedUtxos.length);
+            setTotalNotTagged(notTaggedUtxos.length.toString());
         }
 
         if (isMounted.current) {
@@ -237,12 +242,9 @@ const Send: FC<CreateTokenProps> = (props) => {
             }
 
             const mergedAssetsFromUtxosCurrentOutput = mergeAssetsFromUtxos(filterUtxosFromCurrentOutput);
-            console.log('mergedAssetsFromUtxosCurrentOutput');
-            console.log(mergedAssetsFromUtxosCurrentOutput);
             const processedAssets = removeAssetNameFromKey(output.assets);
             const isolatedOutputIsValid = validOutputs(mergedAssetsFromUtxosCurrentOutput, processedAssets);
-            console.log('isolatedOutputIsValid');
-            console.log(isolatedOutputIsValid);
+
             if (!isolatedOutputIsValid){
                 output.valid = false;
             } else {
@@ -269,8 +271,6 @@ const Send: FC<CreateTokenProps> = (props) => {
         setOutputs(updatedOutputs);
     }
     const updateOutput = async (output) => {
-        console.log('updateOutput');
-        console.log(output);
         let updatedOutputs = outputs.map(out =>{
             if (out.label === output.label){
                 out = output;
@@ -282,10 +282,8 @@ const Send: FC<CreateTokenProps> = (props) => {
         validateOutputs();
 
         if (outputsAreValid()){
-            console.log("updateOutput: lets build tx ")
             await buildTx();
         }
-
     }
 
     const outputsAreValid = () => {
@@ -318,8 +316,6 @@ const Send: FC<CreateTokenProps> = (props) => {
         //console.log(joinUtxos);
 
         const mergedAssetsFromUtxos = mergeAssetsFromUtxos(joinUtxos);
-        console.log('mergedAssetsFromUtxos');
-        console.log(mergedAssetsFromUtxos);
 
         setMergedUtxos(mergedAssetsFromUtxos);
         let availableAdaOnSelectedUtxos =
@@ -402,14 +398,31 @@ const Send: FC<CreateTokenProps> = (props) => {
         console.log(pass);
         const tx = await buildTransaction(currentAccount, accountState, filterUtxos, filterOutputs, protocolParameters, pass);
         if (tx && tx.error){
+            console.log("Error on send tx")
             console.log(tx.error);
         } else {
-            handleHideModal();
+            addTxToDb(tx, filterUtxos, filterOutputs).then(()=> handleHideModal());
         }
 
     }
     const sendTransaction = async () => {
         handleHideModal();
+    };
+    const addTxToDb = async (tx, utxos, outputs) => {
+
+        let account = await apiDb.getAccount(currentAccount.accountName);
+        let pendingTxs = account.pendingTxs || [];
+        pendingTxs.push({
+            txHash: tx.txHash,
+            blockTime: tx.date,
+            fee: tx.fee,
+            type: "pending",
+            inputs: utxos,
+            outputs
+        });
+
+        account.pendingTxs = pendingTxs;
+        await apiDb.updateAccount(account);
     };
     const handleSetPassword = async (pass:string) => {
         console.log('handleSetPassword');
@@ -432,8 +445,6 @@ const Send: FC<CreateTokenProps> = (props) => {
     };
     const updateQuantityFromSelectedAsset = async (unit, quantity) => {
 
-        console.log('updateQuantityFromSelectedAsset');
-        console.log(quantity);
         if (amount === ''){
             return;
         }
@@ -733,7 +744,7 @@ const Send: FC<CreateTokenProps> = (props) => {
                                         currentTabData && currentTabData.notTagged ? '#603EDA' : 'gray',
                                 }}
                                 badgeProps={{
-                                    label: totalNotTagged,
+                                    label: totalNotTagged || '0',
                                     backgroundColor: '#603EDA',
                                 }}
                                 labelStyle={{fontFamily: 'AvenirNextCyr-Medium', fontSize: 14}}

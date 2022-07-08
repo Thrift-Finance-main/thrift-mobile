@@ -18,6 +18,8 @@ import BigNumber from "bignumber.js";
 import {groupBy} from "../utils";
 import {BLOCKFROST_SUMBIT_TESTNET, DANDELION_URL_TESTNET, TX} from "../constants/tx";
 import {submitTransaction} from "../api/graphql/queries";
+import moment from "moment";
+
 import {NativeScripts} from "@emurgo/cardano-serialization-lib-nodejs";
 import {BASE_ADDRESS_INDEX, DERIVE_COIN_TYPE, DERIVE_PUROPOSE} from "./config";
 export const RECEIVE_TX = 'RECEIVE_TX';
@@ -538,36 +540,44 @@ export const buildTransaction = async (
     const txHex = Buffer.from(txBytes).toString('hex');
 
     if (password && password.length){
-        const result = await submitTxBlockfrost(
-            txHex,
-            BLOCKFROST_SUMBIT_TESTNET
-        );
+        try {
+            const result = await submitTxBlockfrost(
+                txHex,
+                BLOCKFROST_SUMBIT_TESTNET
+            );
 
 
-        console.log('result');
-        console.log(result);
+            console.log('result');
+            console.log(result);
 
-        const txHashSubmitted = await submitTransaction(
-            DANDELION_URL_TESTNET,
-            txHex
-        );
+            const txHashSubmitted = await submitTransaction(
+                DANDELION_URL_TESTNET,
+                txHex
+            );
 
-        if (txHashSubmitted.data.errors && txHashSubmitted.data.errors.length){
-            console.log('\n\n\nDandelion errors:');
-            console.log(txHashSubmitted.data.errors);
-            console.log(JSON.stringify(txHashSubmitted.data.errors[0].extensions.reasons));
-            const aa = Buffer.from(txHashSubmitted.data.errors[0].extensions.reasons[0].details[0], 'hex').toString('utf-8');
-            console.log('aa')
-            console.log(aa)
+            if (txHashSubmitted.data.errors && txHashSubmitted.data.errors.length){
+                console.log('\n\n\nDandelion errors:');
+                console.log(txHashSubmitted.data.errors);
+                console.log(JSON.stringify(txHashSubmitted.data.errors[0].extensions.reasons));
+                const aa = Buffer.from(txHashSubmitted.data.errors[0].extensions.reasons[0].details[0], 'hex').toString('utf-8');
+                console.log('aa')
+                console.log(aa)
+            }
+
+            console.log('txHashSubmitted');
+            console.log(txHashSubmitted.data);
+
+        } catch (e) {
+            return {
+                error: e
+            }
         }
-
-        console.log('txHashSubmitted');
-        console.log(txHashSubmitted.data);
     }
 
     return {
         fee: f,
-        txHex2: txHex
+        txHex,
+        date: moment().format("YYYY-MM-DD")
     }
 }
 export const dictToAssetsList = (assets: { [key: string]: string}):{quantity: string, unit: string}[] => {
