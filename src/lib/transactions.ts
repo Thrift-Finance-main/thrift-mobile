@@ -337,11 +337,14 @@ export const buildTransaction = async (
         changeList.push({address: currentAccount.externalPubAddress[0].address, assets: initialAssetsFromNotTaggedUtxos})
     }
 
+    // changeList está duplicada
     console.log('changeList');
     console.log(changeList);
     const groupedChangeList = groupBy(changeList, "address");
     console.log('groupedChangeList');
     console.log(groupedChangeList);
+
+    // TODO: fix double value on multi-output
     let mergedChangeList = [];
     for (const [key, value] of Object.entries(groupedChangeList)) {
         console.log('value');
