@@ -487,39 +487,34 @@ export const buildTransaction = async (
     let witnessesSet = await TransactionWitnessSet.new();
     let vkeyWitnesses = await Vkeywitnesses.new();
 
-    let paymentKey = null;
-    let stakeKey = null;
-    let accountKey = null;
-    if (password && password.length){
-        console.log("Lets try to descencrypt the encryptedMasterKey");
-        console.log(password);
-        try{
-            const accountKeys = await requestAccountKeys(currentAccount.encryptedMasterKey, password);
-
-            accountKey = accountKeys.accountKey;
-            paymentKey = accountKeys.paymentKey
-            stakeKey = accountKeys.stakeKey
-        } catch (e) {
-            return {
-                error: e
-            }
-        }
-    }
-
     // if is submit tx
-    if ((currentAccount.encryptedMasterKey && password)
-        && currentAccount.encryptedMasterKey.length
-        && accountKey
-        && paymentKey
-    ){
-        console.log("Lets sign")
-        const vkeyWitness = await make_vkey_witness(txHash, paymentKey);
-        await vkeyWitnesses.add(vkeyWitness);
+    if (password && password.length){
+        console.log('\n\n\nLets Sign')
+        // Get all addresses details addresses from currentAccount
+        let addressesList1: any[] = [];
+        currentAccount.externalPubAddress.forEach(function (_, index) {
+            const extAddr = currentAccount.externalPubAddress[index];
+            const intAddr = currentAccount.internalPubAddress[index];
+            if (inputs.some(input => input.address === extAddr.address)){
+                addressesList1.push(extAddr);
+            } else if (inputs.some(input => input.address === intAddr.address)){
+                addressesList1.push(intAddr);
+            }
+        });
 
-        // @ts-ignore
-        const stakeKeyVitness = await make_vkey_witness(txHash, stakeKey)
-        await vkeyWitnesses.add(stakeKeyVitness);
+        console.log('addressesList1')
+        console.log(addressesList1);
 
+        for (const address of addressesList1) {
+            const accountKeys = await requestAccountKeys(currentAccount.encryptedMasterKey, password, address.index);
+            const paymentKey = accountKeys.paymentKey
+            const stakeKey = accountKeys.stakeKey
+
+            const vkeyWitness = await make_vkey_witness(txHash, paymentKey);
+            await vkeyWitnesses.add(vkeyWitness);
+            const stakeKeyVitness = await make_vkey_witness(txHash, stakeKey)
+            await vkeyWitnesses.add(stakeKeyVitness);
+        }
         console.log('vkeyWitnesses.len()')
         console.log(await vkeyWitnesses.len());
         // Set paymentKey
@@ -766,14 +761,14 @@ export const requestAccountKeys = async (encryptedMasterKey:string, password:str
             Buffer.from(await decryptData(encryptedMasterKey, password), 'hex')
         )).derive(harden(1852)))
             .derive(harden(1815)) )// coin type;
-            .derive(harden(accountIndex));
+            .derive(harden(0));
     } catch (e) {
         throw e
     }
 
     return {
         accountKey,
-        paymentKey: await (await(await accountKey.derive(0)).derive(0)).to_raw_key(),
+        paymentKey: await (await(await accountKey.derive(0)).derive(accountIndex)).to_raw_key(),
         stakeKey: await (await(await accountKey.derive(2)).derive(0)).to_raw_key(),
     };
 };
