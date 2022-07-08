@@ -195,9 +195,6 @@ const Send: FC<CreateTokenProps> = (props) => {
                 }
             })
             const notTaggedUtxos = utxos.filter((utxo) => utxo && utxo.tags && !utxo.tags.length && utxo.utxos);
-            console.log('notTaggedUtxos');
-            console.log(notTaggedUtxos);
-            console.log(notTaggedUtxos.length);
             setTotalNotTagged(notTaggedUtxos.length.toString());
         }
 
@@ -410,6 +407,7 @@ const Send: FC<CreateTokenProps> = (props) => {
     };
     const addTxToDb = async (tx, utxos, outputs) => {
 
+        console.log('addTxToDb');
         let account = await apiDb.getAccount(currentAccount.accountName);
         let pendingTxs = account.pendingTxs || [];
         pendingTxs.push({
