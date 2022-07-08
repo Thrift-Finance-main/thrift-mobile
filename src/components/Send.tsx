@@ -20,6 +20,9 @@ import {fetchBlockfrost, getProtocolParams, getTxUTxOsByAddress} from "../api/Bl
 import {validateAddress} from "../lib/account";
 import {isDictEmpty} from "../utils";
 import BigNumber from "bignumber.js";
+import CustomModal from "./PopUps/CustomModal";
+import {apiDb} from "../db/LiteDb";
+import {setCurrentAccount} from "../store/Action";
 
 
 interface CreateTokenProps {
@@ -49,6 +52,7 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     const [currentFee, setCurrentFee] = useState('0');
     const [password, setPassword] = useState('0');
+    const [hideModal, setHideModal] = useState(true);
 
     let totalUtxos = 0;
     utxos.map(acc => {
@@ -374,7 +378,7 @@ const Send: FC<CreateTokenProps> = (props) => {
 
         console.log('buildTx ends');
     }
-    const sendTransaction = async () => {
+    const confirmTransaction = async () => {
         const protocolParameters =  await getProtocolParams();
         // Remove empty assets and filter outputs with no assets
         const filterOutputs = outputs.map(output => {
@@ -391,11 +395,27 @@ const Send: FC<CreateTokenProps> = (props) => {
         if (outputs.some(out => out.notTagged)){
             const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
             filterUtxos = [...filterUtxos,...notTaggedUtxos]
+
         }
-        const tx = await buildTransaction(currentAccount, accountState, filterUtxos, filterOutputs, protocolParameters, password);
+        const pass = password || null;
+        console.log('pass');
+        console.log(pass);
+        const tx = await buildTransaction(currentAccount, accountState, filterUtxos, filterOutputs, protocolParameters, pass);
         if (tx && tx.error){
             console.log(tx.error);
+        } else {
+            handleHideModal();
         }
+
+    }
+    const sendTransaction = async () => {
+        handleHideModal();
+    };
+    const handleSetPassword = async (pass:string) => {
+        console.log('handleSetPassword');
+        console.log(pass);
+        setPassword(pass)
+        console.log(pass);
     };
     const updateSelectedAssets = async asset => {
         let outputAux = outputs.filter(output => output.label === activeTab);
@@ -617,6 +637,11 @@ const Send: FC<CreateTokenProps> = (props) => {
         }
         mergeAssets().then(()=>{});
     };
+
+    const handleHideModal = () => {
+        setHideModal(!hideModal);
+    }
+
     const renderDialog: PickerProps['renderCustomModal'] = modalProps => {
         const {visible, children, toggleModal, onDone} = modalProps;
 
@@ -959,6 +984,14 @@ const Send: FC<CreateTokenProps> = (props) => {
                     <View
                         style={{height: heightPercentageToDP(4)}}
                     />
+                    <CustomModal
+                        isBlackTheme={props.isBlackTheme}
+                        visible={!hideModal}
+                        hideModal={() => confirmTransaction()}
+                        security={"success"}
+                        inputText={true}
+                        placeholder={"Introduce spending password"}
+                        handleInputText={(pass:string) => handleSetPassword(pass)}/>
             </ScrollView>
         </SafeAreaView>
     )

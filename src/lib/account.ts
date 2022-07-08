@@ -125,7 +125,7 @@ export const generatePayAddress = async (
   let paymentKeyPub;
   try {
     const paymentKey = (
-      await (await accountKey.derive(chain)).derive(index)
+      await (await accountKey.derive(chain)).derive(index)// TODO: when add witness, calc each payment key,
     ).to_raw_key();
     paymentKeyPub = await (await paymentKey).to_public();
   } catch (e) {
@@ -144,24 +144,33 @@ export const generatePayAddress = async (
   }
 };
 
+export const deriveAccountKey = async (
+    key: Bip32PrivateKey,
+    index: number = 0
+) => {
+  return await (
+      await (await key.derive(harden(DERIVE_PUROPOSE))).derive(harden(DERIVE_COIN_TYPE))
+  ).derive(harden(index));
+}
 export const createAccount = async (
   mnemonic: string,
   accountName: string,
   pass: string
 ) => {
 
-  const rootKey = await generateWalletRootKey(mnemonic);
-
-  const accountKey = await (
-    await (await rootKey.derive(harden(DERIVE_PUROPOSE))).derive(harden(DERIVE_COIN_TYPE))
-  ).derive(harden(BASE_ADDRESS_INDEX));
-  const publicKey = await accountKey.to_public();
-  const publicKeyHex = Buffer.from(await publicKey.as_bytes()).toString('hex');
-
+  console.log('createAccount');
+  const masterKeyPtr = await generateWalletRootKey(mnemonic);
   //console.log('hey1');
-  const accountKeyBytes:string = Buffer.from(await accountKey.as_bytes()).toString('hex')
-  const encryptedMasterKey = await encryptData(accountKeyBytes, pass);
+  const masterKeyHex = Buffer.from(await masterKeyPtr.as_bytes()).toString('hex');
+  const encryptedMasterKey = await encryptData(masterKeyHex, pass);
+  console.log('hello2');
+  const publicKey = await masterKeyPtr.to_public();
+  const publicKeyHex = Buffer.from(await publicKey.as_bytes()).toString('hex');
+  console.log('hello1');
   const encryptedPublicKeyHex = await encryptData(publicKeyHex, pass);
+  console.log('hello3');
+
+  const accountKey = await deriveAccountKey(masterKeyPtr);
 
   //console.log('hey2');
 

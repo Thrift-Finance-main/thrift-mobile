@@ -9,7 +9,8 @@ interface InputFieldProps {
     backgroundColor: any,
     value?: string,
     // value: string
-    placeholderTextColor: any
+    placeholderTextColor: any,
+    styles?: any
 }
 const InputField: FC<InputFieldProps> = (props) => {
     return (
@@ -18,7 +19,7 @@ const InputField: FC<InputFieldProps> = (props) => {
             onChangeText={(text:string) => props && props.onChangeText &&  props.onChangeText(text)}
             secureTextEntry={props.secureText}
             style={{
-                ...styles.mainCOntainer, backgroundColor:
+                ...props.styles,...styles.mainCOntainer, backgroundColor:
                     props.backgroundColor ? props.backgroundColor :
                         Colors.inputFieldBackground,
                 color: props.placeholderTextColor

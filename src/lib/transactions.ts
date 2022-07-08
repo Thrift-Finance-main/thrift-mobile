@@ -1,8 +1,8 @@
-import {CONFIG} from "./account";
+import {CONFIG, deriveAccountKey, harden} from "./account";
 import {addBigNum, divBigNum, subBigNum} from "./utils";
 import {apiDb} from "../db/LiteDb";
 import {getProtocolParams, getTxUTxOsByAddress, IAccountState, submitTxBlockfrost} from "../api/Blockfrost";
-import {decryptData} from "./cryptoLib";
+import {decryptData, decryptWithPassword} from "./cryptoLib";
 import {
     Address,
     AssetName,
@@ -10,7 +10,7 @@ import {
     BigNum,
     Bip32PrivateKey, hash_transaction,
     LinearFee, make_vkey_witness,
-    MultiAsset, ScriptHash, Transaction,
+    MultiAsset, PrivateKey, ScriptHash, Transaction,
     TransactionBuilder, TransactionHash, TransactionInput, TransactionOutput, TransactionWitnessSet,
     Value, Vkeywitnesses
 } from "@emurgo/react-native-haskell-shelley";
@@ -18,6 +18,8 @@ import BigNumber from "bignumber.js";
 import {groupBy} from "../utils";
 import {BLOCKFROST_SUMBIT_TESTNET, DANDELION_URL_TESTNET, TX} from "../constants/tx";
 import {submitTransaction} from "../api/graphql/queries";
+import {NativeScripts} from "@emurgo/cardano-serialization-lib-nodejs";
+import {BASE_ADDRESS_INDEX, DERIVE_COIN_TYPE, DERIVE_PUROPOSE} from "./config";
 export const RECEIVE_TX = 'RECEIVE_TX';
 export const SEND_TX = 'SEND_TX';
 export const SELF_TX = 'SELF_TX';
@@ -355,18 +357,7 @@ export const buildTransaction = async (
     // Merge changeList
 
     // BUILD TX
-    let paymentKey = null;
-    let accountKey = null;
-    if (password && password.length){
-        let decryptedPassw = await decryptData(password, currentAccount.encryptedMasterKey);
 
-        accountKey = await Bip32PrivateKey.from_bytes(
-            // @ts-ignore
-            Buffer.from(decryptedPassw, 'hex')
-        );
-
-        paymentKey = (await (await accountKey.derive(0)).derive(0)).to_raw_key();
-    }
 
     console.log('txBuilder');
     const txBuilder = await getTransactionBuilder(parameters);
@@ -376,6 +367,7 @@ export const buildTransaction = async (
     console.log(txBuilderDraft);
 
     // TODO: coinSelection, select which utxos(inputs) to use
+    console.log("Add inputs from ")
     for (const input of inputs) {
         const address = input.address;
         const utxos = input.utxos;
@@ -384,7 +376,12 @@ export const buildTransaction = async (
                 const inputHash = await TransactionHash.from_bytes(Buffer.from(utxo.tx_hash, 'hex'));
                 const txInput = await TransactionInput.new(inputHash, utxo.tx_index);
                 const inputValue = await toValue(utxo.amount);
+                console.log('address');
+                console.log(address);
+                console.log('amount');
+                console.log(utxo.amount);
                 const inputAddress = await Address.from_bech32(address);
+                await txBuilderDraft.add_input(inputAddress,txInput,inputValue);
                 await txBuilder.add_input(inputAddress,txInput,inputValue);
             } catch (e) {
                 return {
@@ -398,10 +395,13 @@ export const buildTransaction = async (
     console.log('add outputs');
     for (const output of outputs) {
         try {
-            const outputValue = await toValueFromDict(output.assets);
+            const outputValue = await toValue(dictToAssetsList(output.assets));
             const outputAddress = await Address.from_bech32(output.toAddress);
             const txOutput = await TransactionOutput.new(outputAddress, outputValue);
+            await txBuilderDraft.add_output(txOutput);
             await txBuilder.add_output(txOutput);
+            console.log("\n\noutput added");
+            console.log(output)
         } catch (e) {
             return {
                 error: e
@@ -409,38 +409,102 @@ export const buildTransaction = async (
         }
     }
 
-    console.log('add change');
+    console.log('add change to draft');
     for (const outputAsChange of mergedChangeList) {
         try {
-            const outputValue = await toValueFromDict(outputAsChange.assets);
+            const outputValue = await toValue(dictToAssetsList(outputAsChange.assets));
             const outputAddress = await Address.from_bech32(outputAsChange.address);
             const txOutput = await TransactionOutput.new(outputAddress, outputValue);
-            await txBuilder.add_output(txOutput);
+            await txBuilderDraft.add_output(txOutput);
         } catch (e) {
             return {
                 error: e
             }
         }
     }
+
+    const compensate = "4224";
+    let minFeeDraft = await (await txBuilderDraft.min_fee()).to_str();
+    const f = (new BigNumber(minFeeDraft).plus(compensate)).toString();
+
+    // Select change to sub the fee
+    let outputAsChangeWithFee = [];
+    let done = false;
+    for (let outputAsChange of mergedChangeList) {
+        if (!done &&(outputAsChange.address === currentAccount.externalPubAddress)
+            || currentAccount.externalPubAddress.some(pubAddr => pubAddr.address ===  outputAsChange.address)
+        ) {
+            outputAsChange.assets["lovelace"] = (new BigNumber(outputAsChange.assets["lovelace"]).minus(new BigNumber(f))).toString();
+            done = true;
+        }
+        outputAsChangeWithFee.push(outputAsChange);
+    }
+
+    console.log('Final change with fee');
+    console.log(outputAsChangeWithFee);
+
+    for (const outputAsChange of outputAsChangeWithFee) {
+        try {
+            const outputValue2 = await toValue(dictToAssetsList(outputAsChange.assets));
+            const outputAddress2 = await Address.from_bech32(outputAsChange.address);
+            const txOutput2 = await TransactionOutput.new(outputAddress2, outputValue2);
+
+            console.log("get_explicit_output ")
+            console.log(await (await (await txBuilder.get_explicit_output()).coin()).to_str());
+            await txBuilder.add_output(txOutput2);
+            console.log("get_explicit_output ")
+            console.log(await (await (await txBuilder.get_explicit_output()).coin()).to_str());
+            console.log("\n\nchange added");
+            console.log(outputAsChange)
+        } catch (e) {
+            return {
+                error: e
+            }
+        }
+    }
+
+    await txBuilder.set_fee(await BigNum.from_str(f));
 
     console.log("min fee: ")
     console.log(await (await txBuilder.min_fee()).to_str());
+    console.log("get_explicit_output ")
+    console.log(await (await (await txBuilder.get_explicit_output()).coin()).to_str());
 
-    console.log('parameters');
-    console.log(parameters);
-    await txBuilder.set_ttl(parameters.slot + TX.invalid_hereafter);
 
-    const minFee = await (await txBuilder.min_fee()).to_str();
+    console.log('\n\n\n');
+    console.log('Final inputs');
+    console.log(inputs);
+    console.log('Final outputs');
+    console.log(outputs);
+    console.log('Final change');
+    console.log(mergedChangeList);
 
-    await txBuilder.set_fee(await BigNum.from_str(minFee));
     const txBody = await txBuilder.build();
-
-    const witnesses = await TransactionWitnessSet.new();
 
     const txHash = await hash_transaction(txBody);
 
     // add keyhash witnesses
-    const vkeyWitnesses = await Vkeywitnesses.new();
+    let witnessesSet = await TransactionWitnessSet.new();
+    let vkeyWitnesses = await Vkeywitnesses.new();
+
+    let paymentKey = null;
+    let stakeKey = null;
+    let accountKey = null;
+    if (password && password.length){
+        console.log("Lets try to descencrypt the encryptedMasterKey");
+        console.log(password);
+        try{
+            const accountKeys = await requestAccountKeys(currentAccount.encryptedMasterKey, password);
+
+            accountKey = accountKeys.accountKey;
+            paymentKey = accountKeys.paymentKey
+            stakeKey = accountKeys.stakeKey
+        } catch (e) {
+            return {
+                error: e
+            }
+        }
+    }
 
     // if is submit tx
     if ((currentAccount.encryptedMasterKey && password)
@@ -449,27 +513,29 @@ export const buildTransaction = async (
         && paymentKey
     ){
         console.log("Lets sign")
-        const vkeyWitness = await make_vkey_witness(txHash, (await paymentKey));
+        const vkeyWitness = await make_vkey_witness(txHash, paymentKey);
         await vkeyWitnesses.add(vkeyWitness);
 
-        const prvKey2 = await accountKey.to_raw_key();
-
-        // TODO: second sign
-        const stakeKeyVitness = await make_vkey_witness(txHash, prvKey2)
+        // @ts-ignore
+        const stakeKeyVitness = await make_vkey_witness(txHash, stakeKey)
         await vkeyWitnesses.add(stakeKeyVitness);
 
+        console.log('vkeyWitnesses.len()')
+        console.log(await vkeyWitnesses.len());
         // Set paymentKey
-        await witnesses.set_vkeys(vkeyWitnesses);
-        await (await paymentKey).free();
+
+        //await paymentKey.free();
     }
 
+    await witnessesSet.set_vkeys(vkeyWitnesses);
     // create the finalized transaction with witnesses
     const transaction = await Transaction.new(
         txBody,
-        witnesses
+        witnessesSet
     );
-    const txHex:string = Buffer.from(await transaction.to_bytes()).toString("hex");
+    const txBytes = await transaction.to_bytes();
 
+    const txHex = Buffer.from(txBytes).toString('hex');
 
     if (password && password.length){
         const result = await submitTxBlockfrost(
@@ -487,8 +553,12 @@ export const buildTransaction = async (
         );
 
         if (txHashSubmitted.data.errors && txHashSubmitted.data.errors.length){
-            console.log('Dandelion errors:');
+            console.log('\n\n\nDandelion errors:');
             console.log(txHashSubmitted.data.errors);
+            console.log(JSON.stringify(txHashSubmitted.data.errors[0].extensions.reasons));
+            const aa = Buffer.from(txHashSubmitted.data.errors[0].extensions.reasons[0].details[0], 'hex').toString('utf-8');
+            console.log('aa')
+            console.log(aa)
         }
 
         console.log('txHashSubmitted');
@@ -496,9 +566,16 @@ export const buildTransaction = async (
     }
 
     return {
-        fee: minFee,
-        txHex
+        fee: f,
+        txHex2: txHex
     }
+}
+export const dictToAssetsList = (assets: { [key: string]: string}):{quantity: string, unit: string}[] => {
+    let list = [];
+    for (const [key, value] of Object.entries(assets)) {
+        list.push({unit: key, quantity: value})
+    }
+    return list;
 }
 export const mergeAssetsFromUtxos = (utxos) => {
     let assets: { [key: string]: string } = {};
@@ -634,28 +711,25 @@ export const getTransactionBuilder = async (protocolParams): Promise<Transaction
 
 export const toValue = async (assets:{quantity: string, unit: string}[]): Promise<Value> => {
 
+    //console.log('\n\ntoValue');
+
     const lovelace = assets.filter(a => a.unit === "lovelace")[0];
-    const value = await Value.new(
+    let value = await Value.new(
         await BigNum.from_str(lovelace.quantity)
     );
+    //console.log("Add lovelace");
+    //console.log(lovelace.unit);
+    //console.log(lovelace.quantity);
     const multiAss = await buildMultiAssets(assets);
     await value.set_multiasset(multiAss);
 
+    let coin = await value.coin();
+    coin = await coin.to_str()
+    //console.log('coin')
+    //console.log(coin)
     return value;
 }
 
-export const toValueFromDict = async (assets: { [key: string]: string}): Promise<Value> => {
-
-    const value = await Value.new(
-        await BigNum.from_str(assets["lovelace"])
-    );
-    console.log("hello1.1");
-    const multiAss = await buildMultiAssetsFromDict(assets);
-    console.log("hello1.2");
-    await value.set_multiasset(multiAss);
-
-    return value;
-}
 export const buildMultiAssets = async (assets:{quantity: string, unit: string}[]): Promise<MultiAsset> => {
 
     let multiAsset = await MultiAsset.new();
@@ -683,34 +757,26 @@ export const buildMultiAssets = async (assets:{quantity: string, unit: string}[]
     return multiAsset;
 }
 
-export const buildMultiAssetsFromDict = async (assets: { [key: string]: string}): Promise<MultiAsset> => {
 
-    let multiAsset = await MultiAsset.new();
+export const requestAccountKeys = async (encryptedMasterKey:string, password:string, accountIndex = 0) => {
 
-    for (const [key, value] of Object.entries(assets)) {
-        const policyId = key.slice(0,56);
-        const assetName = key.split(policyId)[1];  // unit: policyId+assetName
-
-        if (key !== "lovelace"){
-            const polId = await ScriptHash.from_bytes(
-                Buffer.from(policyId, "hex")
-            )
-            let assetObj = await multiAsset.get(polId) ?? await Assets.new();
-            const script = await ScriptHash.from_bytes(Buffer.from(policyId, 'hex'));
-
-            const aName = await AssetName.new(Buffer.from(assetName, 'hex'));
-            await assetObj.insert(aName, await BigNum.from_str(value.toString()));
-            await multiAsset.insert(script, assetObj);
-        }
+    let accountKey;
+    try {
+        accountKey = await (await(await (await Bip32PrivateKey.from_bytes(
+            Buffer.from(await decryptData(encryptedMasterKey, password), 'hex')
+        )).derive(harden(1852)))
+            .derive(harden(1815)) )// coin type;
+            .derive(harden(accountIndex));
+    } catch (e) {
+        throw e
     }
 
-    return multiAsset;
-}
-
-
-
-
-
+    return {
+        accountKey,
+        paymentKey: await (await(await accountKey.derive(0)).derive(0)).to_raw_key(),
+        stakeKey: await (await(await accountKey.derive(2)).derive(0)).to_raw_key(),
+    };
+};
 
 
 

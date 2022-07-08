@@ -1,17 +1,37 @@
-import React, { FC } from 'react';
+import React, {FC, useState} from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import Colors from '../../constants/CustomColors';
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimensions';
 import Button from '../Common/Button';
 import Modal from 'react-native-modal'
+import {TextField} from "react-native-ui-lib";
+import InputField from "../Common/InputField";
+import removeIcon from "../../assets/remove.png";
 interface CustomModalProps {
   visible: boolean,
   hideModal: () => void,
-  modalText: string
-  security: boolean
+  handleInputText: (text:string) => void,
+  modalText: string,
+  security: string,
+  placeholder: string,
+  inputText: boolean,
   isBlackTheme: boolean
 }
 const CustomModal: FC<CustomModalProps> = (props) => {
+
+  const [inputText, setInputText] = useState('');
+  const getGraphic = () => {
+    switch (props.security) {
+      case 'fingerprint':
+        return require("../../assets/fingerPrint.gif");
+      case 'success':
+        return require("../../assets/success.gif");
+      default:
+        return require("../../assets/success.gif");
+    }
+  }
+  //const hiddenText = inputText.replace(/./g, '*');
+
   return (
     <Modal
       style={styles.mainContainer}
@@ -30,9 +50,7 @@ const CustomModal: FC<CustomModalProps> = (props) => {
               Colors.white,
         }}>
           <Image
-            source={
-              props.security ? require("../../assets/fingerPrint.gif") :
-                require("../../assets/success.gif")}
+            source={getGraphic()}
             resizeMode='contain'
             style={styles.imageStyle}
           />
@@ -43,6 +61,25 @@ const CustomModal: FC<CustomModalProps> = (props) => {
           }}>{props.modalText}</Text>
           <View
             style={{ height: heightPercentageToDP(3) }}
+          />
+          {
+            props.inputText ?
+                <View >
+                  <TextField
+                      containerStyle={{width: 330, marginHorizontal: 12,  fontFamily: 'AvenirNextCyr-Medium'}}
+                      floatingPlaceholder
+                      placeholder={props.placeholder}
+                      onChangeText={(value:string) => props.handleInputText(value)}
+                      useBottomErrors
+                      validate={['required']}
+                      errorMessage={"Invalid amount"}
+                      type="password"
+                  />
+                </View>
+            : null
+          }
+          <View
+              style={{ height: heightPercentageToDP(3) }}
           />
           <Button
             backgroundColor={Colors.primaryButton}
@@ -85,7 +122,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
+  inputText :{
+    paddingHorizontal: 12
+  }
 
 
 });
