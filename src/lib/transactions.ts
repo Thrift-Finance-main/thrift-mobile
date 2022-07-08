@@ -423,10 +423,10 @@ export const buildTransaction = async (
         }
     }
 
-    const compensate = "4224";
+
+    const compensate = "13112";
     let minFeeDraft = await (await txBuilderDraft.min_fee()).to_str();
     const f = (new BigNumber(minFeeDraft).plus(compensate)).toString();
-
     // Select change to sub the fee
     let outputAsChangeWithFee = [];
     let done = false;
@@ -463,9 +463,12 @@ export const buildTransaction = async (
         }
     }
 
-    await txBuilder.set_fee(await BigNum.from_str(f));
+    const feeBigNum = await BigNum.from_str(f);
+    await txBuilder.set_fee(feeBigNum);
 
-    console.log("min fee: ")
+    console.log("fee in tx: ")
+    console.log(await (await txBuilder.get_fee_if_set()).to_str());
+    console.log("Min fee")
     console.log(await (await txBuilder.min_fee()).to_str());
     console.log("get_explicit_output ")
     console.log(await (await (await txBuilder.get_explicit_output()).coin()).to_str());
@@ -491,22 +494,24 @@ export const buildTransaction = async (
     if (password && password.length){
         console.log('\n\n\nLets Sign')
         // Get all addresses details addresses from currentAccount
-        let addressesList1: any[] = [];
+        let inputsList: any[] = [];
         currentAccount.externalPubAddress.forEach(function (_, index) {
-            const extAddr = currentAccount.externalPubAddress[index];
-            const intAddr = currentAccount.internalPubAddress[index];
+            let extAddr = currentAccount.externalPubAddress[index];
+            let intAddr = currentAccount.internalPubAddress[index];
             if (inputs.some(input => input.address === extAddr.address)){
-                addressesList1.push(extAddr);
+                extAddr.chain = 0;
+                inputsList.push(extAddr);
             } else if (inputs.some(input => input.address === intAddr.address)){
-                addressesList1.push(intAddr);
+                intAddr.chain = 1;
+                inputsList.push(intAddr);
             }
         });
 
         console.log('addressesList1')
-        console.log(addressesList1);
+        console.log(inputsList);
 
-        for (const address of addressesList1) {
-            const accountKeys = await requestAccountKeys(currentAccount.encryptedMasterKey, password, address.index);
+        for (const address of inputsList) {
+            const accountKeys = await requestAccountKeys(currentAccount.encryptedMasterKey, password, address.chain, address.index);
             const paymentKey = accountKeys.paymentKey
             const stakeKey = accountKeys.stakeKey
 
@@ -753,7 +758,7 @@ export const buildMultiAssets = async (assets:{quantity: string, unit: string}[]
 }
 
 
-export const requestAccountKeys = async (encryptedMasterKey:string, password:string, accountIndex = 0) => {
+export const requestAccountKeys = async (encryptedMasterKey:string, password:string, chain = 0,accountIndex = 0) => {
 
     let accountKey;
     try {
@@ -768,7 +773,7 @@ export const requestAccountKeys = async (encryptedMasterKey:string, password:str
 
     return {
         accountKey,
-        paymentKey: await (await(await accountKey.derive(0)).derive(accountIndex)).to_raw_key(),
+        paymentKey: await (await(await accountKey.derive(chain)).derive(accountIndex)).to_raw_key(),
         stakeKey: await (await(await accountKey.derive(2)).derive(0)).to_raw_key(),
     };
 };
