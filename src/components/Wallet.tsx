@@ -65,8 +65,11 @@ const Wallet: FC<WalletProps> = (props) => {
     console.log(currentAccount.pendingTxs);
 
     console.log('currentAccount.history');
-    console.log(currentAccount.pendingTxs);
+    console.log(currentAccount.history);
     const txList = [...currentAccount.pendingTxs, ...currentAccount.history];
+
+    console.log('txList');
+    console.log(txList);
 
     const useIsMounted = () => {
         const isMounted = useRef(false);

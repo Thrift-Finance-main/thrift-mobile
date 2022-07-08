@@ -398,7 +398,12 @@ const Send: FC<CreateTokenProps> = (props) => {
             console.log("Error on send tx")
             console.log(tx.error);
         } else {
-            addTxToDb(tx, filterUtxos, filterOutputs).then(()=> handleHideModal());
+            addTxToDb(tx, filterUtxos, filterOutputs).then(()=>
+            {
+                handleHideModal();
+                props.onContinuePress("Wallet");;
+            });
+
         }
 
     }
@@ -410,7 +415,10 @@ const Send: FC<CreateTokenProps> = (props) => {
         console.log('addTxToDb');
         let account = await apiDb.getAccount(currentAccount.accountName);
         let pendingTxs = account.pendingTxs || [];
+        console.log('tx');
+        console.log(tx);
         pendingTxs.push({
+            hash: "jb",
             txHash: tx.txHash,
             blockTime: tx.date,
             fee: tx.fee,
@@ -423,10 +431,7 @@ const Send: FC<CreateTokenProps> = (props) => {
         await apiDb.updateAccount(account);
     };
     const handleSetPassword = async (pass:string) => {
-        console.log('handleSetPassword');
-        console.log(pass);
-        setPassword(pass)
-        console.log(pass);
+        setPassword(pass);
     };
     const updateSelectedAssets = async asset => {
         let outputAux = outputs.filter(output => output.label === activeTab);
@@ -529,7 +534,7 @@ const Send: FC<CreateTokenProps> = (props) => {
 
     const onSelectNotTagged = () => {
         const updatedOutputs = outputs.map(out => {
-            if (out.label === activeTab){
+            if (out.label === activeTab && totalNotTagged > 0){
                 out.notTagged = !out.notTagged;
             }
             return out;
