@@ -61,19 +61,10 @@ const Wallet: FC<WalletProps> = (props) => {
         //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
     });
 
-    console.log('currentAccount.pendingTxs');
-    console.log(currentAccount.pendingTxs);
-
     let pendingTxs = currentAccount.pendingTxs.filter(pendTx => {
         return !(currentAccount.history.some(h => h.txHash === pendTx.txHash))
     });
-
-    console.log('currentAccount.history');
-    console.log(currentAccount.history);
     const txList = [...pendingTxs, ...currentAccount.history];
-
-    console.log('txList');
-    console.log(txList);
 
     const useIsMounted = () => {
         const isMounted = useRef(false);
@@ -472,7 +463,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                         fontSize: 8,
                                         textAlign: 'center',
                                         fontFamily: 'AvenirNextCyr-Medium',
-                                        fontWeight: item.status && item.status === "pending" ? "bold" : "",
+                                        fontWeight: item.status && item.status === "pending" ? "bold" : "normal",
                                         color: item.status && item.status === "pending" ? "gray" : "green"
                                     }}>
                                     {item.status ? capitalizeFirstLetter(item.status) : item.status}

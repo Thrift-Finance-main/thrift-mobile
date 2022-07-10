@@ -117,13 +117,28 @@ export const diffAmounts = async (amount1, amount2) => {
         Object.keys(amount1).map(async unit => {
             if ((unit in amount2)){
                 amountDict[unit] =
-                    amountDict[unit] = await subBigNum(amount1[unit], amount2[unit],);
+                    amountDict[unit] = await subBigNum(amount1[unit], amount2[unit]);
 
             } else {
                 amountDict[unit] = amount1[unit];
             }
         })
     );
+
+    return amountDict;
+}
+export const diffAmounts2 = (amount1:{ [unit: string]: string }, amount2:{ [unit: string]: string }) => {
+
+    let amountDict: { [unit: string]: string } = {};
+    Object.keys(amount1).map(async unit => {
+        if ((unit in amount2)){
+            const bigValue1 = new BigNumber(amount1[unit]);
+            const bigValue2 = new BigNumber(amount2[unit]);
+            amountDict[unit] = bigValue1.minus(bigValue2).toString();
+        } else {
+            amountDict[unit] = amount1[unit];
+        }
+    })
 
     return amountDict;
 }
@@ -233,8 +248,7 @@ export const buildTransaction = async (
     console.log('outputs');
     console.log(outputs);
     const mergedAssetsFromOutputs = mergeAssetsFromOutputs(outputs);
-    console.log('mergedAssetsFromOutputs');
-    console.log(mergedAssetsFromOutputs);
+
     const outputsAreValid = validOutputs(mergedAssetsFromUtxos,mergedAssetsFromOutputs);
     console.log('outputsAreValid');
     console.log(outputsAreValid);
@@ -244,29 +258,36 @@ export const buildTransaction = async (
         }
     }
 
-
-
-
     const taggedUtxos = utxos.filter((utxo) => utxo.tags.length);
     const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
-
-    let notTaggedUtxosAux = notTaggedUtxos;
 
     let initialAssetsFromUtxos = mergeAssetsFromUtxos(taggedUtxos);
     let initialAssetsFromNotTaggedUtxos = mergeAssetsFromUtxos(notTaggedUtxos);
 
-    let assetsFromAllUtxos = mergeAssetsFromUtxos(utxos);
+    console.log('\n\n\n\n\n1- Start Coin Selection');
+    console.log('mergedAssetsFromOutputs');
+    console.log(mergedAssetsFromOutputs);
+    console.log('initialAssetsFromUtxos');
+    console.log(initialAssetsFromUtxos);
 
     let changeList = [];
+
+    console.log("\n\n\nCalculate change from outputs");
+    let inputUtxosByTag:{ [tag: string]: any[] } = {};
     for (const output of outputs) {
+        const currentTags = output.fromTags;
+        console.log("\n\nCurrent Tag");
+        console.log(currentTags[0]);
+        console.log("All inputUtxosByTag");
+        console.log(inputUtxosByTag);
+        console.log("inputUtxosByTag by Tag");
+        console.log(inputUtxosByTag[currentTags[0]]);
 
         const utxosFromSelectedTag = taggedUtxos.filter((utxo) => utxo.tags.length
-            && utxo.tags.some(t => output.fromTags.includes(t)
-        ));
+            && utxo.tags.some(t => currentTags.includes(t)));
 
         // Candidates to receive the change
         const fromAddresses = utxosFromSelectedTag.map(utxo => utxo.address);
-
         // Set output: address-assets
         let changeAddress;
         // if there is not any utxo in the selected tag
@@ -276,22 +297,22 @@ export const buildTransaction = async (
             changeAddress = fromAddresses[0];
         }
 
-        // inputs
-        let joinUtxos = utxosFromSelectedTag;
-        // CoinSelection algorithm here. update joinUtxos ..
-
-        // Calc the diff joinUtxos-output.assets, send diff to change
-        const mergedAssetsFromUtxos = mergeAssetsFromUtxos(joinUtxos);
-        // we just need to create the outputs+change, the inputs are -> utxos param
-
+        console.log('utxos for current Output');
+        console.log(utxosFromSelectedTag);
+        const mergedAssetsFromCurrentUtxos = mergeAssetsFromUtxos(utxosFromSelectedTag);
+        console.log("Input Assets for current output");
+        console.log(mergedAssetsFromCurrentUtxos);
         const assets = output.assets;
+        console.log('assets for current Output');
+        console.log(output.assets);
+        if (inputUtxosByTag[currentTags[0]] === undefined) {
+            inputUtxosByTag[currentTags[0]] = mergedAssetsFromCurrentUtxos;
+        } else {
+            inputUtxosByTag[currentTags[0]] = diffAmounts2(mergedAssetsFromCurrentUtxos, output.assets);
+        }
 
-        const processedAssets = removeAssetNameFromKey(assets); // X policyId.assetName
-        // This is the assets change from the current output
-        const diff = calcDiffAssets(mergedAssetsFromUtxos, processedAssets);
-        // si diff es mayor que mergedAssetsFromUtxos
-        //
 
+        /*
         // if notTaggedUtxos are selected
          if (output.notTagged){
              // joinUtxos = [...utxosFromSelectedTag,...notTaggedUtxos];
@@ -300,19 +321,28 @@ export const buildTransaction = async (
              const assetsNeededFromNotTaggedUtxos = {};
              const assetsForCurrentChange = {};
 
-             for (const [key, value] of Object.entries(diff)) {
+
+             for (const [key, value] of Object.entries(assets)) {
                  let bigValue = new BigNumber(value);
+                 console.log(value);
+                 console.log(value);
                  if (bigValue.isLessThan(new BigNumber(0))) {
+                     console.log("Not enough assets for this output, need notTagged")
                      assetsNeededFromNotTaggedUtxos[key] = bigValue.multipliedBy(new BigNumber(-1)).toString();
                  } else {
+                     console.log("Enough assets for current output, OK");
                      assetsForCurrentChange[key] = bigValue.toString();
                  }
              }
 
+             console.log("assetsForCurrentChange");
+             console.log(assetsForCurrentChange);
              if (Object.entries(assetsForCurrentChange).length){
                  changeList.push({address: changeAddress, assets: assetsForCurrentChange});
              }
 
+             console.log("assetsNeededFromNotTaggedUtxos");
+             console.log(assetsNeededFromNotTaggedUtxos);
              if (Object.keys(assetsNeededFromNotTaggedUtxos).length){
                  const updatedInitialAssetsFromNotTaggedUtxos = calcDiffAssets(initialAssetsFromNotTaggedUtxos, assetsNeededFromNotTaggedUtxos);
                  initialAssetsFromNotTaggedUtxos = updatedInitialAssetsFromNotTaggedUtxos;
@@ -320,25 +350,55 @@ export const buildTransaction = async (
              // diff and update initialAssetsFromNotTaggedUtxos
              // positive values go to the current changeAddress
          } else {
-             if (Object.entries(diff).length){
-                 changeList.push({address: changeAddress, assets: diff});
+             if (Object.entries(assets).length){
+                 changeList.push({address: changeAddress, assets: assets});
              }
          }
 
-         // Add change as outputs
+         */
+
+        //initialAssetsFromUtxos= calcDiffAssets(initialAssetsFromUtxos, assets);
+        //console.log('DIFF initialAssetsFromUtxos after rest current output');
+        //console.log(initialAssetsFromUtxos);
+        // Add change as outputs
 
     }
 
-    console.log('asset left fron notTaggedUtxos initialAssetsFromNotTaggedUtxos, going to global address');
-    console.log(initialAssetsFromNotTaggedUtxos);
+    console.log("\n\n");
+
+    console.log('All final change in inputUtxosByTag');
+    console.log(inputUtxosByTag);
 
 
-    if (Object.entries(initialAssetsFromNotTaggedUtxos).length){
-        changeList.push({address: currentAccount.externalPubAddress[0].address, assets: initialAssetsFromNotTaggedUtxos})
+    const needAssetsFromNotTaggedUtxos =  Object.keys(inputUtxosByTag).some(tag => (new BigNumber(inputUtxosByTag[tag])).isLessThan(new BigNumber('0')));
+
+    // Check if there are negative values in inputUtxosByTag
+    if (needAssetsFromNotTaggedUtxos){
+        console.log('We need to use notTagged utxos to cover the rest');
+    } else {
+        console.log('notTagged utxos NOT needed');
     }
 
+    //console.log('changeList1');
+    //console.log(changeList);
+
+    //if (Object.entries(initialAssetsFromNotTaggedUtxos).length){
+    //    changeList.push({address: currentAccount.externalPubAddress[0].address, assets: initialAssetsFromNotTaggedUtxos})
+    //}
+
+    // Remove duplicates
+    /*
+    changeList = changeList.filter((value, index, self) =>
+        index === self.findIndex((t) => (
+            t.address === value.address
+        ))
+    );
+     */
+
+
+    /*
     // changeList está duplicada
-    console.log('changeList');
+    console.log('changeList2');
     console.log(changeList);
     const groupedChangeList = groupBy(changeList, "address");
     console.log('groupedChangeList');
@@ -352,15 +412,15 @@ export const buildTransaction = async (
         const mergedAssets = mergeAssetsFromOutputs(value);
         mergedChangeList.push({address: key, assets: mergedAssets})
     }
-
-    console.log('Inputs');
+    */
+    console.log('\n\nInputs');
     let inputs = [];
     utxos.map(utxo => inputs.push({address: utxo.address, utxos: utxo.utxos}))
     console.log(inputs);
     console.log('Final outputs');
     console.log(outputs);
-    console.log('Final change');
-    console.log(mergedChangeList);
+    //console.log('Final change');
+    //console.log(mergedChangeList);
     // Merge changeList
 
     // BUILD TX
@@ -374,7 +434,8 @@ export const buildTransaction = async (
     console.log(txBuilderDraft);
 
     // TODO: coinSelection, select which utxos(inputs) to use
-    console.log("Add inputs from ")
+
+    /*
     for (const input of inputs) {
         const address = input.address;
         const utxos = input.utxos;
@@ -383,10 +444,6 @@ export const buildTransaction = async (
                 const inputHash = await TransactionHash.from_bytes(Buffer.from(utxo.tx_hash, 'hex'));
                 const txInput = await TransactionInput.new(inputHash, utxo.tx_index);
                 const inputValue = await toValue(utxo.amount);
-                console.log('address');
-                console.log(address);
-                console.log('amount');
-                console.log(utxo.amount);
                 const inputAddress = await Address.from_bech32(address);
                 await txBuilderDraft.add_input(inputAddress,txInput,inputValue);
                 await txBuilder.add_input(inputAddress,txInput,inputValue);
@@ -399,7 +456,6 @@ export const buildTransaction = async (
         }
     }
 
-    console.log('add outputs');
     for (const output of outputs) {
         try {
             const outputValue = await toValue(dictToAssetsList(output.assets));
@@ -407,8 +463,6 @@ export const buildTransaction = async (
             const txOutput = await TransactionOutput.new(outputAddress, outputValue);
             await txBuilderDraft.add_output(txOutput);
             await txBuilder.add_output(txOutput);
-            console.log("\n\noutput added");
-            console.log(output)
         } catch (e) {
             return {
                 error: e
@@ -416,7 +470,6 @@ export const buildTransaction = async (
         }
     }
 
-    console.log('add change to draft');
     for (const outputAsChange of mergedChangeList) {
         try {
             const outputValue = await toValue(dictToAssetsList(outputAsChange.assets));
@@ -447,8 +500,8 @@ export const buildTransaction = async (
         outputAsChangeWithFee.push(outputAsChange);
     }
 
-    console.log('Final change with fee');
-    console.log(outputAsChangeWithFee);
+    //console.log('Final change with fee');
+    //console.log(outputAsChangeWithFee);
 
     for (const outputAsChange of outputAsChangeWithFee) {
         try {
@@ -456,13 +509,8 @@ export const buildTransaction = async (
             const outputAddress2 = await Address.from_bech32(outputAsChange.address);
             const txOutput2 = await TransactionOutput.new(outputAddress2, outputValue2);
 
-            console.log("get_explicit_output ")
-            console.log(await (await (await txBuilder.get_explicit_output()).coin()).to_str());
             await txBuilder.add_output(txOutput2);
-            console.log("get_explicit_output ")
-            console.log(await (await (await txBuilder.get_explicit_output()).coin()).to_str());
-            console.log("\n\nchange added");
-            console.log(outputAsChange)
+            //console.log(await (await (await txBuilder.get_explicit_output()).coin()).to_str());
         } catch (e) {
             return {
                 error: e
@@ -477,8 +525,6 @@ export const buildTransaction = async (
     console.log(await (await txBuilder.get_fee_if_set()).to_str());
     console.log("Min fee")
     console.log(await (await txBuilder.min_fee()).to_str());
-    console.log("get_explicit_output ")
-    console.log(await (await (await txBuilder.get_explicit_output()).coin()).to_str());
 
 
     console.log('\n\n\n');
@@ -489,6 +535,8 @@ export const buildTransaction = async (
     console.log(outputs);
     console.log('Final change');
     console.log(mergedChangeList);
+
+     */
 
     const txBody = await txBuilder.build();
 
@@ -544,6 +592,8 @@ export const buildTransaction = async (
     const txBytes = await transaction.to_bytes();
 
     const txHex = Buffer.from(txBytes).toString('hex');
+    console.log('txHex');
+    console.log(txHex);
 
     let finalHash = '';
     if (password && password.length){

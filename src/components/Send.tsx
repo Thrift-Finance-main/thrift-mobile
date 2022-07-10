@@ -75,11 +75,20 @@ const Send: FC<SendProps> = (props) => {
         {
             toAddress: 'addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u',
             validAddress: true,
-            assets: {lovelace: ''},
+            assets: {lovelace: '2000000'},
             fromTags: selectedTags,
             notTagged: selectNotTagged,
             valid: true,
             label: '1'
+        },
+        {
+            toAddress: 'addr_test1qz9whwf8herg9qqav3wmnhjvcqmgzddez29e8g9xvv75jc80xul88828lfwaaa58cjaetdvqspmx6zrq095e3lfqr4kswsnsl2',
+            validAddress: true,
+            assets: {lovelace: '3000000'},
+            fromTags: selectedTags,
+            notTagged: selectNotTagged,
+            valid: true,
+            label: '2'
         }
     ]);
 
@@ -191,14 +200,7 @@ const Send: FC<SendProps> = (props) => {
             // verify in enough amount in selected utxos, alert
 
             await mergeAssets();
-
-            let totalUtxos = 0;
-            utxos.map(acc => {
-                if (acc.utxos && acc.utxos.length){
-                    totalUtxos++;
-                }
-            })
-            const notTaggedUtxos = utxos.filter((utxo) => utxo && utxo.tags && !utxo.tags.length && utxo.utxos);
+            const notTaggedUtxos = updatedUtxos.filter((utxo) => utxo && utxo.tags && !utxo.tags.length && utxo.utxos);
             setTotalNotTagged(notTaggedUtxos.length.toString());
         }
 
@@ -243,8 +245,8 @@ const Send: FC<SendProps> = (props) => {
             }
 
             const mergedAssetsFromUtxosCurrentOutput = mergeAssetsFromUtxos(filterUtxosFromCurrentOutput);
-            const processedAssets = removeAssetNameFromKey(output.assets);
-            const isolatedOutputIsValid = validOutputs(mergedAssetsFromUtxosCurrentOutput, processedAssets);
+            // TODO: fix validation
+            const isolatedOutputIsValid = validOutputs(mergedAssetsFromUtxosCurrentOutput, output.assets);
 
             if (!isolatedOutputIsValid){
                 output.valid = false;
