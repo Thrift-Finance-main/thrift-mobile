@@ -996,13 +996,9 @@ const Send: FC<SendProps> = (props) => {
 
                     {   currentTabData && currentTabData.assets ?
                         Object.entries(currentTabData.assets).map(keyValuePair => {
-                            console.log('keyValuePair')
-                            console.log(keyValuePair[0])
                             if (keyValuePair[0] !== 'lovelace')
                             {
                                 const assetName =  keyValuePair[0].slice(56,keyValuePair[0].length)
-                                console.log('assetName')
-                                console.log(assetName)
                                 const unit = keyValuePair[0];
 
 

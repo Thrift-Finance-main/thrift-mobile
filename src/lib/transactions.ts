@@ -447,7 +447,7 @@ export const buildTransaction = async (
 
     // TODO: coinSelection, select which utxos(inputs) to use
 
-    /*
+
     for (const input of inputs) {
         const address = input.address;
         const utxos = input.utxos;
@@ -482,7 +482,7 @@ export const buildTransaction = async (
         }
     }
 
-    for (const outputAsChange of mergedChangeList) {
+    for (const outputAsChange of finalChange) {
         try {
             const outputValue = await toValue(dictToAssetsList(outputAsChange.assets));
             const outputAddress = await Address.from_bech32(outputAsChange.address);
@@ -495,6 +495,8 @@ export const buildTransaction = async (
         }
     }
 
+    await txBuilder.set_ttl(parameters.slot + TX.invalid_hereafter);
+    await txBuilderDraft.set_ttl(parameters.slot + TX.invalid_hereafter);
 
     const compensate = "13112";
     let minFeeDraft = await (await txBuilderDraft.min_fee()).to_str();
@@ -502,20 +504,32 @@ export const buildTransaction = async (
     // Select change to sub the fee
     let outputAsChangeWithFee = [];
     let done = false;
-    for (let outputAsChange of mergedChangeList) {
+
+    console.log('finalChange');
+    console.log(finalChange.length)
+
+    finalChange[0].assets["lovelace"] = (new BigNumber(finalChange[0].assets["lovelace"]).minus(new BigNumber(f))).toString();
+    /*
+    for (let outputAsChange of finalChange) {
         if (!done &&(outputAsChange.address === currentAccount.externalPubAddress)
             || currentAccount.externalPubAddress.some(pubAddr => pubAddr.address ===  outputAsChange.address)
         ) {
+            console.log("change minus fee")
+            console.log(outputAsChange.assets["lovelace"])
+            console.log("fee to rest")
+            console.log(f);
+
             outputAsChange.assets["lovelace"] = (new BigNumber(outputAsChange.assets["lovelace"]).minus(new BigNumber(f))).toString();
             done = true;
         }
         outputAsChangeWithFee.push(outputAsChange);
     }
+     */
 
     //console.log('Final change with fee');
     //console.log(outputAsChangeWithFee);
 
-    for (const outputAsChange of outputAsChangeWithFee) {
+    for (const outputAsChange of finalChange) {
         try {
             const outputValue2 = await toValue(dictToAssetsList(outputAsChange.assets));
             const outputAddress2 = await Address.from_bech32(outputAsChange.address);
@@ -530,13 +544,15 @@ export const buildTransaction = async (
         }
     }
 
+    console.log("fee to set")
+    console.log(f);
     const feeBigNum = await BigNum.from_str(f);
     await txBuilder.set_fee(feeBigNum);
 
     console.log("fee in tx: ")
     console.log(await (await txBuilder.get_fee_if_set()).to_str());
-    console.log("Min fee")
-    console.log(await (await txBuilder.min_fee()).to_str());
+
+
 
 
     console.log('\n\n\n');
@@ -546,9 +562,8 @@ export const buildTransaction = async (
     console.log('Final outputs');
     console.log(outputs);
     console.log('Final change');
-    console.log(mergedChangeList);
+    console.log(finalChange);
 
-     */
 
     const txBody = await txBuilder.build();
 
@@ -614,7 +629,6 @@ export const buildTransaction = async (
                 txHex,
                 BLOCKFROST_SUMBIT_TESTNET
             );
-
 
             console.log('result');
             console.log(result);
