@@ -502,14 +502,32 @@ export const buildTransaction = async (
     let minFeeDraft = await (await txBuilderDraft.min_fee()).to_str();
     const f = (new BigNumber(minFeeDraft).plus(compensate)).toString();
     // Select change to sub the fee
-    let outputAsChangeWithFee = [];
-    let done = false;
-
     console.log('finalChange');
     console.log(finalChange.length)
 
-    finalChange[0].assets["lovelace"] = (new BigNumber(finalChange[0].assets["lovelace"]).minus(new BigNumber(f))).toString();
+    const usingGlobalAddress = finalChange.some(change => {
+        return change.address === currentAccount.externalPubAddress[0].address;
+    });
+
+    let outputAsChangeWithFee = finalChange;
+
+    if (usingGlobalAddress){
+        outputAsChangeWithFee = finalChange.map(change => {
+            if (change.address === currentAccount.externalPubAddress[0].address){
+                change.assets["lovelace"] = (new BigNumber(change.assets["lovelace"]).minus(new BigNumber(f))).toString();
+            }
+            return change;
+        });
+    } else {
+        outputAsChangeWithFee[0].assets["lovelace"] = (new BigNumber(finalChange[0].assets["lovelace"]).minus(new BigNumber(f))).toString();
+    }
+
     /*
+
+       const outputAsChangeWithFee = finalChange.map(change => {
+        change.assets["lovelace"] = (new BigNumber(change.assets["lovelace"]).minus(new BigNumber(f))).toString();
+    }
+
     for (let outputAsChange of finalChange) {
         if (!done &&(outputAsChange.address === currentAccount.externalPubAddress)
             || currentAccount.externalPubAddress.some(pubAddr => pubAddr.address ===  outputAsChange.address)
@@ -529,7 +547,7 @@ export const buildTransaction = async (
     //console.log('Final change with fee');
     //console.log(outputAsChangeWithFee);
 
-    for (const outputAsChange of finalChange) {
+    for (const outputAsChange of outputAsChangeWithFee) {
         try {
             const outputValue2 = await toValue(dictToAssetsList(outputAsChange.assets));
             const outputAddress2 = await Address.from_bech32(outputAsChange.address);
