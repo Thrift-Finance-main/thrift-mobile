@@ -380,6 +380,17 @@ export const buildTransaction = async (
         console.log('notTagged utxos NOT needed');
     }
 
+    const finalChange:{address: string, assets:{ [unit: string]: string }}[] = [];
+    Object.keys(inputUtxosByTag).map(tag => {
+        const addrObj = currentAccount.externalPubAddress.find(pubAddr => pubAddr.tags[0] === tag);
+        console.log('address');
+        console.log(addrObj);
+        finalChange.push({
+        address: addrObj.address,
+        assets: inputUtxosByTag[tag]
+     });
+    });
+
     //console.log('changeList1');
     //console.log(changeList);
 
@@ -420,8 +431,8 @@ export const buildTransaction = async (
     console.log(inputs);
     console.log('Final outputs');
     console.log(outputs);
-    //console.log('Final change');
-    //console.log(mergedChangeList);
+    console.log('Final change');
+    console.log(finalChange);
     // Merge changeList
 
     // BUILD TX
