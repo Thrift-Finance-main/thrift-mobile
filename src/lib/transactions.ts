@@ -47,6 +47,8 @@ export const classifyTx = async (transaction, accountAddresses) => {
         if (!othersInInputs) {
             txType = SEND_TX;
         }
+    } else {
+        txType = SELF_TX;
     }
 
     const processedIn = processInputs(inputs, accountAddresses);
@@ -87,7 +89,23 @@ export const classifyTx = async (transaction, accountAddresses) => {
             usedInOutputs.map(uoutput => {
                 amountOutputs = [...amountOutputs, ...uoutput.amount]
             });
-            const mergedOutputs = await mergeAmounts(amountOutputs);
+            let mergedOutputs = await mergeAmounts(amountOutputs);
+            return {
+                txHash,
+                blockTime: block_time,
+                inputs: processedIn,
+                outputs: processedOut,
+                amount: mergedOutputs,
+                fees,
+                type: txType,
+                status: "confirmed"
+            }
+        case SELF_TX:
+            amountOutputs = [];
+            usedInOutputs.map(uoutput => {
+                amountOutputs = [...amountOutputs, ...uoutput.amount]
+            });
+            mergedOutputs = await mergeAmounts(amountOutputs);
             return {
                 txHash,
                 blockTime: block_time,

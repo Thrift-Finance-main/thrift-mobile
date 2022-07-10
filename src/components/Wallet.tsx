@@ -391,6 +391,8 @@ const Wallet: FC<WalletProps> = (props) => {
     const renderItemTransaction = ({item, index}) => {
 
         if(item){
+            console.log('item');
+            console.log(item);
             const inputOtherAddresses = item.inputs && item.inputs.otherAddresses || [];
             const outputOtherAddresses = item.outputs && item.outputs.otherAddresses || [];
             let showAddr = '';
