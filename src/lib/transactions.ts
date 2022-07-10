@@ -305,10 +305,11 @@ export const buildTransaction = async (
         const assets = output.assets;
         console.log('assets for current Output');
         console.log(output.assets);
+
         if (inputUtxosByTag[currentTags[0]] === undefined) {
-            inputUtxosByTag[currentTags[0]] = mergedAssetsFromCurrentUtxos;
+            inputUtxosByTag[currentTags[0]] =  diffAmounts2(mergedAssetsFromCurrentUtxos, output.assets);
         } else {
-            inputUtxosByTag[currentTags[0]] = diffAmounts2(mergedAssetsFromCurrentUtxos, output.assets);
+            inputUtxosByTag[currentTags[0]] = diffAmounts2(inputUtxosByTag[currentTags[0]], output.assets);
         }
 
 
