@@ -384,7 +384,7 @@ const Wallet: FC<WalletProps> = (props) => {
             case SEND_TX:
                 return '-'
             default:
-                return ''
+                return '+'
         }
     }
 
@@ -395,7 +395,7 @@ const Wallet: FC<WalletProps> = (props) => {
             const outputOtherAddresses = item.outputs && item.outputs.otherAddresses || [];
             let showAddr = '';
             if (item.type === SEND_TX){
-                showAddr = outputOtherAddresses[0].address;
+                showAddr = outputOtherAddresses && outputOtherAddresses.length ? outputOtherAddresses[0].address : 'none';
             } else {
                 showAddr = inputOtherAddresses && inputOtherAddresses.length ? inputOtherAddresses[0].address : 'none';
             }

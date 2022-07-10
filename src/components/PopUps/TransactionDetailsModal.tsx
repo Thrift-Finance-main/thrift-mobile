@@ -38,12 +38,12 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
     const inputOtherAddresses = props.data.inputs.otherAddresses;
     const outputOtherAddresses = props.data.outputs.otherAddresses;
     if (props.data.type === SEND_TX){
-      inAddress = inputUsedAddresses[0].address;
-      outAddress = outputOtherAddresses[0].address
+      inAddress = inputUsedAddresses && inputUsedAddresses.length && inputUsedAddresses[0].address || [];
+      outAddress = outputOtherAddresses && outputOtherAddresses.length && outputOtherAddresses[0].address || [];
     } else {
       console.log('hei1')
-      inAddress = inputOtherAddresses[0].address;
-      outAddress = outputUsedAddresses[0].address
+      inAddress =  inputOtherAddresses && inputOtherAddresses.length && inputOtherAddresses[0].address || [];
+      outAddress = outputUsedAddresses && outputUsedAddresses.length && outputUsedAddresses[0].address || [];
       console.log('hei2')
     }
   }
