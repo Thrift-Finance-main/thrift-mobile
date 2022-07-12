@@ -202,8 +202,7 @@ const Wallet: FC<WalletProps> = (props) => {
                         allTxHashes.push(tx.txHash);
                     }
                 });
-                console.log('uniqueArrayTxsList');
-                console.log(uniqueArrayTxsList);
+
                 uniqueArrayTxsList = uniqueArrayTxsList.map(txAddr => {
                     const r = !allTxHashes.includes(txAddr.tx_hash);
                     if (r){

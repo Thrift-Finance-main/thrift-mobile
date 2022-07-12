@@ -9,7 +9,7 @@ import {
     Assets,
     BigNum,
     Bip32PrivateKey, hash_transaction,
-    LinearFee, make_vkey_witness,
+    LinearFee, make_vkey_witness, min_ada_required,
     MultiAsset, PrivateKey, ScriptHash, Transaction,
     TransactionBuilder, TransactionHash, TransactionInput, TransactionOutput, TransactionWitnessSet,
     Value, Vkeywitnesses
@@ -22,6 +22,7 @@ import moment from "moment";
 
 import {NativeScripts} from "@emurgo/cardano-serialization-lib-nodejs";
 import {BASE_ADDRESS_INDEX, DERIVE_COIN_TYPE, DERIVE_PUROPOSE} from "./config";
+import {ERROR_TRANSACTION} from "../constants/error";
 export const RECEIVE_TX = 'RECEIVE_TX';
 export const SEND_TX = 'SEND_TX';
 export const SELF_TX = 'SELF_TX';
@@ -427,15 +428,44 @@ export const buildTransaction = async (
         }
     }
 
-    console.log('hellooooo1');
+
+
+    const outputsInfoList = [];
+    let minLovelaces = parameters.minUtxo;
+    console.log('\n\n\nAdd outputs');
     for (const output of outputs) {
         try {
+            console.log(output.assets);
+            console.log(dictToAssetsList(output.assets));
+
             const outputValue = await toValue(dictToAssetsList(output.assets));
+
+            console.log('parameters');
+            console.log(parameters);
+            let minAdaValue = await Value.new(
+                await BigNum.from_str(parameters.minUtxo)
+            );
+            const minAdaRequired = await min_ada_required(outputValue, (await minAdaValue.coin()));
+
+            const lovelaces =  new BigNumber(output.assets.lovelace);
+            minLovelaces =  new BigNumber(await minAdaRequired.to_str());
+
+            const minLovelacesError = minLovelaces.dividedBy('1000000');
+
+            if (lovelaces.isLessThan(minLovelaces)){
+                return {
+                    error: ERROR_TRANSACTION.TX_NO_ENOUGH_ADA_FOR_MINIMUM_VALUE,
+                    details: "Min Ada value "+  minLovelacesError.toString()
+                }
+            }
+
             const outputAddress = await Address.from_bech32(output.toAddress);
             const txOutput = await TransactionOutput.new(outputAddress, outputValue);
             await txBuilderDraft.add_output(txOutput);
             await txBuilder.add_output(txOutput);
         } catch (e) {
+            console.log("Error on adding output");
+            console.log(e);
             return {
                 error: e
             }
@@ -512,6 +542,8 @@ export const buildTransaction = async (
             await txBuilder.add_output(txOutput2);
             //console.log(await (await (await txBuilder.get_explicit_output()).coin()).to_str());
         } catch (e) {
+            console.log("Error on adding outputAsChangeWithFee")
+            console.log(e)
             return {
                 error: e
             }
@@ -806,8 +838,10 @@ export const toValue = async (assets:{quantity: string, unit: string}[]): Promis
         await BigNum.from_str(lovelace.quantity)
     );
 
-    const multiAss = await buildMultiAssets(assets);
-    await value.set_multiasset(multiAss);
+    if (assets.length > 1){
+        const multiAss = await buildMultiAssets(assets);
+        await value.set_multiasset(multiAss);
+    }
 
     return value;
 }

@@ -24,6 +24,7 @@ import CustomModal from "./PopUps/CustomModal";
 import {apiDb} from "../db/LiteDb";
 import {setCurrentAccount} from "../store/Action";
 import moment from "moment";
+import {ERROR_TRANSACTION} from "../constants/error";
 
 
 interface SendProps {
@@ -58,15 +59,9 @@ const Send: FC<SendProps> = (props) => {
     const [password, setPassword] = useState('0');
     const [hideModal, setHideModal] = useState(true);
 
-    const [totalNotTagged, setTotalNotTagged] = useState('0');
-    /*
-         1. if Selected address has tag, show and select its tag. Change from selected address and others(if selected) to selected address.
-         2. if Selected address has NOOO tag, show and select Global tag. Change from global & others(if selected) to global.
-         3.
+    const [txError, setTxError] = useState('0');
 
-         modelar los merged outputs para que ir construyendo el input-output
-         construir los ooutputs-receipt con su origen
-     */
+    const [totalNotTagged, setTotalNotTagged] = useState('0');
 
     const selectAddr = currentAccount.externalPubAddress.filter(a => a.address === currentAccount.selectedAddress.address);  // TODO: refactor
 
@@ -290,33 +285,29 @@ const Send: FC<SendProps> = (props) => {
     }
 
     const outputsAreValid = () => {
-        return !(outputs.some(out => !out.valid) || new BigNumber(mergedOutputs.lovelace || 0).dividedBy(1000000).toString() === '0');
+        const txNotValid = txError.length > 1;
+        console.log('txNotValid');
+        console.log(txNotValid);
+        const outputsAreValid = !txNotValid && !(outputs.some(out => !out.valid) || new BigNumber(mergedOutputs.lovelace || 0).dividedBy(1000000).toString() === '0');
+        console.log('outputsAreValid');
+        console.log(outputsAreValid);
+        return outputsAreValid;
     }
     const mergeAssets = async () => {
 
         console.log('\n\n\nmergeAssets');
-        //console.log('utxos');
-        //console.log(utxos);
-
-        //console.log('currentOutput');
-        //console.log(currentOutput);
-
+        setTxError('');
         const taggedUtxos = utxos.filter((utxo) => utxo.tags.length);
-        //console.log('taggedUtxos');
-        //console.log(taggedUtxos);
+
         const utxosFromSelectedTag = taggedUtxos.filter((utxo) => utxo.tags.length && utxo.tags.some(t =>
             currentTabData && currentTabData.fromTags.includes(t)
         ));
 
-        //console.log('utxosFromSelectedTag');
-        //console.log(utxosFromSelectedTag);
         let joinUtxos = utxosFromSelectedTag;
         if (currentTabData && currentTabData.notTagged){
             const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
             joinUtxos = [...joinUtxos,...notTaggedUtxos];
         }
-        //console.log('joinUtxos');
-        //console.log(joinUtxos);
 
         const mergedAssetsFromUtxos = mergeAssetsFromUtxos(joinUtxos);
 
@@ -328,8 +319,6 @@ const Send: FC<SendProps> = (props) => {
             && mergedAssetsFromUtxos.lovelace !== '0' ?
             new BigNumber(mergedAssetsFromUtxos.lovelace || 0).dividedBy(1000000).toString() : '0';
 
-        //console.log('availableAdaOnSelectedUtxos');
-        //console.log(availableAdaOnSelectedUtxos);
         setAvailableAda(availableAdaOnSelectedUtxos)
 
         const filterOutputs = outputs.map(output => {
@@ -348,6 +337,7 @@ const Send: FC<SendProps> = (props) => {
     }
     const buildTx = async () => {
         console.log('buildTx');
+        setTxError('');
         const protocolParameters =  await getProtocolParams();
         // Remove empty assets and filter outputs with no assets
         const filterOutputs = outputs.map(output => {
@@ -369,7 +359,10 @@ const Send: FC<SendProps> = (props) => {
         if (tx && tx.error){
             console.log('tx.error');
             console.log(tx.error);
+            setTxError(tx.error);
             return;
+        } else {
+            setTxError('');
         }
 
         console.log('buildTx fee');
@@ -417,6 +410,7 @@ const Send: FC<SendProps> = (props) => {
 
     }
     const sendTransaction = async () => {
+        setTxError('');
         handleHideModal();
     };
     const addTxToDb = async (tx, inputs, outputs) => {
@@ -1031,6 +1025,11 @@ const Send: FC<SendProps> = (props) => {
                     <View
                         style={{ height: heightPercentageToDP(4)}}
                     />
+
+                    <Text style={{color: 'black', padding:4, textAlign: 'center', fontSize: 12, fontWeight: 'bold'}}>
+                        {txError.length > 1 ? txError : ''}
+                    </Text>
+
                         <Button
                             backgroundColor={"#F338C2"}
                             onPress={() => sendTransaction()}
@@ -1067,6 +1066,7 @@ const Send: FC<SendProps> = (props) => {
                         security={"success"}
                         inputText={true}
                         placeholder={"Introduce spending password"}
+                        error={txError}
                         handleInputText={(pass:string) => handleSetPassword(pass)}/>
             </ScrollView>
         </SafeAreaView>

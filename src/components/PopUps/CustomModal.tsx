@@ -14,6 +14,7 @@ interface CustomModalProps {
   modalText: string,
   security: string,
   placeholder: string,
+  error?: string,
   inputText: boolean,
   isBlackTheme: boolean
 }
@@ -86,6 +87,14 @@ const CustomModal: FC<CustomModalProps> = (props) => {
             buttonTitle='OK'
             onPress={props.hideModal}
             titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
+          />
+          <Text style={{
+            ...styles.InfoText, color:
+                props.isBlackTheme ? Colors.white :
+                    Colors.black,
+          }}>{props.error && props.error.length ? props.error : ''}</Text>
+          <View
+              style={{ height: heightPercentageToDP(3) }}
           />
         </View>
       </View>
