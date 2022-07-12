@@ -8,6 +8,7 @@ import {RECEIVE_TX, SEND_TX} from "../../lib/transactions";
 import {addressSlice} from "../../utils";
 import {EXPLORER_TX_URL_MAINNET, EXPLORER_TX_URL_TESTNET} from "../../constants/explorer";
 import moment from "moment";
+import BigNumber from "bignumber.js";
 interface TransactionDetailsModalProps {
   visible: boolean,
   hideModal: () => void,
@@ -45,6 +46,17 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
       inAddress =  inputOtherAddresses && inputOtherAddresses.length && inputOtherAddresses[0].address || [];
       outAddress = outputUsedAddresses && outputUsedAddresses.length && outputUsedAddresses[0].address || [];
       console.log('hei2')
+    }
+
+    if (props.data === SEND_TX){
+      inAddress = inputUsedAddresses && inputUsedAddresses.length && inputUsedAddresses[0].address || [];
+      outAddress = outputOtherAddresses && outputOtherAddresses.length && outputOtherAddresses[0].address || [];
+    } else if (props.data === RECEIVE_TX) {
+      inAddress =  inputOtherAddresses && inputOtherAddresses.length && inputOtherAddresses[0].address || [];
+      outAddress = outputUsedAddresses && outputUsedAddresses.length && outputUsedAddresses[0].address || [];
+    } else {
+      inAddress = inputUsedAddresses && inputUsedAddresses.length && inputUsedAddresses[0].address || []
+      outAddress = outputUsedAddresses && outputUsedAddresses.length && outputUsedAddresses[0].address || [];
     }
   }
 

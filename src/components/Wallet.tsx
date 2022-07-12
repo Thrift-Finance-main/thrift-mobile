@@ -18,7 +18,7 @@ import WalletIcon from "../assets/wallet.svg";
 import {fetchBlockfrost, getBlockInfo, getTxInfo, getTxUTxOs, getTxUTxOsByAddress} from "../api/Blockfrost";
 import {apiDb} from "../db/LiteDb";
 import {setCurrentAccount, setCurrentPrice} from "../store/Action";
-import {classifyTx, RECEIVE_TX, SEND_TX} from "../lib/transactions";
+import {classifyTx, RECEIVE_TX, SELF_TX, SEND_TX} from "../lib/transactions";
 import Ada from '../assets/Ada.svg'
 import moment from "moment";
 import {addressSlice, capitalizeFirstLetter} from "../utils";
@@ -36,6 +36,7 @@ import {
     Button
 } from 'react-native-ui-lib';
 import {getPrices} from "../api";
+import BigNumber from "bignumber.js";
 
 interface WalletProps {
     onSavingsPress: () => void
@@ -81,191 +82,7 @@ const Wallet: FC<WalletProps> = (props) => {
     useEffect(() =>{
 
         const fetchData = async () => {
-            console.log('fetchData');
-            const saddress = currentAccount && currentAccount.rewardAddress;
-            if (saddress) {
-                let endpoint = "accounts/" + saddress;
-                const accountState = await fetchBlockfrost(endpoint);
-                if (accountState.error){
-                    return;
-                }
-                endpoint =  "accounts/" + saddress + "/addresses";
-                const relatedAddresses = await fetchBlockfrost(endpoint);
-                if (relatedAddresses.error){
-                    return;
-                }
-
-                const utxos = await Promise.all(
-                    relatedAddresses.map(async a => {
-                        const utxos = await getTxUTxOsByAddress(a.address);
-                        if (utxos && !utxos.error){
-                            a.utxos = utxos;
-                            return a;
-                        }
-                    })
-                );
-
-                let tags = new Set();
-                const updatedUtxos = utxos.map(utxo => {
-                    const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
-                    if (data){
-                        data.tags.map(tag => tags.add(tag));
-                        utxo = {...utxo, ...data};
-                        return utxo;
-                    }
-                }).filter(r => r !== undefined);
-
-                let currentAccountInLocal = await apiDb.getAccount(currentAccount.accountName);
-                currentAccountInLocal.utxos = updatedUtxos;
-                currentAccountInLocal.balance = accountState.controlled_amount;
-                currentAccountInLocal.delegated = accountState.active;
-                currentAccountInLocal.activeEpoch = accountState.active_epoch;
-                currentAccountInLocal.poolId = accountState.pool_id;
-                currentAccountInLocal.rewardsSum = accountState.rewards_sum;
-                currentAccountInLocal.withdrawableAmount = accountState.withdrawable_amount;
-
-                const assetResponse = await fetchBlockfrost(endpoint+'/assets');
-                if (assetResponse.error){
-                    return;
-                }
-
-                const assetsWithDetails = await Promise.all(
-                    assetResponse.map(async(a) => {
-                        let asset = await fetchBlockfrost(`assets/${a.unit}`);
-                        asset.quantity = a.quantity;
-                        asset.unit = a.unit;
-                        if (!asset.error){
-                            return asset;
-                        }
-                    })
-                );
-
-                currentAccountInLocal.assets = assetsWithDetails;
-                await apiDb.updateAccount(currentAccountInLocal);
-
-                dispatch(setCurrentAccount(currentAccountInLocal));
-
-                let prices = await getPrices('usd');
-                setCurrPrice(prices.cardano);
-                dispatch(setCurrentPrice(prices.cardano));
-
-                let addressTxsList = await Promise.all(
-                    relatedAddresses.map(async addr =>{
-                        const response = await fetchBlockfrost(`addresses/${addr.address}/transactions`);
-                        if (!response.error){
-                            addr.txs = response;
-                            return addr;
-                        }
-                    })
-                );
-
-                let joinedTxsList:
-                {
-                    address: string,
-                    block_height: number,
-                    block_time: number,
-                    tx_hash: string,
-                    tx_index: number,
-                    status: string,
-
-                }[] = [];
-                addressTxsList.map(addr => {
-                    addr.txs.map(tx => {
-                        tx.block_time = tx.block_time*1000; // TODO: hot fix, from Moment unix
-                        joinedTxsList.push({...tx, address: addr.address});
-                    })
-                });
-
-                let uniqueArrayTxsList = joinedTxsList.filter((v,i,a)=>a.findIndex(v2=>(v2.tx_hash===v.tx_hash))===i)
-
-                let currentTxs = await apiDb.getAccountHistory(currentAccount.accountName);
-
-                const allTxHashes:string[] = [];
-
-                if (currentTxs){
-                    currentTxs.map(tx => {
-                        if (tx){
-                            allTxHashes.push(tx.txHash);
-                        }
-                    });
-                    uniqueArrayTxsList = uniqueArrayTxsList.map(txAddr => {
-                        const r = !allTxHashes.includes(txAddr.tx_hash);
-                        if (r){
-                            return txAddr;
-                        }
-                    }).filter(e => e != undefined);
-                }
-
-                if (uniqueArrayTxsList && uniqueArrayTxsList.length){
-                    let addrsWithTxsList = [];
-                    addrsWithTxsList = await Promise.all(
-                        uniqueArrayTxsList.map(async tx => {
-                            const txInfo = await getTxInfo(tx.tx_hash);
-                            const utxos = await getTxUTxOs(tx.tx_hash);
-
-                            if (!utxos.error){
-                                tx.utxos = utxos;
-                                tx.fees = txInfo.fees;
-                                tx.size = txInfo.size;
-                                tx.asset_mint_or_burn_count = txInfo.asset_mint_or_burn_count;
-                                return tx;
-                            }
-                        })
-                    );
-
-                    const allAddresses = [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress];
-                    const allTransactionsByAddr = [];
-
-                    await Promise.all(
-                        addrsWithTxsList.map(async addrObj => {
-                            let cTxs = await classifyTx(addrObj, allAddresses);
-                            allTransactionsByAddr.push({address: addrObj.address, history: cTxs });
-                        })
-                    );
-
-                    console.log("allTransactionsByAddr");
-                    console.log(allTransactionsByAddr);
-
-                    let mergedHistory = []; // All addresses
-                    allTransactionsByAddr.map(async addr => {
-                        mergedHistory.push(addr.history);
-                    });
-
-
-                    let accHistory = [];
-                    accHistory = await apiDb.getAccountHistory(currentAccount.accountName);
-
-                    if (accHistory){
-                        accHistory = [...accHistory, ...mergedHistory];
-                    } else {
-                        accHistory = mergedHistory
-                    }
-
-                    let pendingTxs = currentAccount.pendingTxs.filter(pendTx => {
-                        return !(accHistory.some(h => h.txHash === pendTx.txHash))
-                    });
-
-                    accHistory = accHistory.sort((a, b) => (a.blockTime < b.blockTime) ? 1 : -1);
-
-                    // TODO: store everything
-                    if (mergedHistory.length) {
-                        //await apiDb.setAccountTransactionsHashes(currentAccount.accountName, currentTxs);
-                        await apiDb.setAccountHistory(currentAccount.accountName, accHistory);
-
-                    }
-                    if (pendingTxs.length) {
-                        await apiDb.setAccountPendingTxs(currentAccount.accountName, pendingTxs);
-                    }
-
-                    const account = await apiDb.getAccount(currentAccount.accountName);
-                    dispatch(setCurrentAccount(account));
-                }
-
-
-            } else {
-                console.log("Not current account in store");
-            }
-
+            await fetchData2();
         }
 
         if (isMounted.current) {
@@ -276,6 +93,196 @@ const Wallet: FC<WalletProps> = (props) => {
         }
 
     }, [currentAccount.accountName]);
+
+    const fetchData2 = async () => {
+        console.log('fetchData');
+        const saddress = currentAccount && currentAccount.rewardAddress;
+        if (saddress) {
+            let endpoint = "accounts/" + saddress;
+            const accountState = await fetchBlockfrost(endpoint);
+            if (accountState.error){
+                return;
+            }
+            endpoint =  "accounts/" + saddress + "/addresses";
+            const relatedAddresses = await fetchBlockfrost(endpoint);
+            if (relatedAddresses.error){
+                return;
+            }
+
+            const utxos = await Promise.all(
+                relatedAddresses.map(async a => {
+                    const utxos = await getTxUTxOsByAddress(a.address);
+                    if (utxos && !utxos.error){
+                        a.utxos = utxos;
+                        return a;
+                    }
+                })
+            );
+
+            let tags = new Set();
+            const updatedUtxos = utxos.map(utxo => {
+                const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
+                if (data){
+                    data.tags.map(tag => tags.add(tag));
+                    utxo = {...utxo, ...data};
+                    return utxo;
+                }
+            }).filter(r => r !== undefined);
+
+            let currentAccountInLocal = await apiDb.getAccount(currentAccount.accountName);
+            currentAccountInLocal.utxos = updatedUtxos;
+            currentAccountInLocal.balance = accountState.controlled_amount;
+            currentAccountInLocal.delegated = accountState.active;
+            currentAccountInLocal.activeEpoch = accountState.active_epoch;
+            currentAccountInLocal.poolId = accountState.pool_id;
+            currentAccountInLocal.rewardsSum = accountState.rewards_sum;
+            currentAccountInLocal.withdrawableAmount = accountState.withdrawable_amount;
+
+            const assetResponse = await fetchBlockfrost(endpoint+'/assets');
+            if (assetResponse.error){
+                return;
+            }
+
+            const assetsWithDetails = await Promise.all(
+                assetResponse.map(async(a) => {
+                    let asset = await fetchBlockfrost(`assets/${a.unit}`);
+                    asset.quantity = a.quantity;
+                    asset.unit = a.unit;
+                    if (!asset.error){
+                        return asset;
+                    }
+                })
+            );
+
+            currentAccountInLocal.assets = assetsWithDetails;
+            await apiDb.updateAccount(currentAccountInLocal);
+
+            dispatch(setCurrentAccount(currentAccountInLocal));
+
+            let prices = await getPrices('usd');
+            setCurrPrice(prices.cardano);
+            dispatch(setCurrentPrice(prices.cardano));
+
+            let addressTxsList = await Promise.all(
+                relatedAddresses.map(async addr =>{
+                    const response = await fetchBlockfrost(`addresses/${addr.address}/transactions`);
+                    if (!response.error){
+                        addr.txs = response;
+                        return addr;
+                    }
+                })
+            );
+
+            let joinedTxsList:
+                {
+                    address: string,
+                    block_height: number,
+                    block_time: number,
+                    tx_hash: string,
+                    tx_index: number,
+                    status: string,
+
+                }[] = [];
+            addressTxsList.map(addr => {
+                addr.txs.map(tx => {
+                    tx.block_time = tx.block_time*1000; // TODO: hot fix, from Moment unix
+                    joinedTxsList.push({...tx, address: addr.address});
+                })
+            });
+
+            let uniqueArrayTxsList = joinedTxsList.filter((v,i,a)=>a.findIndex(v2=>(v2.tx_hash===v.tx_hash))===i)
+
+            let currentTxs = await apiDb.getAccountHistory(currentAccount.accountName);
+
+            const allTxHashes:string[] = [];
+
+            if (currentTxs){
+                currentTxs.map(tx => {
+                    if (tx){
+                        allTxHashes.push(tx.txHash);
+                    }
+                });
+                console.log('uniqueArrayTxsList');
+                console.log(uniqueArrayTxsList);
+                uniqueArrayTxsList = uniqueArrayTxsList.map(txAddr => {
+                    const r = !allTxHashes.includes(txAddr.tx_hash);
+                    if (r){
+                        return txAddr;
+                    }
+                }).filter(e => e != undefined);
+            }
+
+            if (uniqueArrayTxsList && uniqueArrayTxsList.length){
+                let addrsWithTxsList = [];
+                addrsWithTxsList = await Promise.all(
+                    uniqueArrayTxsList.map(async tx => {
+                        const txInfo = await getTxInfo(tx.tx_hash);
+                        const utxos = await getTxUTxOs(tx.tx_hash);
+
+                        if (!utxos.error){
+                            tx.utxos = utxos;
+                            tx.fees = txInfo.fees;
+                            tx.size = txInfo.size;
+                            tx.asset_mint_or_burn_count = txInfo.asset_mint_or_burn_count;
+                            return tx;
+                        }
+                    })
+                );
+
+                const allAddresses = [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress];
+                const allTransactionsByAddr = [];
+
+                await Promise.all(
+                    addrsWithTxsList.map(async addrObj => {
+                        let cTxs = await classifyTx(addrObj, allAddresses);
+                        allTransactionsByAddr.push({address: addrObj.address, history: cTxs });
+                    })
+                );
+
+                console.log("allTransactionsByAddr");
+                console.log(allTransactionsByAddr);
+
+                let mergedHistory = []; // All addresses
+                allTransactionsByAddr.map(async addr => {
+                    mergedHistory.push(addr.history);
+                });
+
+
+                let accHistory = [];
+                accHistory = await apiDb.getAccountHistory(currentAccount.accountName);
+
+                if (accHistory){
+                    accHistory = [...accHistory, ...mergedHistory];
+                } else {
+                    accHistory = mergedHistory
+                }
+
+                let pendingTxs = currentAccount.pendingTxs.filter(pendTx => {
+                    return !(accHistory.some(h => h.txHash === pendTx.txHash))
+                });
+
+                accHistory = accHistory.sort((a, b) => (a.blockTime < b.blockTime) ? 1 : -1);
+
+                // TODO: store everything
+                if (mergedHistory.length) {
+                    //await apiDb.setAccountTransactionsHashes(currentAccount.accountName, currentTxs);
+                    await apiDb.setAccountHistory(currentAccount.accountName, accHistory);
+
+                }
+                if (pendingTxs.length) {
+                    await apiDb.setAccountPendingTxs(currentAccount.accountName, pendingTxs);
+                }
+
+                const account = await apiDb.getAccount(currentAccount.accountName);
+                dispatch(setCurrentAccount(account));
+            }
+
+
+        } else {
+            console.log("Not current account in store");
+        }
+
+    }
 
     const getAddrData = (address, addresses) => {
         for (let i = 0; i < addresses.length; i++) {
@@ -373,6 +380,8 @@ const Wallet: FC<WalletProps> = (props) => {
                 return <AntDesignIcon name="arrowdown" color="green" size={22} />
             case SEND_TX:
                 return <AntDesignIcon name="arrowup" color="red" size={22} />
+            case SELF_TX:
+                return <AntDesignIcon name="retweet" color="blue" size={22} />
             default:
                 return <AntDesignIcon name="arrowdown" color="green" size={22} />
         }
@@ -384,23 +393,33 @@ const Wallet: FC<WalletProps> = (props) => {
             case SEND_TX:
                 return '-'
             default:
-                return '+'
+                return '-'
         }
     }
 
     const renderItemTransaction = ({item, index}) => {
 
         if(item){
-            console.log('item');
-            console.log(item);
+            const fee = item.fees;
+            let amount = '0';
+
             const inputOtherAddresses = item.inputs && item.inputs.otherAddresses || [];
+            const outputOwnAddresses = item.inputs && item.outputs.usedAddresses || [];
             const outputOtherAddresses = item.outputs && item.outputs.otherAddresses || [];
             let showAddr = '';
             if (item.type === SEND_TX){
                 showAddr = outputOtherAddresses && outputOtherAddresses.length ? outputOtherAddresses[0].address : 'none';
-            } else {
+                amount = new BigNumber(item.amount.lovelace).plus(new BigNumber(fee)).dividedBy('1000000').toNumber();
+            } else if (item.type === RECEIVE_TX) {
                 showAddr = inputOtherAddresses && inputOtherAddresses.length ? inputOtherAddresses[0].address : 'none';
+                amount = new BigNumber(item.amount.lovelace).dividedBy('1000000').toNumber();
+            } else {
+                showAddr = outputOwnAddresses && outputOwnAddresses.length ? outputOwnAddresses[0].address : 'none';
+                amount = new BigNumber(fee).dividedBy('1000000').toString();
             }
+
+            amount = item.amount && formatter.format(amount).substring(1);
+
 
             return (
                 <View
@@ -458,7 +477,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                         fontFamily: 'AvenirNextCyr-Medium',
                                         color: props.isBlackTheme ? Colors.white : Colors.black,
                                     }}>
-                                    {getSymbolFromTxType(item.type)}{item.amount && formatter.format((item.amount.lovelace)/1000000).substring(1)}
+                                    {getSymbolFromTxType(item.type)}{amount}
                                 </Text>
                                 <Text
                                     style={{
@@ -607,6 +626,7 @@ const Wallet: FC<WalletProps> = (props) => {
                 <TouchableOpacity onPress={props.onTransactionPress}>
                     <Text
                         style={{
+                            marginRight: 2,
                             ...styles.topTitle,
                             color: props.showTransaction
                                 ? props.isBlackTheme
@@ -615,6 +635,11 @@ const Wallet: FC<WalletProps> = (props) => {
                                 : Colors.hintsColor,
                         }}>
                         Activity
+                        <AntDesignIcon onPress={() => fetchData2()} name="sync" color={props.showTransaction
+                            ? props.isBlackTheme
+                            ? Colors.white
+                            : Colors.black
+                            : Colors.hintsColor} size={14} />
                     </Text>
                 </TouchableOpacity>
             </View>

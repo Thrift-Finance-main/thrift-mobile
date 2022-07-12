@@ -37,8 +37,14 @@ export const classifyTx = async (transaction, accountAddresses) => {
     const accInInputs = addressInCommon(inputs, accountAddresses);
     const accInOutputs = addressInCommon(outputs, accountAddresses);
 
+    const othersInInputs = containOtherAddresses(inputs, accountAddresses);
+    const othersInOutputs= containOtherAddresses(outputs, accountAddresses);
+
     let txType = SELF_TX;
-    if (!accInInputs && accInOutputs) {
+    if (accInInputs && !othersInInputs && accInOutputs && !othersInOutputs){
+        txType = SELF_TX;
+    }
+    else if (!accInInputs && accInOutputs) {
         txType = RECEIVE_TX;
     } else if (accInInputs && !accInOutputs) {
         txType = SEND_TX;
@@ -47,8 +53,6 @@ export const classifyTx = async (transaction, accountAddresses) => {
         if (!othersInInputs) {
             txType = SEND_TX;
         }
-    } else {
-        txType = SELF_TX;
     }
 
     const processedIn = processInputs(inputs, accountAddresses);
