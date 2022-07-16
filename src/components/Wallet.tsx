@@ -725,7 +725,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     walletContainer: {
-        backgroundColor: Colors.walletBackground,
+        backgroundColor: '#603EDA',
         borderRadius: 10,
         minHeight: heightPercentageToDP(20),
         paddingHorizontal: widthPercentageToDP(7),
@@ -743,7 +743,7 @@ const styles = StyleSheet.create({
         fontFamily: 'AvenirNextCyr-Medium'
     },
     walletInnerContainer: {
-        backgroundColor: '#213EC2',
+        backgroundColor: '#F338C2',
         width: widthPercentageToDP(16.5),
         marginTop: heightPercentageToDP(2),
         alignItems: 'center',
