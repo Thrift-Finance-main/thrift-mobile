@@ -7,6 +7,7 @@ import Button from './Common/Button'
 import Back from '../../src/assets/back.svg';
 import DarkBack from '../../src/assets/DarkBack.svg';
 import Key from "../assets/Key.svg";
+import RemoveCircular from "../assets/remove-circular.svg";
 import User from "../assets/user.svg";
 import RemoveIcon from "../assets/remove.svg";
 import {useDispatch, useSelector} from "react-redux";
@@ -89,7 +90,7 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
             });
         });
     }
-    const onRemoveAccount = (accountName) => {
+    const onRemoveAccount = (accountName:string) => {
         setAccountToRemove(accountName);
         setRemoveModal(true);
     }
@@ -125,11 +126,11 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
                     {
                         accounts.map((acc, index) => {
                             const account = JSON.parse(acc[1]);
-                            return <TouchableOpacity
-                                        onPress={() => onSelectAccount(account)}
-                                        onLongPress={() => onRemoveAccount(account.accountName)}
+                            return <View
                                         style={{...styles.accountsContainer }} key={index}>
-                                            <View style={{
+                                            <TouchableOpacity
+                                                onPress={() => onSelectAccount(account)}
+                                                style={{
                                                 padding: 10,
                                                 borderRadius: 10,
                                                 flex:1,
@@ -145,10 +146,16 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
                                                     {account.accountName}
                                                 </Text>
                                                 <Text style={styles.termsText}>
-                                                    {addressSlice(account.publicKeyHex, 10)}
+                                                    {addressSlice(account.publicKeyHex, 6)}
                                                 </Text>
-                                            </View>
-                                    </TouchableOpacity>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                onPress={() => onRemoveAccount(account.accountName)}
+                                                style={{paddingLeft: 6}}>
+                                                <RemoveCircular />
+                                            </TouchableOpacity>
+
+                                    </View>
                         })
                     }
 
@@ -183,8 +190,11 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
             <CustomModal
                 isBlackTheme={props.isBlackTheme}
                 visible={removeModal}
-                hideModal={hideModal1}
-                modalText='Remove account'
+                hideModal={() => hideModal1()}
+                inputText={false}
+                modalText={'Remove account'}
+                security={'remove'}
+                justHideModal={() => setRemoveModal(false)}
             />
         </SafeAreaView>
     )

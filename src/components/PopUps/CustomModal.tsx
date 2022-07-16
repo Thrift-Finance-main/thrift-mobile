@@ -8,6 +8,7 @@ import BigNumber from "bignumber.js";
 interface CustomModalProps {
   visible: boolean,
   hideModal: () => void,
+  justHideModal: () => void,
   handleInputText: (text:string) => void,
   modalText: string,
   security: string,
@@ -29,6 +30,8 @@ const CustomModal: FC<CustomModalProps> = (props) => {
         return require("../../assets/success.gif");
       case 'password':
         return require("../../assets/passlock.png");
+      case 'remove':
+        return require("../../assets/removeUser.png");
       default:
         return require("../../assets/success.gif");
     }
@@ -89,6 +92,15 @@ const CustomModal: FC<CustomModalProps> = (props) => {
               Confirm
             </Text>
           </Button>
+          <Button
+              backgroundColor={"#603EDA"}
+              onPress={props.justHideModal}
+              style={{width: 200, marginTop:20}}
+          >
+            <Text style={{color: props.isBlackTheme ? Colors.black : Colors.white, padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
+              Cancel
+            </Text>
+          </Button>
           <Text style={{
             ...styles.InfoText, color:
                 props.isBlackTheme ? Colors.white :
@@ -105,6 +117,7 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP(100),
     height: heightPercentageToDP(25),
     alignSelf: "center",
+    marginLeft: 18
   },
   mainContainer:
   {
