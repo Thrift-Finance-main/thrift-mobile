@@ -3,7 +3,6 @@ import {View, Text, StyleSheet, Image, ScrollView, TouchableOpacity} from 'react
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '../../src/constants/CustomColors';
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
-import Button from './Common/Button'
 import Back from '../../src/assets/back.svg';
 import DarkBack from '../../src/assets/DarkBack.svg';
 import Key from "../assets/Key.svg";
@@ -15,6 +14,7 @@ import {apiDb} from "../db/LiteDb";
 import {addressSlice} from "../utils";
 import {setCurrentAccount} from "../store/Action";
 import CustomModal from "./PopUps/CustomModal";
+import {Button} from "react-native-ui-lib";
 
 interface CreateAccountProps {
     onBackIconPress: () => void
@@ -163,26 +163,28 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
                     <View
                         style={{
                             paddingVertical: heightPercentageToDP(14),
-                            paddingHorizontal: heightPercentageToDP(4),
+                            paddingHorizontal: 80,
                             marginTop: heightPercentageToDP(2),
                             bottom: 0
                         }}>
                         <Button
                             backgroundColor={"#F338C2"}
-                            buttonTitle='Create Account'
                             onPress={props.onCreateAccountPress}
-                            titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
-
-                        />
-                        <View
-                            style={{ height: heightPercentageToDP(2) }}
-                        />
+                            style={{width: 200, marginTop:20}}
+                        >
+                            <Text style={{color: props.isBlackTheme ? Colors.black : Colors.white, padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
+                                Create Account
+                            </Text>
+                        </Button>
                         <Button
                             backgroundColor={"#603EDA"}
-                            buttonTitle='Restore Account'
-                            onPress={props.onRestoreAccountPress}
-
-                        />
+                            onPress={props.onCreateAccountPress}
+                            style={{width: 200, marginTop:20}}
+                        >
+                            <Text style={{color: props.isBlackTheme ? Colors.black : Colors.white, padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
+                                Restore Account
+                            </Text>
+                        </Button>
                     </View>
 
                 </View>

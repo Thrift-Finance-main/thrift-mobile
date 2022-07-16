@@ -1072,6 +1072,7 @@ const Send: FC<SendProps> = (props) => {
                         isBlackTheme={props.isBlackTheme}
                         visible={!hideModal}
                         hideModal={() => confirmTransaction()}
+                        justHideModal={() => setHideModal(true)}
                         security={modalType}
                         inputText={modalType !== 'success'}
                         typePassword={true}
