@@ -1,12 +1,10 @@
 import React, {FC, useState} from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import {View, Text, StyleSheet, Image, TextInput} from 'react-native';
 import Colors from '../../constants/CustomColors';
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimensions';
-import Button from '../Common/Button';
 import Modal from 'react-native-modal'
-import {TextField} from "react-native-ui-lib";
-import InputField from "../Common/InputField";
-import removeIcon from "../../assets/remove.png";
+import {Button, TextField} from "react-native-ui-lib";
+import BigNumber from "bignumber.js";
 interface CustomModalProps {
   visible: boolean,
   hideModal: () => void,
@@ -16,6 +14,8 @@ interface CustomModalProps {
   placeholder: string,
   error?: string,
   inputText: boolean,
+  buttonDisabled?: boolean,
+  typePassword: boolean,
   isBlackTheme: boolean
 }
 const CustomModal: FC<CustomModalProps> = (props) => {
@@ -27,6 +27,8 @@ const CustomModal: FC<CustomModalProps> = (props) => {
         return require("../../assets/fingerPrint.gif");
       case 'success':
         return require("../../assets/success.gif");
+      case 'password':
+        return require("../../assets/passlock.png");
       default:
         return require("../../assets/success.gif");
     }
@@ -66,36 +68,33 @@ const CustomModal: FC<CustomModalProps> = (props) => {
           {
             props.inputText ?
                 <View >
-                  <TextField
-                      containerStyle={{width: 330, marginHorizontal: 12,  fontFamily: 'AvenirNextCyr-Medium'}}
-                      floatingPlaceholder
+                  <TextInput
+                      style={{width: 330, marginHorizontal: 12, paddingHorizontal: 64,  fontFamily: 'AvenirNextCyr-Medium'}}
                       placeholder={props.placeholder}
                       onChangeText={(value:string) => props.handleInputText(value)}
-                      useBottomErrors
-                      validate={['required']}
-                      errorMessage={"Invalid amount"}
-                      type="password"
+                      secureTextEntry={props.typePassword}
+
                   />
                 </View>
             : null
           }
-          <View
-              style={{ height: heightPercentageToDP(3) }}
-          />
+
           <Button
-            backgroundColor={Colors.primaryButton}
-            buttonTitle='OK'
-            onPress={props.hideModal}
-            titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
-          />
+              backgroundColor={"#F338C2"}
+              disabled={props.buttonDisabled}
+              onPress={props.hideModal}
+              style={{width: 200, marginTop:20}}
+          >
+            <Text style={{color: props.isBlackTheme ? Colors.black : Colors.white, padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
+              Confirm
+            </Text>
+          </Button>
           <Text style={{
             ...styles.InfoText, color:
                 props.isBlackTheme ? Colors.white :
                     Colors.black,
           }}>{props.error && props.error.length ? props.error : ''}</Text>
-          <View
-              style={{ height: heightPercentageToDP(3) }}
-          />
+
         </View>
       </View>
     </Modal>

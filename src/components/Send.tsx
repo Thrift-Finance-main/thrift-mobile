@@ -58,6 +58,7 @@ const Send: FC<SendProps> = (props) => {
     const [currentFee, setCurrentFee] = useState('0');
     const [password, setPassword] = useState('0');
     const [hideModal, setHideModal] = useState(true);
+    const [sendTxSuccess, setSendTxSuccess] = useState(false);
 
     const [txError, setTxError] = useState('0');
 
@@ -105,6 +106,8 @@ const Send: FC<SendProps> = (props) => {
     const fee = new BigNumber(
         currentFee
     ).dividedBy(1000000).toString();
+
+    const modalType = sendTxSuccess ? 'success':'password';
 
   // TODO: Get utxos from currentAccount, set in wallet
     const useIsMounted = () => {
@@ -396,16 +399,22 @@ const Send: FC<SendProps> = (props) => {
         if (tx && tx.error){
             console.log("Error on send tx")
             console.log(tx.error);
+            setSendTxSuccess(false);
             return;
         } else {
             console.log('tx.mergedOutputs');
             console.log(tx.mergedOutputs);
+            setSendTxSuccess(true);
             addTxToDb(tx, filterUtxos, filterOutputs).then(()=>
             {
-                handleHideModal();
-                props.onContinuePress("Wallet");;
+                setTimeout(
+                    () => {
+                        handleHideModal();
+                        props.onContinuePress("Wallet");
+                    },
+                    4000
+                );
             });
-
         }
 
     }
@@ -1063,8 +1072,10 @@ const Send: FC<SendProps> = (props) => {
                         isBlackTheme={props.isBlackTheme}
                         visible={!hideModal}
                         hideModal={() => confirmTransaction()}
-                        security={"success"}
-                        inputText={true}
+                        security={modalType}
+                        inputText={modalType !== 'success'}
+                        typePassword={true}
+                        buttonDisabled={modalType === 'success'}
                         placeholder={"Introduce spending password"}
                         error={txError}
                         handleInputText={(pass:string) => handleSetPassword(pass)}/>

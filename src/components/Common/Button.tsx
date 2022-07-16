@@ -7,7 +7,8 @@ interface ButtonProps {
     buttonTitle: string,
     titleTextColor?: any;
     onPress?: () => void,
-    valid?: string
+    valid?: string,
+    disabled?: boolean
 }
 const Button: FC<ButtonProps> = (props) => {
     return (
