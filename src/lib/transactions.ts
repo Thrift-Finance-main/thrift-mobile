@@ -255,6 +255,322 @@ export const buildTransaction = async (
     password: string | null = null,
 ) => {
 
+    const mergedAssetsFromUtxos = mergeAssetsFromUtxos(utxos);
+    const mergedAssetsFromOutputs = mergeAssetsFromOutputs(outputs);
+
+    const outputsAreValid = validOutputs(mergedAssetsFromUtxos,mergedAssetsFromOutputs);
+    console.log('outputsAreValid');
+    console.log(outputsAreValid);
+    if (!outputsAreValid) {
+        return {
+            error: 'Not enough assets in selected tags'
+        }
+    }
+
+    const taggedUtxos = utxos.filter((utxo) => utxo.tags.length);
+
+    let inputUtxosByTag:{ [tag: string]: any[] } = {};
+    for (const output of outputs) {
+        const currentTags = output.fromTags;
+
+        const utxosFromSelectedTag = taggedUtxos.filter((utxo) => utxo.tags.length
+            && utxo.tags.some(t => currentTags.includes(t)));
+
+        // Candidates to receive the change
+        const fromAddresses = utxosFromSelectedTag.map(utxo => utxo.address);
+        // Set output: address-assets
+        let changeAddress;
+        // if there is not any utxo in the selected tag
+        if (!fromAddresses.length){
+            changeAddress = currentAccount.externalPubAddress[0].address;   // Global address
+        } else {
+            changeAddress = fromAddresses[0];
+        }
+
+        const mergedAssetsFromCurrentUtxos = mergeAssetsFromUtxos(utxosFromSelectedTag);
+
+        if (inputUtxosByTag[currentTags[0]] === undefined) {
+            inputUtxosByTag[currentTags[0]] =  diffAmounts2(mergedAssetsFromCurrentUtxos, output.assets);
+        } else {
+            inputUtxosByTag[currentTags[0]] = diffAmounts2(inputUtxosByTag[currentTags[0]], output.assets);
+        }
+    }
+
+    const assetsNeededFromNotTagged:{ [key: string]: string } = {};
+    Object.keys(inputUtxosByTag).some(tag => {
+        return Object.keys(inputUtxosByTag[tag]).some(unit => {
+            const value = new BigNumber(inputUtxosByTag[tag][unit]);
+            const zero = new BigNumber('0');
+            const isLessThanZero = value.isLessThan(zero);
+            if (value.isLessThan(zero)) {
+                const positiveValue = value.multipliedBy('-1').toString();
+                assetsNeededFromNotTagged[unit] = positiveValue;
+            }
+            return isLessThanZero;
+        })}
+    );
+
+    const finalChange:{address: string, assets:{ [unit: string]: string }}[] = [];
+
+    // Take negative assets from notTaggedUtxos
+    // Check if there are negative values in inputUtxosByTag
+    if (Object.keys(assetsNeededFromNotTagged).length){
+        try {
+            const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
+            let assetsFromNotTaggedUtxos = mergeAssetsFromUtxos(notTaggedUtxos);
+
+            const finalChangeFromNotTagged = diffAmounts2(assetsFromNotTaggedUtxos, assetsNeededFromNotTagged);
+
+            finalChange.push({
+                address: currentAccount.externalPubAddress[0].address,
+                assets: finalChangeFromNotTagged
+            });
+        } catch (e) {
+            return {
+                error: e
+            }
+        }
+    } else {
+        console.log('notTagged utxos NOT needed');
+    }
+
+    Object.keys(inputUtxosByTag).map(tag => {
+        const addrObj = currentAccount.externalPubAddress.find(pubAddr => pubAddr.tags[0] === tag);
+        // Remove negative assets
+        const justPositiveAssets = removeNegativeAssets(inputUtxosByTag[tag]);
+        if ( Object.keys(justPositiveAssets).length){
+            finalChange.push({
+                address: addrObj.address,
+                assets: removeNegativeAssets(inputUtxosByTag[tag])
+            });
+        }
+    });
+
+    let inputs = [];
+    utxos.map(utxo => inputs.push({address: utxo.address, utxos: utxo.utxos}))
+
+    // BUILD TX
+    const txBuilder = await getTransactionBuilder(parameters);
+    const txBuilderDraft = await getTransactionBuilder(parameters);
+
+    // TODO: coinSelection, select which utxos(inputs) to use
+
+
+    for (const input of inputs) {
+        const address = input.address;
+        const utxos = input.utxos;
+        for (const utxo of utxos) {
+            try {
+                const inputHash = await TransactionHash.from_bytes(Buffer.from(utxo.tx_hash, 'hex'));
+                const txInput = await TransactionInput.new(inputHash, utxo.tx_index);
+                const inputValue = await toValue(utxo.amount);
+                const inputAddress = await Address.from_bech32(address);
+                await txBuilderDraft.add_input(inputAddress,txInput,inputValue);
+                await txBuilder.add_input(inputAddress,txInput,inputValue);
+            } catch (e) {
+                console.log("error");
+                console.log(e);
+                return {
+                    error: e
+                }
+            }
+
+        }
+    }
+
+
+    let minLovelaces = parameters.minUtxo;
+
+    for (const output of outputs) {
+        try {
+            console.log(output.assets);
+            console.log(dictToAssetsList(output.assets));
+
+            const outputValue = await toValue(dictToAssetsList(output.assets));
+
+            let minAdaValue = await Value.new(
+                await BigNum.from_str(parameters.minUtxo)
+            );
+            const minAdaRequired = await min_ada_required(outputValue, (await minAdaValue.coin()));
+
+            const lovelaces =  new BigNumber(output.assets.lovelace);
+            minLovelaces =  new BigNumber(await minAdaRequired.to_str());
+
+            const minLovelacesError = minLovelaces.dividedBy('1000000');
+
+            if (lovelaces.isLessThan(minLovelaces)){
+                return {
+                    error: ERROR_TRANSACTION.TX_NO_ENOUGH_ADA_FOR_MINIMUM_VALUE,
+                    details: "Min Ada value "+  minLovelacesError.toString()
+                }
+            }
+
+            const outputAddress = await Address.from_bech32(output.toAddress);
+            const txOutput = await TransactionOutput.new(outputAddress, outputValue);
+            await txBuilderDraft.add_output(txOutput);
+            await txBuilder.add_output(txOutput);
+        } catch (e) {
+            console.log("Error on adding output");
+            console.log(e);
+            return {
+                error: e
+            }
+        }
+    }
+
+    for (const outputAsChange of finalChange) {
+        try {
+            const outputValue = await toValue(dictToAssetsList(outputAsChange.assets));
+
+            const outputAddress = await Address.from_bech32(outputAsChange.address);
+
+            const txOutput = await TransactionOutput.new(outputAddress, outputValue);
+            await txBuilderDraft.add_output(txOutput);
+        } catch (e) {
+            console.log("Error in adding finalChange to txBuilderDraft");
+            console.log(e);
+            return {
+                error: e
+            }
+        }
+    }
+
+    await txBuilder.set_ttl(parameters.slot + TX.invalid_hereafter);
+    await txBuilderDraft.set_ttl(parameters.slot + TX.invalid_hereafter);
+
+    const compensate = "13112";
+    let minFeeDraft = await (await txBuilderDraft.min_fee()).to_str();
+    const f = (new BigNumber(minFeeDraft).plus(compensate)).toString();
+
+    const usingGlobalAddress = finalChange.some(change => {
+        return change.address === currentAccount.externalPubAddress[0].address;
+    });
+
+    let outputAsChangeWithFee = finalChange;
+
+    if (usingGlobalAddress){
+        outputAsChangeWithFee = finalChange.map(change => {
+            if (change.address === currentAccount.externalPubAddress[0].address){
+                change.assets["lovelace"] = (new BigNumber(change.assets["lovelace"]).minus(new BigNumber(f))).toString();
+            }
+            return change;
+        });
+    } else {
+        outputAsChangeWithFee[0].assets["lovelace"] = (new BigNumber(finalChange[0].assets["lovelace"]).minus(new BigNumber(f))).toString();
+    }
+
+    //console.log('Final change with fee');
+    //console.log(outputAsChangeWithFee);
+
+    for (const outputAsChange of outputAsChangeWithFee) {
+        try {
+            const outputValue2 = await toValue(dictToAssetsList(outputAsChange.assets));
+            const outputAddress2 = await Address.from_bech32(outputAsChange.address);
+            const txOutput2 = await TransactionOutput.new(outputAddress2, outputValue2);
+
+            await txBuilder.add_output(txOutput2);
+            //console.log(await (await (await txBuilder.get_explicit_output()).coin()).to_str());
+        } catch (e) {
+            console.log("Error on adding outputAsChangeWithFee")
+            console.log(e)
+            return {
+                error: e
+            }
+        }
+    }
+
+    const feeBigNum = await BigNum.from_str(f);
+    await txBuilder.set_fee(feeBigNum);
+
+    const txBody = await txBuilder.build();
+
+    const txHash = await hash_transaction(txBody);
+
+    // add keyhash witnesses
+    let witnessesSet = await TransactionWitnessSet.new();
+    let vkeyWitnesses = await Vkeywitnesses.new();
+
+    // if is submit tx
+    if (password && password.length){
+        // Get all addresses details addresses from currentAccount
+        let inputsList: any[] = [];
+        currentAccount.externalPubAddress.forEach(function (_, index) {
+            let extAddr = currentAccount.externalPubAddress[index];
+            let intAddr = currentAccount.internalPubAddress[index];
+            if (inputs.some(input => input.address === extAddr.address)){
+                extAddr.chain = 0;
+                inputsList.push(extAddr);
+            } else if (inputs.some(input => input.address === intAddr.address)){
+                intAddr.chain = 1;
+                inputsList.push(intAddr);
+            }
+        });
+
+        for (const address of inputsList) {
+            const accountKeys = await requestAccountKeys(currentAccount.encryptedMasterKey, password, address.chain, address.index);
+            const paymentKey = accountKeys.paymentKey
+            const stakeKey = accountKeys.stakeKey
+
+            const vkeyWitness = await make_vkey_witness(txHash, paymentKey);
+            await vkeyWitnesses.add(vkeyWitness);
+            const stakeKeyVitness = await make_vkey_witness(txHash, stakeKey)
+            await vkeyWitnesses.add(stakeKeyVitness);
+        }
+    }
+
+    await witnessesSet.set_vkeys(vkeyWitnesses);
+    // create the finalized transaction with witnesses
+    const transaction = await Transaction.new(
+        txBody,
+        witnessesSet
+    );
+    const txBytes = await transaction.to_bytes();
+
+    const txHex = Buffer.from(txBytes).toString('hex');
+
+    let finalHash = '';
+    if (password && password.length){
+        try {
+            const result = await submitTxBlockfrost(
+                txHex,
+                BLOCKFROST_SUMBIT_TESTNET
+            );
+
+            const txHashSubmitted = await submitTransaction(
+                DANDELION_URL_TESTNET,
+                txHex
+            );
+
+            finalHash = txHashSubmitted.data.data.submitTransaction.hash;
+
+        } catch (e) {
+            console.log("Error on submit tx to dandelion")
+            return {
+
+                error: e
+            }
+        }
+    }
+
+    return {
+        fee: f,
+        txHash: finalHash,
+        inputs,
+        mergedOutputs: mergedAssetsFromOutputs
+    }
+}
+
+
+
+export const buildDelegationTransaction = async (
+    currentAccount: any,
+    accountState: any,
+    utxos: any[],
+    outputs: any[],
+    parameters: any,
+    password: string | null = null,
+) => {
+
     console.log('outputs.length');
     console.log(outputs.length);
     console.log('pParams');
@@ -284,14 +600,6 @@ export const buildTransaction = async (
     const taggedUtxos = utxos.filter((utxo) => utxo.tags.length);
     let initialAssetsFromUtxos = mergeAssetsFromUtxos(taggedUtxos);
 
-    console.log('\n\n\n\n\n1- Start Coin Selection');
-    console.log('mergedAssetsFromOutputs');
-    console.log(mergedAssetsFromOutputs);
-    console.log('initialAssetsFromUtxos');
-    console.log(initialAssetsFromUtxos);
-
-
-    console.log("\n\n\nCalculate change from outputs");
     let inputUtxosByTag:{ [tag: string]: any[] } = {};
     for (const output of outputs) {
         const currentTags = output.fromTags;
@@ -319,11 +627,6 @@ export const buildTransaction = async (
         }
     }
 
-    console.log("\n\n");
-
-    console.log('All final change in inputUtxosByTag');
-    console.log(inputUtxosByTag);
-
     const assetsNeededFromNotTagged:{ [key: string]: string } = {};
     Object.keys(inputUtxosByTag).some(tag => {
         return Object.keys(inputUtxosByTag[tag]).some(unit => {
@@ -344,21 +647,11 @@ export const buildTransaction = async (
     // Check if there are negative values in inputUtxosByTag
     if (Object.keys(assetsNeededFromNotTagged).length){
         try {
-            console.log('We need to use notTagged utxos to cover the rest');
             const notTaggedUtxos = utxos.filter((utxo) => !utxo.tags.length);
-            console.log('notTaggedUtxos');
-            console.log(notTaggedUtxos);
             let assetsFromNotTaggedUtxos = mergeAssetsFromUtxos(notTaggedUtxos);
-            console.log('assetsFromNotTaggedUtxos');
-            console.log(assetsFromNotTaggedUtxos);
-
-            console.log('assetsNeededFromNotTagged');
-            console.log(assetsNeededFromNotTagged);
 
             const finalChangeFromNotTagged = diffAmounts2(assetsFromNotTaggedUtxos, assetsNeededFromNotTagged);
 
-            console.log('finalChangeFromNotTagged');
-            console.log(finalChangeFromNotTagged);
             finalChange.push({
                 address: currentAccount.externalPubAddress[0].address,
                 assets: finalChangeFromNotTagged
@@ -779,16 +1072,6 @@ export const removeAssetNameFromKey = (assets) => {
         }
     }
     return processedAssets;
-}
-export const validateAssets = (mergedAssetsFromUtxos, mergedAssetsFromOutputs ) => {
-    for (let key in mergedAssetsFromOutputs) {
-        // check if the property/key is defined in the object itself, not in parent
-        if (!(mergedAssetsFromUtxos.hasOwnProperty(key)
-            && new BigNumber(mergedAssetsFromUtxos[key]).isGreaterThanOrEqualTo(new BigNumber(mergedAssetsFromOutputs[key])))) {
-           return false;
-        }
-    }
-    return true;
 }
 export const calcDiffAssets = (assetsA:{ [unit: string]: string }, assetsB:{ [unit: string]: string } ) => {
     let assets: { [unit: string]: string } = {};

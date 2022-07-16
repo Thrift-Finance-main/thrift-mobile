@@ -32,8 +32,6 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
   let inAddress = '';
   let outAddress = '';
   if (props.data && props.data.type){
-    console.log('props.data')
-    console.log(props.data)
     const inputUsedAddresses = props.data.inputs.usedAddresses;
     const outputUsedAddresses = props.data.outputs.usedAddresses;
     const inputOtherAddresses = props.data.inputs.otherAddresses;

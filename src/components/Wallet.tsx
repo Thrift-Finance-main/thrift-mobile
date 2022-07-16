@@ -79,6 +79,13 @@ const Wallet: FC<WalletProps> = (props) => {
 
     const isMounted = useIsMounted();
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            fetchData2().then(()=>{});
+        }, 15000);
+        return () => clearInterval(interval);
+    }, []);
+
     useEffect(() =>{
 
         const fetchData = async () => {
@@ -371,8 +378,6 @@ const Wallet: FC<WalletProps> = (props) => {
             </View>
         );
     };
-
-
     const getIconTxType = (type:string) => {
         switch (type) {
             case RECEIVE_TX:
@@ -395,7 +400,6 @@ const Wallet: FC<WalletProps> = (props) => {
                 return '-'
         }
     }
-
     const renderItemTransaction = ({item, index}) => {
 
         if(item){
