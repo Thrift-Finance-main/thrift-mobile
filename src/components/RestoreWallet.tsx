@@ -67,7 +67,7 @@ const RestoreWallet: FC<RestoreWalletProps> = (props) => {
 
                         <TextInput
                             onChangeText={(text) => props.handleSeed(text.trim().replace(/ +(?= )/g,'').replace(/\n/g, " "))}
-                            style={styles.VerifiedtagsContainer}
+                            style={{...styles.VerifiedtagsContainer, color: props.isBlackTheme ? Colors.white : Colors.black}}
                             multiline={true}
                         />
                     </View>
@@ -102,7 +102,8 @@ const RestoreWallet: FC<RestoreWalletProps> = (props) => {
                 isBlackTheme={props.isBlackTheme}
                 visible={props.visible}
                 hideModal={props.hideModal}
-                modalText='You have successfully restored your account, proceed to create your four digit pin.'
+                buttonTitle={"Continue"}
+                modalText='You have successfully restored your account'
             />
         </SafeAreaView>
     )

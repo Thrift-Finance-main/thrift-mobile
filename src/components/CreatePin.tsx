@@ -169,6 +169,7 @@ const CreatePin: FC<CreatePinProps> = (props) => {
             visible={props.visible}
             hideModal={props.hideModal}
             modalText={props.oldpin ? 'Pin updated successfully' : 'Pin created successfully'}
+            buttonTitle={"Continue"}
         />
     </SafeAreaView>
 }

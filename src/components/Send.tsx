@@ -1079,7 +1079,9 @@ const Send: FC<SendProps> = (props) => {
                         buttonDisabled={modalType === 'success'}
                         placeholder={"Introduce spending password"}
                         error={txError}
-                        handleInputText={(pass:string) => handleSetPassword(pass)}/>
+                        handleInputText={(pass:string) => handleSetPassword(pass)}
+                        showCancel={true}
+                    />
             </ScrollView>
         </SafeAreaView>
     )

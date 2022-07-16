@@ -13,9 +13,11 @@ interface CustomModalProps {
   modalText: string,
   security: string,
   placeholder: string,
+  buttonTitle: string,
   error?: string,
   inputText: boolean,
   buttonDisabled?: boolean,
+  showCancel?: boolean,
   typePassword: boolean,
   isBlackTheme: boolean
 }
@@ -89,18 +91,21 @@ const CustomModal: FC<CustomModalProps> = (props) => {
               style={{width: 200, marginTop:20}}
           >
             <Text style={{color: props.isBlackTheme ? Colors.black : Colors.white, padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
-              Confirm
+              {props.buttonTitle || 'Confirm'}
             </Text>
           </Button>
-          <Button
-              backgroundColor={"#603EDA"}
-              onPress={props.justHideModal}
-              style={{width: 200, marginTop:20}}
-          >
-            <Text style={{color: props.isBlackTheme ? Colors.black : Colors.white, padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
-              Cancel
-            </Text>
-          </Button>
+          {
+            props.showCancel ?  <Button
+                backgroundColor={"#603EDA"}
+                onPress={props.justHideModal}
+                style={{width: 200, marginTop:20}}
+            >
+              <Text style={{color: props.isBlackTheme ? Colors.black : Colors.white, padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
+                Cancel
+              </Text>
+            </Button> : null
+          }
+
           <Text style={{
             ...styles.InfoText, color:
                 props.isBlackTheme ? Colors.white :

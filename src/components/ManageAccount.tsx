@@ -178,7 +178,7 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
                         </Button>
                         <Button
                             backgroundColor={"#603EDA"}
-                            onPress={props.onCreateAccountPress}
+                            onPress={props.onRestoreAccountPress}
                             style={{height: 60, width: 200, marginTop:20}}
                         >
                             <Text style={{color: props.isBlackTheme ? Colors.black : Colors.white, padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
@@ -197,6 +197,7 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
                 modalText={'Remove account'}
                 security={'remove'}
                 justHideModal={() => setRemoveModal(false)}
+                showCancel={true}
             />
         </SafeAreaView>
     )

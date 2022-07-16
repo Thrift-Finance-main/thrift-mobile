@@ -1,4 +1,4 @@
-import React, {FC, useMemo, useState} from 'react'
+import React, {FC, useEffect, useMemo, useRef, useState} from 'react'
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '../../src/constants/CustomColors';
@@ -19,6 +19,37 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
     const [name, setName] = useState('');
     const [passwd, setPasswd] = useState('');
     const [confirmPasswd, setConfirmPassd] = useState('');
+
+    console.log('name');
+    console.log(name);
+
+    const useIsMounted = () => {
+        const isMounted = useRef(false);
+        // @ts-ignore
+        useEffect(() => {
+            isMounted.current = true;
+            return () => (isMounted.current = false);
+        }, []);
+        return isMounted;
+    };
+
+    const isMounted = useIsMounted();
+
+    useEffect(() =>{
+
+        const execMethod = async () => {
+
+        }
+
+        if (isMounted.current) {
+            // call the function
+            execMethod()
+                // make sure to catch any error
+                .catch(console.error);
+        }
+
+    }, []);
+
 
     return (
         <SafeAreaView style={{
@@ -100,6 +131,7 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                         style={{ height: heightPercentageToDP(5) }}
                     />
                     <Button
+                        disabled={passwd !== confirmPasswd && passwd !== ''}
                         backgroundColor={"#603EDA"}
                         buttonTitle={props.fromScreen == "CreateAccount" ? "Continue" : "Now Set"}
                         titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
