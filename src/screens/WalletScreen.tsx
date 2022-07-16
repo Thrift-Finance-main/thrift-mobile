@@ -25,6 +25,7 @@ const WalletScreen = ({ navigation }) => {
         SplashScreen.hide();
     }, [])
     useEffect(() => {
+        /*
         const backAction = () => {
             BackHandler.exitApp()
             return true;
@@ -35,6 +36,8 @@ const WalletScreen = ({ navigation }) => {
             backAction
         );
         return () => backHandler.remove();
+
+         */
     }, []);
     const onContinuePress = (route:string) => {
         navigation.navigate(route, {fromRoute: "DashboardTab"});

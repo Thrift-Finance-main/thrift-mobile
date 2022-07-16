@@ -39,6 +39,7 @@ import {getPrices} from "../api";
 import BigNumber from "bignumber.js";
 import Toast from "react-native-toast-message";
 import {WALLET_ROUTE_ASSETS, WALLET_ROUTE_TRANSACTIONS} from "../store/ActionTypes";
+import SplashScreen from "react-native-splash-screen";
 
 interface WalletProps {
     onSavingsPress: () => void
@@ -85,6 +86,8 @@ const Wallet: FC<WalletProps> = (props) => {
     const isMounted = useIsMounted();
 
     useEffect(() => {
+
+
         const interval = setInterval(() => {
             fetchData2().then(()=>{});
         }, 15000);
