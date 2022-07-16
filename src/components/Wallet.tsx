@@ -38,12 +38,15 @@ import {
 import {getPrices} from "../api";
 import BigNumber from "bignumber.js";
 import Toast from "react-native-toast-message";
+import {WALLET_ROUTE_ASSETS, WALLET_ROUTE_TRANSACTIONS} from "../store/ActionTypes";
 
 interface WalletProps {
     onSavingsPress: () => void
     onBackIconPress: () => void
     onCreateTargetPress: () => void
-    isBlackTheme: any
+    onTabOptionPress: (route:string) => void
+    isBlackTheme: any,
+    walletRoute: string
 }
 const Wallet: FC<WalletProps> = (props) => {
     const dispatch = useDispatch();
@@ -51,6 +54,7 @@ const Wallet: FC<WalletProps> = (props) => {
     const [scanner, setScanner] = useState(false);
     const [currPrice, setCurrPrice] = useState(false);
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
+    const walletRoute = useSelector((state) => state.Reducers.walletRoute);
     const [selectedTx, setSelectedTx] = useState(undefined);
     const formatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -401,6 +405,27 @@ const Wallet: FC<WalletProps> = (props) => {
                 return <AntDesignIcon name="arrowdown" color="green" size={22} />
         }
     }
+
+    const renderContentTab = () => {
+        switch (walletRoute) {
+            case WALLET_ROUTE_ASSETS:
+                return  <FlatList
+                    style={{marginTop: heightPercentageToDP(1)}}
+                    data={currentAccount && currentAccount.assets || []}
+                    renderItem={renderAssetsList}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+            case WALLET_ROUTE_TRANSACTIONS:
+                return  <FlatList
+                    style={{marginTop: heightPercentageToDP(1)}}
+                    data={txList}
+                    renderItem={renderItemTransaction}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+            default:
+                //
+        }
+    }
     const getSymbolFromTxType = (type:string) => {
         switch (type) {
             case RECEIVE_TX:
@@ -624,11 +649,11 @@ const Wallet: FC<WalletProps> = (props) => {
                 </View>
             </View>
             <View style={styles.listHeader}>
-                <TouchableOpacity onPress={props.onAssetsPress}>
+                <TouchableOpacity onPress={() => props.onTabOptionPress(WALLET_ROUTE_ASSETS)}>
                     <Text
                         style={{
                             ...styles.topTitle,
-                            color: props.showAssets
+                            color: walletRoute === WALLET_ROUTE_ASSETS
                                 ? props.isBlackTheme
                                     ? Colors.white
                                     : Colors.black
@@ -637,19 +662,19 @@ const Wallet: FC<WalletProps> = (props) => {
                         Assets
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={props.onTransactionPress}>
+                <TouchableOpacity onPress={() => props.onTabOptionPress(WALLET_ROUTE_TRANSACTIONS)}>
                     <Text
                         style={{
                             marginRight: 2,
                             ...styles.topTitle,
-                            color: props.showTransaction
+                            color: walletRoute === WALLET_ROUTE_TRANSACTIONS
                                 ? props.isBlackTheme
                                     ? Colors.white
                                     : Colors.black
                                 : Colors.hintsColor,
                         }}>
                         Activity
-                        <AntDesignIcon onPress={() => fetchData2()} name="sync" color={props.showTransaction
+                        <AntDesignIcon onPress={() => fetchData2()} name="sync" color={walletRoute === WALLET_ROUTE_TRANSACTIONS
                             ? props.isBlackTheme
                             ? Colors.white
                             : Colors.black
@@ -657,21 +682,7 @@ const Wallet: FC<WalletProps> = (props) => {
                     </Text>
                 </TouchableOpacity>
             </View>
-            {props.showAssets ? (
-                <FlatList
-                    style={{marginTop: heightPercentageToDP(1)}}
-                    data={currentAccount && currentAccount.assets || []}
-                    renderItem={renderAssetsList}
-                    keyExtractor={(item, index) => index.toString()}
-                />
-            ) : (
-                <FlatList
-                    style={{marginTop: heightPercentageToDP(1)}}
-                    data={txList}
-                    renderItem={renderItemTransaction}
-                    keyExtractor={(item, index) => index.toString()}
-                />
-            )}
+            {renderContentTab()}
             <TransactionDetailsModal
                 visible={props.transactionDetailsModal}
                 hideModal={props.hideShowTransactionDetailsModal}

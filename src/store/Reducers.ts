@@ -1,10 +1,17 @@
-import {ISBLACKTHEME, SET_CURRENT_ACCOUNT, SET_CURRENT_PRICE, SET_ENTRY_ROUTE} from "./ActionTypes";
+import {
+    ISBLACKTHEME,
+    SET_CURRENT_ACCOUNT,
+    SET_CURRENT_PRICE,
+    SET_ENTRY_ROUTE, SET_WALLET_ROUTE,
+    WALLET_ROUTE_ASSETS
+} from "./ActionTypes";
 
 export const getInitialState = () => {
     const state = {
         isBlackTheme: false,
         currentAccount: {},
         entryRoute: '',
+        walletRoute: WALLET_ROUTE_ASSETS,
         currentPrice: {"usd": 0},
     }
     return state;
@@ -36,6 +43,12 @@ const Reducers = (state = initialState, action:any) => {
             return {
                 ...state,
                 currentPrice: action.currentPrice,
+            };
+        }
+        case SET_WALLET_ROUTE: {
+            return {
+                ...state,
+                walletRoute: action.walletRoute,
             };
         }
 

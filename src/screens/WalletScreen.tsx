@@ -7,32 +7,46 @@ import Ada from '../assets/Ada.svg'
 import Dana from '../assets/Dana.svg'
 import AntDesignIcon from 'react-native-vector-icons/AntDesign'
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { setTheme } from "../store/Action"
+import {setTheme, setWalletRoute} from "../store/Action"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Blockfrost, fetchBlockfrost} from "../api/Blockfrost";
+import {Alert, BackHandler} from "react-native";
 
 const WalletScreen = ({ navigation }) => {
     const dispatch = useDispatch();
     const isBlackTheme = useSelector((state) => state.Reducers.isBlackTheme);
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
+    const walletRoute = useSelector((state) => state.Reducers.walletRoute);
 
     const [receiveTokenModal, setReceiveTokenModal] = useState<boolean>(false)
     const [transactionDetailsModal, setTransactionDetailsModal] = useState<boolean>(false)
-    const [showAssets, setShowAssets] = useState<boolean>(true)
-    const [showTransaction, setShowTransaction] = useState<boolean>(false)
 
     useEffect(() => {
         SplashScreen.hide();
     }, [])
+    useEffect(() => {
+        const backAction = () => {
+            BackHandler.exitApp()
+            return true;
+        };
+
+        const backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            backAction
+        );
+        return () => backHandler.remove();
+    }, []);
     const onContinuePress = (route:string) => {
-        console.log("onContinuePress WalletScreen, click walletIcon");
-        console.log(route);
         navigation.navigate(route, {fromRoute: "DashboardTab"});
     }
 
     const hideShowReceiveTokenModal = () => {
         setReceiveTokenModal(!receiveTokenModal)
 
+    }
+    const handleBackPress = () => {
+
+        BackHandler.exitApp()
     }
     const hideShowTransactionDetailsModal = () => {
         setTransactionDetailsModal(!transactionDetailsModal)
@@ -41,13 +55,8 @@ const WalletScreen = ({ navigation }) => {
     const showCreateTokenScreen = () => {
         navigation.navigate("CreateToken");
     }
-    const onAssetsPress = () => {
-        setShowAssets(true)
-        setShowTransaction(false)
-    }
-    const onTransactionPress = () => {
-        setShowAssets(false)
-        setShowTransaction(true)
+    const onTabOptionPress = (route:string) => {
+        dispatch(setWalletRoute(route));
     }
 
     const onDarkThemePresss = async () => {
@@ -61,10 +70,8 @@ const WalletScreen = ({ navigation }) => {
             transactionDetailsModal={transactionDetailsModal}
             hideShowTransactionDetailsModal={hideShowTransactionDetailsModal}
             showCreateTokenScreen={showCreateTokenScreen}
-            showAssets={showAssets}
-            onAssetsPress={onAssetsPress}
-            showTransaction={showTransaction}
-            onTransactionPress={onTransactionPress}
+            walletRoute={walletRoute}
+            onTabOptionPress={(route:string) => onTabOptionPress(route)}
             onDarkThemePresss={onDarkThemePresss}
             isBlackTheme={isBlackTheme}
             onContinuePress={(route:string) => onContinuePress(route)}
