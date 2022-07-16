@@ -170,7 +170,7 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
                         <Button
                             backgroundColor={"#F338C2"}
                             onPress={props.onCreateAccountPress}
-                            style={{width: 200, marginTop:20}}
+                            style={{height: 60, width: 200, marginTop:20}}
                         >
                             <Text style={{color: props.isBlackTheme ? Colors.black : Colors.white, padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
                                 Create Account
@@ -179,7 +179,7 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
                         <Button
                             backgroundColor={"#603EDA"}
                             onPress={props.onCreateAccountPress}
-                            style={{width: 200, marginTop:20}}
+                            style={{height: 60, width: 200, marginTop:20}}
                         >
                             <Text style={{color: props.isBlackTheme ? Colors.black : Colors.white, padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
                                 Restore Account
