@@ -8,6 +8,7 @@ import {apiDb} from "./src/db/LiteDb";
 import {DEFAULT_CONFIG} from "./src/config/default";
 import {setCurrentAccount, setEntryRoute} from "./src/store/Action";
 import {ENTRY_WITCH_ROUTE} from "./src/config/routes";
+import Toast from 'react-native-toast-message';
 
 const rootReducer = combineReducers({
   Reducers,
@@ -54,6 +55,7 @@ const App = () => {
     return (
         <Provider store={store}>
             <AppWrapper />
+            <Toast />
         </Provider>
     );
 };

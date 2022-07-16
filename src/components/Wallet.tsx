@@ -37,6 +37,7 @@ import {
 } from 'react-native-ui-lib';
 import {getPrices} from "../api";
 import BigNumber from "bignumber.js";
+import Toast from "react-native-toast-message";
 
 interface WalletProps {
     onSavingsPress: () => void
@@ -273,10 +274,20 @@ const Wallet: FC<WalletProps> = (props) => {
                 if (mergedHistory.length) {
                     //await apiDb.setAccountTransactionsHashes(currentAccount.accountName, currentTxs);
                     await apiDb.setAccountHistory(currentAccount.accountName, accHistory);
-
+                    Toast.show({
+                        type: 'success',
+                        text1: 'New transaction added'
+                    });
                 }
                 if (pendingTxs.length) {
                     await apiDb.setAccountPendingTxs(currentAccount.accountName, pendingTxs);
+
+                    if (currentAccount.pendingTxs.length !== pendingTxs.length){
+                        Toast.show({
+                            type: 'success',
+                            text1: 'Transaction confirmed'
+                        });
+                    }
                 }
 
                 const account = await apiDb.getAccount(currentAccount.accountName);
