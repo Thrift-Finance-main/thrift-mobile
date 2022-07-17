@@ -5,6 +5,7 @@ import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimension
 import Modal from 'react-native-modal'
 import {Button, TextField} from "react-native-ui-lib";
 import BigNumber from "bignumber.js";
+import {translate} from "../../i18n";
 interface CustomModalProps {
   visible: boolean,
   hideModal: () => void,
@@ -74,8 +75,12 @@ const CustomModal: FC<CustomModalProps> = (props) => {
             props.inputText ?
                 <View >
                   <TextInput
-                      style={{width: 330, marginHorizontal: 12, paddingHorizontal: 64,  fontFamily: 'AvenirNextCyr-Medium'}}
-                      placeholder={props.placeholder}
+                      style={{
+                        color:
+                            props.isBlackTheme ? Colors.white : Colors.black,
+                        width: 330, marginHorizontal: 12, marginLeft: 56,  paddingHorizontal: 44,  fontFamily: 'AvenirNextCyr-Medium'}}
+                      placeholder={translate("Send.IntroduceSpendingPassword")}
+                      placeholderTextColor={props.isBlackTheme ? Colors.white : Colors.black}
                       onChangeText={(value:string) => props.handleInputText(value)}
                       secureTextEntry={props.typePassword}
 
@@ -91,17 +96,17 @@ const CustomModal: FC<CustomModalProps> = (props) => {
               style={{width: 200, marginTop:20}}
           >
             <Text style={{color: props.isBlackTheme ? Colors.black : Colors.white, padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
-              {props.buttonTitle || 'Confirm'}
+              {translate("Common."+(props.buttonTitle || 'Confirm'))}
             </Text>
           </Button>
           {
-            props.showCancel ?  <Button
+            !props.buttonDisabled && props.showCancel ?  <Button
                 backgroundColor={"#603EDA"}
                 onPress={props.justHideModal}
                 style={{width: 200, marginTop:20}}
             >
               <Text style={{color: props.isBlackTheme ? Colors.black : Colors.white, padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
-                Cancel
+                {translate("Common.Cancel")}
               </Text>
             </Button> : null
           }

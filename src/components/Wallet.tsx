@@ -74,6 +74,10 @@ const Wallet: FC<WalletProps> = (props) => {
     });
     const txList = [...pendingTxs, ...currentAccount.history];
 
+
+    console.log('currentAccount');
+    console.log(currentAccount.accountName);
+
     const useIsMounted = () => {
         const isMounted = useRef(false);
         // @ts-ignore
@@ -89,10 +93,13 @@ const Wallet: FC<WalletProps> = (props) => {
     useEffect(() => {
 
 
+        /*
         const interval = setInterval(() => {
             fetchData2().then(()=>{});
         }, 15000);
         return () => clearInterval(interval);
+
+         */
     }, []);
 
     useEffect(() =>{
@@ -112,7 +119,10 @@ const Wallet: FC<WalletProps> = (props) => {
 
     const fetchData2 = async () => {
         console.log('fetchData');
-        const saddress = currentAccount && currentAccount.rewardAddress;
+        console.log('currentAccount');
+        console.log(currentAccount.accountName);
+        const currAcc = currentAccount;
+        const saddress = currAcc && currAcc.rewardAddress;
         if (saddress) {
             let endpoint = "accounts/" + saddress;
             const accountState = await fetchBlockfrost(endpoint);
@@ -137,7 +147,7 @@ const Wallet: FC<WalletProps> = (props) => {
 
             let tags = new Set();
             const updatedUtxos = utxos.map(utxo => {
-                const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
+                const data = getAddrData(utxo.address, [...currAcc.externalPubAddress, ...currAcc.internalPubAddress]);
                 if (data){
                     data.tags.map(tag => tags.add(tag));
                     utxo = {...utxo, ...data};
@@ -145,7 +155,7 @@ const Wallet: FC<WalletProps> = (props) => {
                 }
             }).filter(r => r !== undefined);
 
-            let currentAccountInLocal = await apiDb.getAccount(currentAccount.accountName);
+            let currentAccountInLocal = await apiDb.getAccount(currAcc.accountName);
             currentAccountInLocal.utxos = updatedUtxos;
             currentAccountInLocal.balance = accountState.controlled_amount;
             currentAccountInLocal.delegated = accountState.active;
@@ -206,9 +216,12 @@ const Wallet: FC<WalletProps> = (props) => {
                 })
             });
 
+
+
+
             let uniqueArrayTxsList = joinedTxsList.filter((v,i,a)=>a.findIndex(v2=>(v2.tx_hash===v.tx_hash))===i)
 
-            let currentTxs = await apiDb.getAccountHistory(currentAccount.accountName);
+            let currentTxs = await apiDb.getAccountHistory(currAcc.accountName);
 
             const allTxHashes:string[] = [];
 
@@ -228,6 +241,7 @@ const Wallet: FC<WalletProps> = (props) => {
             }
 
             if (uniqueArrayTxsList && uniqueArrayTxsList.length){
+
                 let addrsWithTxsList = [];
                 addrsWithTxsList = await Promise.all(
                     uniqueArrayTxsList.map(async tx => {
@@ -244,7 +258,7 @@ const Wallet: FC<WalletProps> = (props) => {
                     })
                 );
 
-                const allAddresses = [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress];
+                const allAddresses = [...currAcc.externalPubAddress, ...currAcc.internalPubAddress];
                 const allTransactionsByAddr = [];
 
                 await Promise.all(
@@ -254,9 +268,6 @@ const Wallet: FC<WalletProps> = (props) => {
                     })
                 );
 
-                console.log("allTransactionsByAddr");
-                console.log(allTransactionsByAddr);
-
                 let mergedHistory = []; // All addresses
                 allTransactionsByAddr.map(async addr => {
                     mergedHistory.push(addr.history);
@@ -264,7 +275,7 @@ const Wallet: FC<WalletProps> = (props) => {
 
 
                 let accHistory = [];
-                accHistory = await apiDb.getAccountHistory(currentAccount.accountName);
+                accHistory = await apiDb.getAccountHistory(currAcc.accountName);
 
                 if (accHistory){
                     accHistory = [...accHistory, ...mergedHistory];
@@ -272,7 +283,7 @@ const Wallet: FC<WalletProps> = (props) => {
                     accHistory = mergedHistory
                 }
 
-                let pendingTxs = currentAccount.pendingTxs.filter(pendTx => {
+                let pendingTxs = currAcc.pendingTxs.filter(pendTx => {
                     return !(accHistory.some(h => h.txHash === pendTx.txHash))
                 });
 
@@ -281,16 +292,16 @@ const Wallet: FC<WalletProps> = (props) => {
                 // TODO: store everything
                 if (mergedHistory.length) {
                     //await apiDb.setAccountTransactionsHashes(currentAccount.accountName, currentTxs);
-                    await apiDb.setAccountHistory(currentAccount.accountName, accHistory);
+                    await apiDb.setAccountHistory(currAcc.accountName, accHistory);
                     Toast.show({
                         type: 'success',
                         text1: 'New transaction added'
                     });
                 }
                 if (pendingTxs.length) {
-                    await apiDb.setAccountPendingTxs(currentAccount.accountName, pendingTxs);
+                    await apiDb.setAccountPendingTxs(currAcc.accountName, pendingTxs);
 
-                    if (currentAccount.pendingTxs.length !== pendingTxs.length){
+                    if (currAcc.pendingTxs.length !== pendingTxs.length){
                         Toast.show({
                             type: 'success',
                             text1: 'Transaction confirmed'
@@ -298,7 +309,7 @@ const Wallet: FC<WalletProps> = (props) => {
                     }
                 }
 
-                const account = await apiDb.getAccount(currentAccount.accountName);
+                const account = await apiDb.getAccount(currAcc.accountName);
                 dispatch(setCurrentAccount(account));
             }
 
@@ -566,6 +577,7 @@ const Wallet: FC<WalletProps> = (props) => {
                             marginTop: heightPercentageToDP(2)
                         }}
                     />
+                      <Text style={{paddingLeft: 40}}>    Ariob Demo Day</Text>
                 </Text>
                 <View style={styles.topContainer2}>
                     <TouchableOpacity onPress={props.onDarkThemePresss}>

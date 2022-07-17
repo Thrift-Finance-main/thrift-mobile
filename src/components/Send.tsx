@@ -79,7 +79,7 @@ const Send: FC<SendProps> = (props) => {
             label: '1'
         },
         {
-            toAddress: 'addr_test1qz9whwf8herg9qqav3wmnhjvcqmgzddez29e8g9xvv75jc80xul88828lfwaaa58cjaetdvqspmx6zrq095e3lfqr4kswsnsl2',
+            toAddress: 'addr_test1qp5ycdwcjjtpu8q4xd6x2xpj05qn0s46mqptyn0s0s7v4jep8y473768ey400nc8zyhjgaahg0k0vqgscf7mm0q08cjquwlfjh',
             validAddress: true,
             assets: {lovelace: '3000000'},
             fromTags: selectedTags,
@@ -396,7 +396,8 @@ const Send: FC<SendProps> = (props) => {
         const pass = password || null;
         console.log('pass');
         console.log(pass);
-        const tx = await buildTransaction(currentAccount, accountState, filterUtxos, filterOutputs, protocolParameters, pass);
+        const currAcc = currentAccount;
+        const tx = await buildTransaction(currAcc, accountState, filterUtxos, filterOutputs, protocolParameters, pass);
         if (tx && tx.error){
             console.log("Error on send tx")
             console.log(tx.error);
@@ -406,7 +407,7 @@ const Send: FC<SendProps> = (props) => {
             console.log('tx.mergedOutputs');
             console.log(tx.mergedOutputs);
             setSendTxSuccess(true);
-            addTxToDb(tx, filterUtxos, filterOutputs).then(()=>
+            addTxToDb(currAcc, tx, filterUtxos, filterOutputs).then(()=>
             {
                 setTimeout(
                     () => {
@@ -423,10 +424,10 @@ const Send: FC<SendProps> = (props) => {
         setTxError('');
         handleHideModal();
     };
-    const addTxToDb = async (tx, inputs, outputs) => {
+    const addTxToDb = async (currAcc, tx, inputs, outputs) => {
 
         console.log('\n\naddTxToDb');
-        let account = await apiDb.getAccount(currentAccount.accountName);
+        let account = await apiDb.getAccount(currAcc.accountName);
         let pendingTxs = account.pendingTxs || [];
         console.log('tx');
         console.log(tx);
@@ -1078,7 +1079,7 @@ const Send: FC<SendProps> = (props) => {
                         inputText={modalType !== 'success'}
                         typePassword={true}
                         buttonDisabled={modalType === 'success'}
-                        placeholder={"Introduce spending password"}
+                        placeholder={"IntroduceSpendingPassword"}
                         error={txError}
                         handleInputText={(pass:string) => handleSetPassword(pass)}
                         showCancel={true}

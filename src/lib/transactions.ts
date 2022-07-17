@@ -580,6 +580,8 @@ export const buildDelegationTransaction = async (
     console.log(accountState);
     console.log('currentAccount.selectedAddress');
     console.log(currentAccount.selectedAddress);
+    console.log('currentAccount');
+    console.log(currentAccount.accountName);
 
     const mergedAssetsFromUtxos = mergeAssetsFromUtxos(utxos);
     console.log('mergedAssetsFromUtxos');
@@ -936,6 +938,9 @@ export const buildDelegationTransaction = async (
                 txHex
             );
 
+            console.log('txHashSubmitted');
+            console.log(txHashSubmitted);
+            console.log(txHashSubmitted.data);
             if (txHashSubmitted.data.errors && txHashSubmitted.data.errors.length){
                 console.log('\n\n\nDandelion errors:');
                 console.log(txHashSubmitted.data.errors);
@@ -943,11 +948,17 @@ export const buildDelegationTransaction = async (
                 const aa = Buffer.from(txHashSubmitted.data.errors[0].extensions.reasons[0].details[0], 'hex').toString('utf-8');
                 console.log('aa')
                 console.log(aa)
+                return {
+                    error: JSON.stringify(txHashSubmitted.data.errors[0].extensions.reasons)
+                };
+            } else{
+                console.log('txHashSubmitted');
+                console.log(txHashSubmitted.data);
+                //console.log(txHashSubmitted.data.data.submitTransaction);
+                finalHash = txHashSubmitted.data.data.submitTransaction.hash;
             }
 
-            console.log('txHashSubmitted');
-            console.log(txHashSubmitted.data.data.submitTransaction);
-            finalHash = txHashSubmitted.data.data.submitTransaction.hash;
+
 
         } catch (e) {
             console.log("Error on submit tx to dandelion")

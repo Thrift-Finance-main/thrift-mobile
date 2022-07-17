@@ -78,7 +78,8 @@
     "To": "To",
     "Date": "Date",
     "Hash": "Transaction Hash",
-    "Confirmed": "Confirmed"
+    "Confirmed": "Confirmed",
+    "Pending": "Pending"
   },
 
   "Send": {

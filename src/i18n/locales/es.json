@@ -78,7 +78,8 @@
     "To": "Para",
     "Date": "Fecha",
     "Hash": "Hash de Transacción",
-    "Confirmed": "Confirmado"
+    "Confirmed": "Confirmado",
+    "Pending": "Pendiente"
   },
 
   "Send": {
@@ -92,6 +93,6 @@
     "SelectAsset": "Selecciona un token",
     "New": "Otra",
     "NotTagged": "Sin Tagear",
-    "IntroduceSpendingPassword": "Introduce la contraseña de gastos",
+    "IntroduceSpendingPassword": "Introduce la contraseña de gastos"
   }
 }
