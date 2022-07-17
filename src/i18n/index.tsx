@@ -2,6 +2,7 @@ import i18next from 'i18next';
 import enJson from './locales/en.json';
 import esJson from './locales/es.json';
 import { initReactI18next } from 'react-i18next';
+import {apiDb} from "../db/LiteDb";
 
 export const LANGUAGES_LIST = ['English','Spanish']
 
@@ -40,7 +41,9 @@ export const getRoute = (route:string) => {
 
 // @ts-ignore
 export const getCurrentLanguage= async ():Promise<string> => {
-    //return await realmDb.getLanguage();
+    const currentLanguage = await apiDb.getCurrentLanguage();
+
+    return  currentLanguage;
 }
 
 export function translate(cell:string) {
@@ -53,6 +56,7 @@ export function getCurrentLang() {
 
 export async function changeLang(lang:string) {
   i18next.changeLanguage(lang);
+
 }
 
 export const resources = {
@@ -65,15 +69,27 @@ export const resources = {
 } as const;
 
 export function initi18n() {
+
+    let initLang = 'en';
+
     i18next
         .use(initReactI18next)
         .init({
-            lng: 'en',
+            lng: initLang,
             // tslint:disable-next-line:object-shorthand-properties-first
             resources,
             debug: true,
             // tslint:disable-next-line:ter-arrow-parens
         });
+
+    getCurrentLanguage().then((lang)=>{
+        console.log('\n\n\n\n\niniti18n getCurrentLanguage');
+        console.log(lang);
+        if(lang && lang.length){
+            console.log("Change language on init");
+            changeLang(lang).then(()=>{})
+        }
+    });
 }
 
 initi18n();

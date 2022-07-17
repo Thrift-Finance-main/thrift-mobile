@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import SplashScreen from 'react-native-splash-screen';
 import { useDispatch, useSelector } from 'react-redux';
 import Language from '../components/Language'
-import { setTheme } from '../store/Action';
+import {setCurrentLanguage, setTheme} from '../store/Action';
 import {
     changeLang,
     getCurrentLang,
@@ -53,6 +53,7 @@ const LanguageScreen = ({ navigation }) => {
         apiDb.setCurrentLanguage(lan).then(r => {
             changeLang(lan).then(r => {
                 setLanguageModal(false);
+                dispatch(setCurrentLanguage(lan));
             });
         });
         setLanguageModal(!languageModal);

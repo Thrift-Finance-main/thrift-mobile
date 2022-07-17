@@ -1,6 +1,6 @@
 import {
     ISBLACKTHEME,
-    SET_CURRENT_ACCOUNT,
+    SET_CURRENT_ACCOUNT, SET_CURRENT_LANGUAGE,
     SET_CURRENT_PRICE,
     SET_ENTRY_ROUTE, SET_WALLET_ROUTE,
     WALLET_ROUTE_ASSETS
@@ -11,6 +11,7 @@ export const getInitialState = () => {
         isBlackTheme: false,
         currentAccount: {},
         entryRoute: '',
+        language: 'en',
         walletRoute: WALLET_ROUTE_ASSETS,
         currentPrice: {"usd": 0},
     }
@@ -49,6 +50,13 @@ const Reducers = (state = initialState, action:any) => {
             return {
                 ...state,
                 walletRoute: action.walletRoute,
+            };
+        }
+
+        case SET_CURRENT_LANGUAGE: {
+            return {
+                ...state,
+                language: action.lang,
             };
         }
 

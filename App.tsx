@@ -6,9 +6,10 @@ import Reducers from './src/store/Reducers';
 import AppWrapper from "./src/AppWrapper";
 import {apiDb} from "./src/db/LiteDb";
 import {DEFAULT_CONFIG} from "./src/config/default";
-import {setCurrentAccount, setEntryRoute} from "./src/store/Action";
+import {setCurrentAccount, setCurrentLanguage, setEntryRoute} from "./src/store/Action";
 import {ENTRY_WITCH_ROUTE} from "./src/config/routes";
 import Toast from 'react-native-toast-message';
+import {changeLang, getCurrentLanguage} from "./src/i18n";
 
 const rootReducer = combineReducers({
   Reducers,
@@ -28,6 +29,7 @@ const setConfig = (store) => {
             console.log('Already config currentConfig');
             console.log('currentAccountName');
             console.log(currentConfig.currentAccountName);
+
             if (!currentConfig.currentAccountName.length){
                 console.log('No accounts in config');
                 store.dispatch(setEntryRoute(ENTRY_WITCH_ROUTE.LANGUAGE));
@@ -38,6 +40,11 @@ const setConfig = (store) => {
                     console.log('There are accounts, going to Homeº');
                     store.dispatch(setCurrentAccount(ca));
                     store.dispatch(setEntryRoute(ENTRY_WITCH_ROUTE.HOME_PAGE));
+                    apiDb.getCurrentLanguage().then(lang => {
+                        if(lang && lang.length){
+                            store.dispatch(setCurrentLanguage(lang));
+                        }
+                    });
                 });
             }
         }

@@ -1,4 +1,11 @@
-import {ISBLACKTHEME, SET_CURRENT_ACCOUNT, SET_CURRENT_PRICE, SET_ENTRY_ROUTE, SET_WALLET_ROUTE} from './ActionTypes';
+import {
+  ISBLACKTHEME,
+  SET_CURRENT_ACCOUNT,
+  SET_CURRENT_LANGUAGE,
+  SET_CURRENT_PRICE,
+  SET_ENTRY_ROUTE,
+  SET_WALLET_ROUTE
+} from './ActionTypes';
 
 export const setTheme = (isBlackTheme: any) => {
   return {
@@ -32,5 +39,12 @@ export const setWalletRoute = (route: any) => {
   return {
     type: SET_WALLET_ROUTE,
     walletRoute: route,
+  };
+};
+
+export const setCurrentLanguage = (lang: any) => {
+  return {
+    type: SET_CURRENT_LANGUAGE,
+    lang,
   };
 };

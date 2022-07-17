@@ -17,7 +17,7 @@ import {useDispatch, useSelector} from "react-redux";
 import WalletIcon from "../assets/wallet.svg";
 import {fetchBlockfrost, getBlockInfo, getTxInfo, getTxUTxOs, getTxUTxOsByAddress} from "../api/Blockfrost";
 import {apiDb} from "../db/LiteDb";
-import {setCurrentAccount, setCurrentPrice} from "../store/Action";
+import {setCurrentAccount, setCurrentLanguage, setCurrentPrice} from "../store/Action";
 import {classifyTx, RECEIVE_TX, SELF_TX, SEND_TX} from "../lib/transactions";
 import Ada from '../assets/Ada.svg'
 import moment from "moment";
@@ -40,7 +40,7 @@ import BigNumber from "bignumber.js";
 import Toast from "react-native-toast-message";
 import {WALLET_ROUTE_ASSETS, WALLET_ROUTE_TRANSACTIONS} from "../store/ActionTypes";
 import SplashScreen from "react-native-splash-screen";
-import {translate} from "../i18n";
+import {changeLang, getCurrentLanguage, translate} from "../i18n";
 
 interface WalletProps {
     onSavingsPress: () => void
@@ -56,6 +56,7 @@ const Wallet: FC<WalletProps> = (props) => {
     const [scanner, setScanner] = useState(false);
     const [currPrice, setCurrPrice] = useState(false);
     const currentAccount = useSelector((state) => state.Reducers.currentAccount);
+    const currentLanguage = useSelector((state) => state.Reducers.language);
     const walletRoute = useSelector((state) => state.Reducers.walletRoute);
     const [selectedTx, setSelectedTx] = useState(undefined);
     const formatter = new Intl.NumberFormat('en-US', {
@@ -116,8 +117,18 @@ const Wallet: FC<WalletProps> = (props) => {
         }
 
     }, [currentAccount.accountName]);
+    useEffect(() =>{
+        getCurrentLanguage().then((lang)=>{
+            if(lang && lang.length){
+                changeLang(lang).then(()=>{});
+                dispatch(setCurrentLanguage(lang));
+            }
+        });
+
+    }, [currentLanguage]);
 
     const fetchData2 = async () => {
+
         console.log('fetchData');
         console.log('currentAccount');
         console.log(currentAccount.accountName);

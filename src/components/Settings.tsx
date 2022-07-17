@@ -13,8 +13,9 @@ import LanguageModal from './PopUps/LanguageModal'
 import PushNotificationModal from './PopUps/PushNotificationModal'
 import CurrencyConvertorModal from './PopUps/CurrencyConvertorModal'
 import {apiDb} from "../db/LiteDb";
-import {setCurrentAccount} from "../store/Action";
+import {setCurrentAccount, setCurrentLanguage} from "../store/Action";
 import {changeLang, LANGUAGES_MODAL, LANGUAGES_NAMES_INVERT, translate} from "../i18n";
+import {useDispatch} from "react-redux";
 
 
 interface SettingsProps {
@@ -29,24 +30,26 @@ interface SettingsProps {
     hideShowCurrencyModal: () => void
 }
 const Settings: FC<SettingsProps> = (props) => {
+    const dispatch = useDispatch();
     const [languageModal, setLanguageModal] = useState(false);
-    const [currentLanguage, setCurrentLanguage] = useState('English');
+    const [currLanguage, setCurrLanguage] = useState('English');
 
     useEffect(() =>{
         apiDb.getCurrentLanguage().then(lang =>{
-            setCurrentLanguage(LANGUAGES_NAMES_INVERT[lang]);
+            setCurrLanguage(LANGUAGES_NAMES_INVERT[lang]);
         });
     }, []);
 
     const updateCurrentLanguage = (lang:string) => {
         apiDb.setCurrentLanguage(lang).then(r => {
             changeLang(lang).then(r => {
-                setCurrentLanguage(LANGUAGES_NAMES_INVERT[lang]);
+                setCurrLanguage(LANGUAGES_NAMES_INVERT[lang]);
                 setLanguageModal(false);
+                dispatch(setCurrentLanguage(lang));
             });
         });
     }
-    translate('Common.Continue')
+
     const renderItemMenuList = ({ item, index }) => {
         return (
             <>
@@ -80,7 +83,7 @@ const Settings: FC<SettingsProps> = (props) => {
                                     props.isBlackTheme ? Colors.white :
                                         Colors.black,
                             }}
-                        >{currentLanguage}</Text>
+                        >{currLanguage}</Text>
                         :
                         props.isBlackTheme ? <DarkForward
                             style={{ paddingHorizontal: widthPercentageToDP(5) }}
@@ -146,7 +149,7 @@ const Settings: FC<SettingsProps> = (props) => {
             </View>
             <LanguageModal
                 Data={LANGUAGES_MODAL}
-                selectedLang ={currentLanguage}
+                selectedLang ={currLanguage}
                 visible={languageModal}
                 hideModal={() => setLanguageModal(false)}
                 proceed={(lang) => updateCurrentLanguage(lang)}
