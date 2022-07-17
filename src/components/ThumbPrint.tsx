@@ -10,6 +10,7 @@ import DarkBack from '../assets//DarkBack.svg'
 import CustomModal from './PopUps/CustomModal'
 import ThriftLogo from '../assets/ThriftLogo.svg'
 import ThriftLogoWhite from '../assets/ThriftFinancelogo.svg'
+import ThriftIcon from '../assets/logo-thrift.png'
 import Icon from 'react-native-vector-icons/Ionicons'
 import FingerPrint from '../assets/FingerPrint.svg'
 interface ThumbPrintProps {
@@ -80,22 +81,12 @@ const ThumbPrint: FC<ThumbPrintProps> = (props : ThumbPrintProps) => {
                     <View
                         style={{ alignItems: "center" }}
                     >
-                        {
-                            props.isBlackTheme ?
-                            <ThriftLogoWhite
-                                style={{
-                                    width: widthPercentageToDP(10), height: heightPercentageToDP(10),
-                                    marginTop: heightPercentageToDP(7)
-                                }}
-                            />
-                            :
-                            <ThriftLogo
-                                style={{
-                                    width: widthPercentageToDP(10), height: heightPercentageToDP(10),
-                                    marginTop: heightPercentageToDP(7)
-                                }}
-                            />
-                        }
+                        <Image
+
+                            source={require("../assets/logo-thrift.png")}
+                            resizeMode='contain'
+                            style={{maxHeight: 100, marginTop: 40 }}
+                        />
                         <Text
                             style={{
                                 ...styles.topTitle, color:
@@ -105,7 +96,7 @@ const ThumbPrint: FC<ThumbPrintProps> = (props : ThumbPrintProps) => {
                         >Enter Your Pin</Text>
 
                         <View
-                            style={{ paddingHorizontal: widthPercentageToDP(2.5) }}
+                            style={{ paddingHorizontal: widthPercentageToDP(4.5), marginTop: 20 }}
                         >
                             <OTPTextView
                                 autoFocusOnLoad={true}
@@ -130,7 +121,9 @@ const ThumbPrint: FC<ThumbPrintProps> = (props : ThumbPrintProps) => {
                     <View
                         style={{ height: heightPercentageToDP(5) }}
                     />
-                    <View style={{flexDirection : 'row', justifyContent : 'space-between', paddingHorizontal : widthPercentageToDP(2.5)}} >
+                    {
+                        /*
+                        <View style={{flexDirection : 'row', justifyContent : 'space-between', paddingHorizontal : widthPercentageToDP(2.5)}} >
                         {
                             firstThreeButtons.map ((item, index) => {
                                 return <TouchableOpacity key={index} style={{
@@ -191,6 +184,9 @@ const ThumbPrint: FC<ThumbPrintProps> = (props : ThumbPrintProps) => {
                             })
                         }
                     </View>
+
+                         */
+                    }
                     <View
                         style={{ height: heightPercentageToDP(2) }}
                     />

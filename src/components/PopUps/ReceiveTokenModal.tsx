@@ -40,6 +40,7 @@ import swapIcon from "../../assets/swapIcon.png";
 import {apiDb} from "../../db/LiteDb";
 import {setCurrentAccount} from "../../store/Action";
 import QRCode from 'react-native-qrcode-generator';
+import {translate} from "../../i18n";
 
 interface ReceiveTokenModalProps {
   visible: boolean,
@@ -257,7 +258,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                             >
                               <Text
                                 style={{ textAlign: "center", color: Colors.white, fontFamily: 'AvenirNextCyr-Medium', }}
-                              >Copy</Text>
+                              >{translate("Receive.Copy")}</Text>
 
                             </TouchableOpacity>
                           </View>
@@ -288,7 +289,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                   <Text
 
                       style={{ textAlign: "center", color: Colors.white, fontFamily: 'AvenirNextCyr-Medium', }}
-                  >Copy</Text>
+                  >{translate("Receive.Copy")}</Text>
 
                 </TouchableOpacity>
                 <View style={{width : widthPercentageToDP(10)}} />
@@ -298,7 +299,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                     style={{
                       alignSelf: "center", marginTop: heightPercentageToDP(1),
                       height: heightPercentageToDP(4.5),
-                      width: widthPercentageToDP(15),
+                      width: widthPercentageToDP(20),
                       borderRadius: 5,
                       backgroundColor: Colors.color7,
                       justifyContent: "center",
@@ -310,7 +311,7 @@ const ReceiveTokenModal: FC<ReceiveTokenModalProps> = (props) => {
                   <Text
 
                       style={{ textAlign: "center", color: '#F338C2', fontFamily: 'AvenirNextCyr-Medium', }}
-                  >Share</Text>
+                  >{translate("Receive.Share")}</Text>
 
                 </TouchableOpacity>
               </View>

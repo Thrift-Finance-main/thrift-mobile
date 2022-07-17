@@ -14,11 +14,11 @@ const SecurityScreen = ({ navigation }) => {
     }
     const MenuList = [{
         icon: <Unlock />,
-        title: "Set unlock code",
+        title: "SetUnlockCode",
     },
     {
         icon: <Keys />,
-        title: "Change Password",
+        title: "ChangePassword",
     },
     {
         icon: <FingerPrint />,

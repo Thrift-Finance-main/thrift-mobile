@@ -10,6 +10,7 @@ import CustomModal from './PopUps/CustomModal'
 import DarkBack from '../assets//DarkBack.svg'
 import DarkForward from '../assets/DarkForward.svg'
 import ToggleSwitch from 'toggle-switch-react-native'
+import {translate} from "../i18n";
 
 interface SecurityProps {
     MenuList: any
@@ -55,7 +56,7 @@ const Security: FC<SecurityProps> = (props) => {
                                     props.isBlackTheme ? Colors.white :
                                         Colors.black,
                             }}
-                        >{item.title}</Text>
+                        >{translate("Security."+item.title)}</Text>
                     </View>
                     {
                         index === 2 ?
@@ -118,7 +119,7 @@ const Security: FC<SecurityProps> = (props) => {
                                 props.isBlackTheme ? Colors.white :
                                     Colors.black,
                         }}
-                    >Security</Text>
+                    >{translate("Security.Security")}</Text>
                 </View>
                 <View>
                     <FlatList

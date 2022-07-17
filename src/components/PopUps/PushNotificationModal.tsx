@@ -5,6 +5,7 @@ import { heightPercentageToDP, widthPercentageToDP } from '../../utils/dimension
 import Modal from 'react-native-modal'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import ToggleSwitch from 'toggle-switch-react-native'
+import {translate} from "../../i18n";
 
 interface LanguageModalProps {
   visible: boolean,
@@ -58,7 +59,7 @@ const PushNotificationModal: FC<LanguageModalProps> = (props) => {
                   props.isBlackTheme ? Colors.white :
                     Colors.black,
               }}
-            >Push Notifications</Text>
+            >{translate("PushNotifications.PushNotifications")}</Text>
             <TouchableOpacity
               style={{
                 position: 'absolute',
@@ -86,7 +87,7 @@ const PushNotificationModal: FC<LanguageModalProps> = (props) => {
 
             <Text
               style={{ color: props.isBlackTheme ? Colors.white : Colors.authTitle, fontFamily: 'AvenirNextCyr-Medium', }}
-            >Allow Push Nofications</Text>
+            >{translate("PushNotifications.AllowPushNotifications")}</Text>
             <ToggleSwitch
               isOn={toggle}
               onColor={props.isBlackTheme ? Colors.white : Colors.black}
@@ -102,7 +103,7 @@ const PushNotificationModal: FC<LanguageModalProps> = (props) => {
 
             <Text
               style={{ color: props.isBlackTheme ? Colors.white : Colors.authTitle, fontFamily: 'AvenirNextCyr-Medium' }}
-            >Send and Recieve</Text>
+            >{translate("PushNotifications.SendReceive")}</Text>
             <ToggleSwitch
               isOn={toggle1}
               onColor={props.isBlackTheme ? Colors.white : Colors.black}

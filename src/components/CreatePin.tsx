@@ -9,6 +9,7 @@ import DarkBack from '../assets//DarkBack.svg'
 import CustomModal from './PopUps/CustomModal'
 import CustomColors from "../constants/CustomColors";
 import { Button } from 'react-native-ui-lib'
+import {translate} from "../i18n";
 
 interface CreatePinProps {
     onConfirmPress: () => void,
@@ -50,7 +51,7 @@ const CreatePin: FC<CreatePinProps> = (props) => {
                             props.isBlackTheme ? Colors.white :
                                 Colors.black,
                     }}
-                >{props.title}</Text>
+                >{translate("CreatePin.CreatePin")}</Text>
                 {
                     props.oldpin ? <>
                         <Text
@@ -59,7 +60,7 @@ const CreatePin: FC<CreatePinProps> = (props) => {
                                     props.isBlackTheme ? Colors.white :
                                         Colors.black,
                             }}
-                        >Confirm current pin</Text>
+                        >{translate("CreatePin.ConfirmCurrentPin")}</Text>
                         <View
                             style={{ paddingHorizontal: widthPercentageToDP(2.5) }}
                         >
@@ -87,7 +88,7 @@ const CreatePin: FC<CreatePinProps> = (props) => {
                             props.isBlackTheme ? Colors.white :
                                 Colors.black,
                     }}
-                >Create Pin</Text>
+                >{translate("CreatePin.CreatePin")}</Text>
                 <View
                     style={{ paddingHorizontal: widthPercentageToDP(2.5) }}
                 >
@@ -116,7 +117,7 @@ const CreatePin: FC<CreatePinProps> = (props) => {
                             props.isBlackTheme ? Colors.white :
                                 Colors.black,
                     }}
-                >Confirm Pin</Text>
+                >{translate("CreatePin.ConfirmPin")}</Text>
                 <View
                     style={{ paddingHorizontal: widthPercentageToDP(2.5) }}
                 >

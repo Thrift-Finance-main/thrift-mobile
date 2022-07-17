@@ -19,11 +19,11 @@ const SettingsScreen = ({ navigation }) => {
         },
         {
             icon: <Notification />,
-            title: "Push Notification",
+            title: "PushNotification",
         },
         {
             icon: <Notification />,
-            title: "Currency Converter",
+            title: "CurrencyConverter",
         },
         {
             icon: <Language />,
@@ -35,7 +35,7 @@ const SettingsScreen = ({ navigation }) => {
         },
         {
             icon: <Terms />,
-            title: "Terms & Condition",
+            title: "Terms&Conditions",
         },
     ]
     const onContinuePress = () => {

@@ -9,6 +9,7 @@ import {addressSlice} from "../../utils";
 import {EXPLORER_TX_URL_MAINNET, EXPLORER_TX_URL_TESTNET} from "../../constants/explorer";
 import moment from "moment";
 import BigNumber from "bignumber.js";
+import {translate} from "../../i18n";
 interface TransactionDetailsModalProps {
   visible: boolean,
   hideModal: () => void,
@@ -81,7 +82,7 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
                 props.isBlackTheme ? Colors.white :
                   Colors.black,
             }}
-          >Transaction Details</Text>
+          >{translate("TransactionDetails.TransactionDetails")}</Text>
 
           <View
             style={{ paddingHorizontal: widthPercentageToDP(10), width: "100%", paddingVertical: heightPercentageToDP(1) }}
@@ -89,7 +90,7 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
             <Text
               style={{ color: Colors.authTitle }}
 
-            >Amount</Text>
+            >{translate("TransactionDetails.Amount")}</Text>
             <Text
               style={{ marginTop: heightPercentageToDP(0.5), color: props.isBlackTheme ? Colors.white : Colors.black }}
             >{props.data && getSymbolFromTxType(props.data.type)}{props.data && props.data.amount && props.data.amount.lovelace/1000000}{}</Text>
@@ -100,7 +101,7 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
             <Text
               style={{ color: Colors.authTitle }}
 
-            >Fee</Text>
+            >{translate("TransactionDetails.Fee")}</Text>
             <Text
               style={{ marginTop: heightPercentageToDP(0.5), color: props.isBlackTheme ? Colors.white : Colors.black }}
             >{props.data && props.data.amount && props.data.fees/1000000}</Text>
@@ -111,7 +112,7 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
             <Text
               style={{ color: Colors.authTitle }}
 
-            >From</Text>
+            >{translate("TransactionDetails.From")}</Text>
             <Text
               style={{ marginTop: heightPercentageToDP(0.5), color: props.isBlackTheme ? Colors.white : Colors.black }}
 
@@ -123,7 +124,7 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
             <Text
               style={{ color: Colors.authTitle }}
 
-            >To</Text>
+            >{translate("TransactionDetails.To")}</Text>
             <Text
               style={{ marginTop: heightPercentageToDP(0.5), color: props.isBlackTheme ? Colors.white : Colors.black }}
 
@@ -135,7 +136,7 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
             <Text
               style={{ color: Colors.authTitle }}
 
-            >Date</Text>
+            >{translate("TransactionDetails.Date")}</Text>
             <Text
               style={{ marginTop: heightPercentageToDP(0.5), color: props.isBlackTheme ? Colors.white : Colors.black }}
 
@@ -147,7 +148,7 @@ const TransactionDetailsModal: FC<TransactionDetailsModalProps> = (props) => {
             <Text
               style={{ color: Colors.authTitle }}
 
-            >Transaction Hash</Text>
+            >{translate("TransactionDetails.Hash")}</Text>
             <Text
                 onPress={()=>{ Linking.openURL(props.data && props.data.txHash && EXPLORER_TX_URL_TESTNET+props.data.txHash)}}
               style={{ marginTop: heightPercentageToDP(0.5), color: props.isBlackTheme ? Colors.white : Colors.black }}

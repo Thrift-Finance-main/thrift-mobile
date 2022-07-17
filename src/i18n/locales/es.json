@@ -1,6 +1,8 @@
 {
   "Common": {
-    "Continue": "Continuar"
+    "Continue": "Continuar",
+    "Confirm": "Confirmar",
+    "Cancel": "Cancelar"
   },
   "LanguageScreen": {
     "selectLanguage": "Seleccionar Lenguaje"
@@ -11,5 +13,85 @@
     "movements": "Movimientos",
     "analytics": "Análisis",
     "services": "Servicios"
+  },
+
+
+  "Settings": {
+    "Settings": "Ajustes",
+    "Security": "Seguridad",
+    "PushNotification": "Notificaciones",
+    "CurrencyConverter": "Conversor de Divisas",
+    "Language": "Idioma",
+    "About": "Sobre Nosotros",
+    "Terms&Conditions": "Terminos y Condiciones"
+  },
+
+  "Security": {
+    "Security": "Seguridad",
+    "SetUnlockCode": "Cambiar Código Pin",
+    "ChangePassword": "Cambiar Contraseña",
+    "Fingerprint": "Huella"
+  },
+
+  "CreatePin": {
+    "CreatePin": "Crear Pin",
+    "ConfirmCurrentPin": "Confirmar Pin Actual",
+    "ConfirmPin": "Confirmar Pin"
+  },
+
+  "ChangeSpendingPassword": {
+    "ChangeSpendingPassword": "Cambiar Contraseña de Gastos",
+    "OldPassword": "Antigua Contraseña",
+    "NewPassword": "Nueva Contraseña",
+    "ConfirmNewPassword": "Confirmar Nueva Contraseña",
+    "Requirements": "La constraseña debe ser alfanumérica",
+    "Confirm": "Confirmar Nueva Contraseña"
+  },
+
+  "PushNotifications": {
+    "PushNotifications": "Notificaciones",
+    "AllowPushNotifications": "Permitir Notficaciones",
+    "SendReceive": "Enviar & Recibir"
+  },
+
+  "Wallet": {
+    "Wallet": "Billetera",
+    "Delegated": "Delegado",
+    "Undelegated": "No delegado",
+    "Send": "Enviar",
+    "Receive": "Recibir",
+    "Assets": "Tokens",
+    "Activity": "Actividad"
+  },
+
+  "Receive": {
+    "Receive": "Recibir",
+    "Copy": "Copiar",
+    "Share": "Compartir"
+  },
+
+  "TransactionDetails": {
+    "TransactionDetails": "Detalles de Transacción",
+    "Amount": "Cantidad",
+    "Fee": "Comisión",
+    "From": "Desde",
+    "To": "Para",
+    "Date": "Fecha",
+    "Hash": "Hash de Transacción",
+    "Confirmed": "Confirmado"
+  },
+
+  "Send": {
+    "Send": "Enviar",
+    "From": "Desde",
+    "To": "Para",
+    "Amount": "Cantidad",
+    "Assets": "Tokens",
+    "NoAssets": "Sin Tokens",
+    "AddAsset": "Añadir Token",
+    "SelectAsset": "Selecciona un token",
+    "New": "Otra",
+    "NotTagged": "Sin Tagear",
+    "IntroduceSpendingPassword": "Introduce la contraseña de gastos",
   }
 }

@@ -7,6 +7,7 @@ import { Button } from 'react-native-ui-lib';
 import InputField from './Common/InputField'
 import CustomModal from './PopUps/CustomModal'
 import CustomColors from "../constants/CustomColors";
+import {translate} from "../i18n";
 interface ChangePasswordProps {
     onContinuePress: () => void
     onBackIconPress: () => void
@@ -33,28 +34,26 @@ const ChangePassword: FC<ChangePasswordProps> = (props) => {
                             ...styles.topTitle, color: props.isBlackTheme ? Colors.white :
                                 Colors.black, fontFamily: 'AvenirNextCyr-Medium',
                         }}
-                    >Change Spending Password</Text>
+                    >{translate("ChangeSpendingPassword.ChangeSpendingPassword")}</Text>
                     <Text
                         style={{
                             ...styles.filedHeader, color:
                                 props.isBlackTheme ? Colors.white :
                                     Colors.black,
                         }}
-                    >Old Password</Text>
+                    >{translate("ChangeSpendingPassword.OldPassword")}</Text>
                     <InputField
                         backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
                         onChangeText={(text:string) => props.onChangeOldPassword(text)}
                         secureText={true}
                     />
-                    <Text
-                        style={styles.hintStyle}
-                    >Password should containt a number and alphabet</Text>
+
                     <Text
                         style={{
                             ...styles.filedHeader, color:
                                 props.isBlackTheme ? Colors.white :
                                     Colors.black,
-                        }}                    >New Password</Text>
+                        }}                    >{translate("ChangeSpendingPassword.NewPassword")}</Text>
                     <InputField
                         backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
                         onChangeText={(text:string) => props.onChangePassword(text)}
@@ -62,24 +61,27 @@ const ChangePassword: FC<ChangePasswordProps> = (props) => {
                     />
                     <Text
                         style={styles.hintStyle}
-                    >Password should containt a number and alphabet</Text>
+                    >{translate("ChangeSpendingPassword.Requirements")}</Text>
                     <Text
                         style={{
                             ...styles.filedHeader, color:
                                 props.isBlackTheme ? Colors.white :
                                     Colors.black,
-                        }}                    >Confirm New Password</Text>
+                        }}                    >{translate("ChangeSpendingPassword.ConfirmNewPassword")}</Text>
                     <InputField
                         backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
                         onChangeText={(text) => props.onChangeConfirmPassword(text)}
                         secureText={true}
                     />
+                    <Text
+                        style={styles.hintStyle}
+                    >{translate("ChangeSpendingPassword.Requirements")}</Text>
                     <View
                         style={{ height: heightPercentageToDP(5) }}
                     />
 
                     <Button
-                        label="Set New Password"
+                        label={translate("ChangeSpendingPassword.Confirm")}
                         borderRadius={5}
                         size={Button.sizes.large}
                         color={props.isBlackTheme ? Colors.black : Colors.white}

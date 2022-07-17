@@ -1,6 +1,8 @@
 {
   "Common": {
-    "Continue": "Continue"
+    "Continue": "Continue",
+    "Confirm": "Confirm",
+    "Cancel": "Cancel"
   },
   "LanguageScreen": {
     "selectLanguage": "Select Language"
@@ -12,6 +14,84 @@
     "movements": "Movements",
     "analytics": "Analytics",
     "services": "Services"
+  },
 
+  "Settings": {
+    "Settings": "Settings",
+    "Security": "Security",
+    "PushNotification": "Push Notification",
+    "CurrencyConverter": "Currency Converter",
+    "Language": "Language",
+    "About": "About",
+    "Terms&Conditions": "Terms & Conditions"
+  },
+
+  "Security": {
+    "Security": "Security",
+    "SetUnlockCode": "Set Unlock Code",
+    "ChangePassword": "Change Password",
+    "Fingerprint": "Fingerprint"
+  },
+
+  "CreatePin": {
+    "CreatePin": "Create Pin",
+    "ConfirmCurrentPin": "Confirm Current Pin",
+    "ConfirmPin": "Confirm Pin"
+  },
+
+  "ChangeSpendingPassword": {
+    "ChangeSpendingPassword": "Change Spending Password",
+    "OldPassword": "Old Password",
+    "NewPassword": "New Password",
+    "ConfirmNewPassword": "Confirm New Password",
+    "Requirements": "Password should containt a number and alphabet",
+    "Confirm": "Confirm New Password"
+  },
+
+  "PushNotifications": {
+    "PushNotifications": "Push Notifications",
+    "AllowPushNotifications": "Allow Push Notifications",
+    "SendReceive": "SendReceive"
+  },
+
+  "Wallet": {
+    "Wallet": "Wallet",
+    "Undelegated": "Undelegated",
+    "Delegated": "Delegated",
+    "Send": "Send",
+    "Receive": "Receive",
+    "Assets": "Assets",
+    "Activity": "Activity"
+  },
+
+  "Receive": {
+    "Receive": "Receive",
+    "Copy": "Copy",
+    "Share": "Share"
+  },
+
+  "TransactionDetails": {
+    "TransactionDetails": "Transaction Details",
+    "Amount": "Amount",
+    "Fee": "Fee",
+    "From": "From",
+    "To": "To",
+    "Date": "Date",
+    "Hash": "Transaction Hash",
+    "Confirmed": "Confirmed"
+  },
+
+  "Send": {
+    "Send": "Send",
+    "From": "From",
+    "To": "Send to",
+    "Amount": "Amount",
+    "Assets": "Assets",
+    "NoAssets": "No Assets",
+    "AddAsset": "Add Asset",
+    "SelectAsset": "Select Asset",
+    "New": "New",
+    "NotTagged": "Not Tagged",
+    "IntroduceSpendingPassword": "Introduce Spending Password"
   }
 }

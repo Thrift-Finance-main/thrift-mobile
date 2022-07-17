@@ -14,7 +14,7 @@ import PushNotificationModal from './PopUps/PushNotificationModal'
 import CurrencyConvertorModal from './PopUps/CurrencyConvertorModal'
 import {apiDb} from "../db/LiteDb";
 import {setCurrentAccount} from "../store/Action";
-import {changeLang, LANGUAGES_MODAL, LANGUAGES_NAMES_INVERT} from "../i18n";
+import {changeLang, LANGUAGES_MODAL, LANGUAGES_NAMES_INVERT, translate} from "../i18n";
 
 
 interface SettingsProps {
@@ -46,7 +46,7 @@ const Settings: FC<SettingsProps> = (props) => {
             });
         });
     }
-
+    translate('Common.Continue')
     const renderItemMenuList = ({ item, index }) => {
         return (
             <>
@@ -71,7 +71,7 @@ const Settings: FC<SettingsProps> = (props) => {
                                 ...styles.renderTitle, color:
                                     props.isBlackTheme ? Colors.white : Colors.black,
                             }}
-                        >{item.title}</Text>
+                        >{translate("Settings."+item.title)}</Text>
                     </View>
                     {index == 3 ?
                         <Text
@@ -129,7 +129,7 @@ const Settings: FC<SettingsProps> = (props) => {
                             ...styles.topTitle, color: props.isBlackTheme ? Colors.white :
                                 Colors.black
                         }}
-                    >Settings</Text>
+                    >{translate("Settings.Settings")}</Text>
                 </View>
                 <View>
                     <FlatList

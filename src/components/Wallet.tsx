@@ -40,6 +40,7 @@ import BigNumber from "bignumber.js";
 import Toast from "react-native-toast-message";
 import {WALLET_ROUTE_ASSETS, WALLET_ROUTE_TRANSACTIONS} from "../store/ActionTypes";
 import SplashScreen from "react-native-splash-screen";
+import {translate} from "../i18n";
 
 interface WalletProps {
     onSavingsPress: () => void
@@ -529,7 +530,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                         fontWeight: item.status && item.status === "pending" ? "bold" : "normal",
                                         color: item.status && item.status === "pending" ? "gray" : "green"
                                     }}>
-                                    {item.status ? capitalizeFirstLetter(item.status) : item.status}
+                                    {item.status ? translate("TransactionDetails."+capitalizeFirstLetter(item.status)) : item.status}
                                 </Text>
                             </View>
                             <EntypoIcon
@@ -593,7 +594,7 @@ const Wallet: FC<WalletProps> = (props) => {
             </View>
             <View style={styles.walletContainer}>
                 <View style={styles.walletInnerContainer}>
-                    <Text style={styles.delegated}>{currentAccount.delegated ? 'Delegated' : 'Undelegated'}</Text>
+                    <Text style={styles.delegated}>{currentAccount.delegated ? translate("Wallet.Delegated") : translate("Wallet.Undelegated")}</Text>
                 </View>
                 <Text style={{...styles.adaText}}>{currentAccount.balance ? currentAccount.balance/1000000 : 0} Ada</Text>
                 <Text style={styles.price}>${currentAccount.balance && currPrice.usd ? ((currentAccount.balance/1000000)*currPrice.usd).toFixed(2) : 0.00}</Text>
@@ -621,7 +622,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                 ...styles.normalText,
                                 marginTop: heightPercentageToDP(0.5),
                             }}>
-                            Send
+                            {translate("Wallet.Send")}
                         </Text>
                     </View>
                     <View style={{width: widthPercentageToDP(15)}} />
@@ -646,7 +647,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                 ...styles.normalText,
                                 marginTop: heightPercentageToDP(0.2),
                             }}>
-                            Receive
+                            {translate("Wallet.Receive")}
                         </Text>
                     </View>
                 </View>
@@ -662,7 +663,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                     : Colors.black
                                 : Colors.hintsColor,
                         }}>
-                        Assets
+                        {translate("Wallet.Assets")}
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => props.onTabOptionPress(WALLET_ROUTE_TRANSACTIONS)}>
@@ -676,7 +677,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                     : Colors.black
                                 : Colors.hintsColor,
                         }}>
-                        Activity
+                         {translate("Wallet.Activity")}
                         <AntDesignIcon onPress={() => fetchData2()} name="sync" color={walletRoute === WALLET_ROUTE_TRANSACTIONS
                             ? props.isBlackTheme
                             ? Colors.white

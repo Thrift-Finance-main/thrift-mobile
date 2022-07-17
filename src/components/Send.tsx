@@ -25,6 +25,7 @@ import {apiDb} from "../db/LiteDb";
 import {setCurrentAccount} from "../store/Action";
 import moment from "moment";
 import {ERROR_TRANSACTION} from "../constants/error";
+import {translate} from "../i18n";
 
 
 interface SendProps {
@@ -745,7 +746,7 @@ const Send: FC<SendProps> = (props) => {
             >
                 <ScrollView>
                     <Text style={{...styles.addressList, ...styles.addressListTitle, color: props.isBlackTheme ? Colors.white : Colors.black}}>
-                        Select Asset
+                        {translate("Send.SelectAsset")}
                     </Text>
                     <View
                         style={{
@@ -799,13 +800,13 @@ const Send: FC<SendProps> = (props) => {
                                     Colors.black,
                             }}
                             onPress={() => setAmount(mergedLovelace)}
-                        >From <Text style={{fontFamily: 'AvenirNextCyr-Demi', fontSize: 18}}>{currentAccount.accountName} {mergedLovelace}</Text> Ada</Text>
+                        > {translate("Send.From")} <Text style={{fontFamily: 'AvenirNextCyr-Demi', fontSize: 18}}>{currentAccount.accountName} {mergedLovelace}</Text> Ada</Text>
                         <View
                             style={{flexDirection:'row', flexWrap:'wrap', marginTop: 8, marginLeft: 12}}
                         >
                             <Chip
                                 key={'all'}
-                                label={'Not Tagged'}
+                                label={translate("Send.NotTagged")}
                                 onPress={onSelectNotTagged}
                                 containerStyle={{
                                     marginRight: 4,
@@ -881,7 +882,7 @@ const Send: FC<SendProps> = (props) => {
                                                 fontFamily: 'AvenirNextCyr-Medium'
                                         }}
                                     >
-                                        {outputs.length < 8 ? 'New' : '' }✚
+                                        {outputs.length < 8 ? translate("Send.New") : '' }✚
                                     </Text>
                                 </TouchableOpacity>
                             : null
@@ -893,7 +894,7 @@ const Send: FC<SendProps> = (props) => {
                             ...styles.filedHeader, color: props.isBlackTheme ? Colors.white :
                                 Colors.black,
                         }}
-                    >Send to</Text>
+                    >{translate("Send.To")}</Text>
                     <TextField
                         text70
                         containerStyle={{marginBottom: 1, marginLeft: 12}}
@@ -924,7 +925,7 @@ const Send: FC<SendProps> = (props) => {
                             ...styles.filedHeader, color: props.isBlackTheme ? Colors.white :
                                 Colors.black,
                         }}
-                    >Amount</Text>
+                    >{translate("Send.Amount")}</Text>
                     <TextField
                         text70
                         containerStyle={{marginBottom: 1, marginLeft: 12}}
@@ -946,12 +947,12 @@ const Send: FC<SendProps> = (props) => {
                             ...styles.filedHeader,
                             color: props.isBlackTheme ? Colors.white :
                                 Colors.black,
-                        }}                    >Assets</Text>
+                        }}                    >{translate("Send.Assets")}</Text>
                     <View
                         style={{marginBottom: 1, marginLeft: 12}}
                     >
                         <Picker
-                            placeholder={filterAssets && filterAssets.length ? 'Add Asset('+filterAssets.length+')' : 'No Assets'}
+                            placeholder={filterAssets && filterAssets.length ? translate("Send.AddAsset")+'('+filterAssets.length+')' : translate("Send.NoAssets")}
                             onChange={item => {
                                 updateSelectedAssets(item).then(r => {})
                             }}
@@ -1046,7 +1047,7 @@ const Send: FC<SendProps> = (props) => {
                         >
                             <Text style={{color: 'white', padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
                                 <Text style={{color: 'white', padding:4, textAlign: 'center', fontSize: 20, fontWeight: 'bold'}}>
-                                    Send{'\n'}
+                                    {translate("Send.Send")}{'\n'}
                                 </Text>
                                 <Text style={{color: 'white', padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
                                     Ada{' '}{new BigNumber(mergedOutputs.lovelace || 0).dividedBy(1000000).toString()}{' | '}
@@ -1054,12 +1055,12 @@ const Send: FC<SendProps> = (props) => {
                                 {
                                     Object.keys(mergedOutputs).length-1 > 0 ?
                                         <Text style={{color: 'white', padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
-                                            Assets{' ('}{Object.keys(mergedOutputs).length-1}{') | '}
+                                            {translate("Send.Assets")}{' ('}{Object.keys(mergedOutputs).length-1}{') | '}
                                         </Text>
                                     : null
                                 }
                                 <Text style={{color: 'white', padding:4, fontSize: 16, fontFamily: 'AvenirNextCyr-Medium'}}>
-                                    Fee {fee}
+                                    {translate("TransactionDetails.Fee")} {fee}
                                 </Text>
 
                             </Text>
