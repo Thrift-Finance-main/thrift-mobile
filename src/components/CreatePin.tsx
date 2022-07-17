@@ -110,7 +110,7 @@ const CreatePin: FC<CreatePinProps> = (props) => {
                 </View>
                 <Text
                     style={styles.hintStyle}
-                >Four number pin</Text>
+                >{translate("CreatePin.Requirements")}</Text>
                 <Text
                     style={{
                         ...styles.filedHeader, color:
@@ -139,7 +139,7 @@ const CreatePin: FC<CreatePinProps> = (props) => {
                 </View>
                 <Text
                     style={styles.hintStyle}
-                >Four number pin</Text>
+                >{translate("CreatePin.Requirements")}</Text>
 
 
                 <View
@@ -147,7 +147,7 @@ const CreatePin: FC<CreatePinProps> = (props) => {
                 />
 
                 <Button
-                    label="Confirm"
+                    label={translate("Common.Confirm")}
                     borderRadius={5}
                     size={Button.sizes.large}
                     color={props.isBlackTheme ? Colors.black : Colors.white}
@@ -169,7 +169,7 @@ const CreatePin: FC<CreatePinProps> = (props) => {
             isBlackTheme={props.isBlackTheme}
             visible={props.visible}
             hideModal={props.hideModal}
-            modalText={props.oldpin ? 'Pin updated successfully' : 'Pin created successfully'}
+            modalText={props.oldpin ? translate("CreatePin.Updated") : translate("CreatePin.Successful")}
             buttonTitle={"Continue"}
         />
     </SafeAreaView>

@@ -39,7 +39,10 @@
   "CreatePin": {
     "CreatePin": "Crear Pin",
     "ConfirmCurrentPin": "Confirmar Pin Actual",
-    "ConfirmPin": "Confirmar Pin"
+    "ConfirmPin": "Confirmar Pin",
+    "Requirements": "Cuatro números",
+    "Successful": "Pin creado con éxito",
+    "Updated": "Pin actualizado con éxito"
   },
 
   "ChangeSpendingPassword": {
@@ -129,7 +132,24 @@
     "VerifyPhrase": "Confirma la clave privada",
     "Tip0": "Por favor, toque el orden correcto de las palabras para verificar su frase de recuperación.",
     "Tip1": "Es aconsejable que haga una copia de seguridad o guarde su frase de recuperación en algún lugar."
-  }
+  },
 
+  "RestoreAccount": {
+    "RestoreAccount": "Restaurar Cuenta",
+    "Tip0": "Para restaurar el monedero, proporcione la frase de recuperación de 15 o 24 horas generada cuando creó su monedero por primera vez.",
+    "Tip1": "Es aconsejable que haga una copia de seguridad o guarde su frase de recuperación en algún lugar.",
+    "ButtonTitle": "Restaurar Billetera",
+    "Successful": "Ha restaurado su cuenta con éxito"
+  },
+
+  "Intro": {
+    "Title0": "Soberana y Segura",
+    "Title1": "Billetera"
+  },
+
+  "Welcome": {
+    "Welcome": "Bienvenid@",
+    "Tip0": "Para mantener su cartera Thrift segura, debe crear una frase de recuperación."
+  }
 
 }

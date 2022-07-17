@@ -39,7 +39,10 @@
   "CreatePin": {
     "CreatePin": "Create Pin",
     "ConfirmCurrentPin": "Confirm Current Pin",
-    "ConfirmPin": "Confirm Pin"
+    "ConfirmPin": "Confirm Pin",
+    "Requirements": "Four number pin",
+    "Successful": "Pin created successfully",
+    "Updated": "Pin updated successfully"
   },
 
   "ChangeSpendingPassword": {
@@ -130,6 +133,24 @@
     "Tip0": "Please tap the correct order of the words to verify your recovery phrase.",
     "Tip1": "It is advisable for you to backup or{\"\\n\"}save your recovery phrase{\"\\n\"}somewhere.",
     "ButtonTitle": "Lo he anotado"
+  },
+
+  "RestoreAccount": {
+    "RestoreAccount": "Restore Account",
+    "Tip0": "To restore wallet, please provide the 15 or 24 words recovery phrase genereated when you created your wallet for the first time.",
+    "Tip1": " It is advisable for you to backup or save your recovery phrase somewhere.",
+    "ButtonTitle": "Restore Wallet",
+    "Successful": "You have successfully restored your account"
+  },
+
+  "Intro": {
+    "Title0": "Save and Secure",
+    "Title1": "Wallet"
+  },
+
+  "Welcome": {
+    "Welcome": "Welcome",
+    "Tip0": "To keep your Thrift Wallet safe and secure you need to create a recovery phrase."
   }
 
 }

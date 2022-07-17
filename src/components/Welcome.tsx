@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
 import Button from './Common/Button'
+import {translate} from "../i18n";
 interface WelcomeProps {
     onContinuePress: () => void
     isBlackTheme: any
@@ -24,20 +25,20 @@ const Welcome: FC<WelcomeProps> = (props) => {
                     />
                     <Text
                         style={{ ...styles.topTitle, color: props.isBlackTheme ? Colors.white : Colors.black, marginTop: heightPercentageToDP(3) }}
-                    >Welcome</Text>
+                    >{translate("Welcome.Welcome")}</Text>
                     <Text
                         style={{
                             ...styles.normalText, color:
                                 props.isBlackTheme ? Colors.white :
                                     Colors.black,
                         }}
-                    >To keep your Thrift Wallet safe and secure you need to create a{"\n"} recovery phrase</Text>
+                    >{translate("Welcome.Tip0")}</Text>
                     <View
                         style={{ height: heightPercentageToDP(7) }}
                     />
                     <Button
                         backgroundColor={Colors.primaryButton}
-                        buttonTitle='Continue'
+                        buttonTitle={translate("Common.Continue")}
                         onPress={props.onContinuePress}
                         titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
                     />

@@ -8,6 +8,7 @@ import Back from '../assets/back.svg'
 import Bulb from '../assets/Bulb.svg'
 import CustomModal from './PopUps/CustomModal'
 import DarkBack from '../assets//DarkBack.svg'
+import {translate} from "../i18n";
 
 interface RestoreWalletProps {
     onRestoreWalletPress: () => void
@@ -46,14 +47,16 @@ const RestoreWallet: FC<RestoreWalletProps> = (props) => {
                                     props.isBlackTheme ? Colors.white :
                                         Colors.black,
                             }}
-                        >Restore Wallet</Text>
+                        >{translate("RestoreAccount.RestoreAccount")}</Text>
                         <Text
                             style={{
                                 ...styles.filedHeader, color:
                                     props.isBlackTheme ? Colors.white :
                                         Colors.black,
                             }}
-                        >To restore wallet, please provide the 15 or 24 words recovery phrase genereated when you created your wallet for the first time.</Text>
+                        >
+                            {translate("RestoreAccount.Tip0")}
+                        </Text>
                     </View>
                     <View
                         style={{
@@ -80,7 +83,7 @@ const RestoreWallet: FC<RestoreWalletProps> = (props) => {
                         <Text
                             style={styles.termsText}
                         >
-                            It is advisable for you to backup or{"\n"}save your recovery phrase{"\n"}somewhere
+                            {translate("RestoreAccount.Tip1")}
                         </Text>
                     </View>
                     <View
@@ -88,7 +91,7 @@ const RestoreWallet: FC<RestoreWalletProps> = (props) => {
                     />
                     <Button
                         backgroundColor="#603EDA"
-                        buttonTitle='Restore Wallet'
+                        buttonTitle={translate("RestoreAccount.ButtonTitle")}
                         onPress={props.onRestoreWalletPress}
                         titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
 
@@ -103,7 +106,7 @@ const RestoreWallet: FC<RestoreWalletProps> = (props) => {
                 visible={props.visible}
                 hideModal={props.hideModal}
                 buttonTitle={"Continue"}
-                modalText='You have successfully restored your account'
+                modalText={translate("RestoreAccount.Successful")}
             />
         </SafeAreaView>
     )

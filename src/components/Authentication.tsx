@@ -5,6 +5,7 @@ import Colors from '../constants/CustomColors'
 import { heightPercentageToDP, widthPercentageToDP } from '../utils/dimensions'
 import Button from './Common/Button'
 import LanguageModal from './PopUps/LanguageModal'
+import {translate} from "../i18n";
 interface AuthenticationProps {
     onCreateAccountPress: () => void,
     onRestoreAccountPress: () => void
@@ -29,20 +30,20 @@ const Authentication: FC<AuthenticationProps> = (props) => {
                     >
                         <Text
                             style={{ ...styles.topTitle, color: Colors.authTitle }}
-                        >Save and Secure</Text><Text
+                        >{translate("Intro.Title0")}</Text><Text
                             style={{
                                 ...styles.topTitle, color:
                                     props.isBlackTheme ? Colors.primaryButton :
                                         Colors.primaryButtonColor2
                             }}
-                        > Wallet</Text>
+                        >{' '}{translate("Intro.Title1")}</Text>
                     </View>
 
                 </View>
 
                 <Button
                     backgroundColor="#F338C2"
-                    buttonTitle='Create Account'
+                    buttonTitle={translate("CreateAccount.CreateAccount")}
                     onPress={props.onCreateAccountPress}
                     titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
 
@@ -52,9 +53,8 @@ const Authentication: FC<AuthenticationProps> = (props) => {
                 />
                 <Button
                     backgroundColor={"#603EDA"}
-                    buttonTitle='Restore Account'
+                    buttonTitle={translate("RestoreAccount.RestoreAccount")}
                     onPress={props.onRestoreAccountPress}
-
                 />
 
             </View>
