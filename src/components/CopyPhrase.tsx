@@ -9,6 +9,7 @@ import Bulb from '../assets/Bulb.svg'
 import CopyClip from '../assets/CopyClip.svg'
 import Modal from 'react-native-modal'
 import DarkBack from '../assets//DarkBack.svg'
+import {translate} from "../i18n";
 
 interface CopyPhraseProps {
     onContinuePress: () => void
@@ -50,7 +51,7 @@ const CopyPhrase: FC<CopyPhraseProps> = (props) => {
                                 props.isBlackTheme ? Colors.white :
                                     Colors.black,
                         }}
-                    >Don’t ever share your recovery phrase with{"\n"}any one or third party.</Text>
+                    >{translate("CopyPhrase.Tip0")}</Text>
                 </View>
                 <View style={styles.tagsContainer}>
                     {props.phraseTags.map((item: any, index: number) => {
@@ -108,7 +109,7 @@ const CopyPhrase: FC<CopyPhraseProps> = (props) => {
                     <Text
                         style={styles.termsText}
                     >
-                        Thrift finance team will never ask you {"\n"}for your recovery phrase.
+                        {translate("CopyPhrase.Tip1")}
                     </Text>
                 </View>
                 <View
@@ -116,7 +117,7 @@ const CopyPhrase: FC<CopyPhraseProps> = (props) => {
                 />
                 <Button
                     backgroundColor={Colors.primaryButton}
-                    buttonTitle='I’ve Written it Down'
+                    buttonTitle= {translate("CopyPhrase.ButtonTitle")}
                     onPress={props.onContinuePress}
                     titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
                 />

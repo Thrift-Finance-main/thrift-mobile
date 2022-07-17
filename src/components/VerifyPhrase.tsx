@@ -9,6 +9,7 @@ import DarkBack from '../assets//DarkBack.svg'
 import {shuffle} from "../utils";
 import CustomColors from "../constants/CustomColors";
 import { Button } from 'react-native-ui-lib'
+import {translate} from "../i18n";
 
 interface VerifyPhraseProps {
     onContinuePress: () => void
@@ -53,14 +54,16 @@ const VerifyPhrase: FC<VerifyPhraseProps> = (props) => {
                                     props.isBlackTheme ? Colors.white :
                                         Colors.black,
                             }}
-                        >Confrim Keyphrase</Text>
+                        >{translate("VerifyPhrase.VerifyPhrase")}</Text>
                         <Text
                             style={{
                                 ...styles.filedHeader, color:
                                     props.isBlackTheme ? Colors.white :
                                         Colors.black,
                             }}
-                        >Please tap the correct order of the words to verify your recovery phrase</Text>
+                        >
+                            {translate("VerifyPhrase.Tip0")}
+                        </Text>
                     </View>
                     <View
                         style={{
@@ -127,14 +130,14 @@ const VerifyPhrase: FC<VerifyPhraseProps> = (props) => {
                         <Text
                             style={styles.termsText}
                         >
-                            It is advisable for you to backup or{"\n"}save your recovery phrase{"\n"}somewhere
+                            {translate("VerifyPhrase.Tip1")}
                         </Text>
                     </View>
                     <View
                         style={{ height: heightPercentageToDP(4) }}
                     />
                     <Button
-                        label="Confirm"
+                        label={translate("Common.Continue")}
                         borderRadius={5}
                         size={Button.sizes.large}
                         color={props.isBlackTheme ? Colors.black : Colors.white}

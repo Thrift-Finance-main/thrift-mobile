@@ -8,6 +8,7 @@ import Back from '../../src/assets/back.svg';
 import DarkBack from '../../src/assets/DarkBack.svg';
 
 import InputField from './Common/InputField';
+import {translate} from "../i18n";
 
 interface CreateAccountProps {
     onContinuePress: (p: { passwd: string; name: string }) => void
@@ -77,7 +78,7 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                                 props.isBlackTheme ? Colors.white :
                                     Colors.black,
                         }}
-                    >Create Account</Text>
+                    >{translate("CreateAccount.CreateAccount")}</Text>
                     <Text
                         style={{
                             ...styles.filedHeader, color:
@@ -85,12 +86,12 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                                 props.isBlackTheme ? Colors.white :
                                     Colors.black,
                         }}
-                    >Name</Text>
+                    >{translate("CreateAccount.Name")}</Text>
                     <InputField
                         onChangeText={(n:string) => setName(n || '')}
                         backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
                         placeholderTextColor={props.isBlackTheme ? Colors.white : Colors.black}
-                        placeHolder={'Name'}
+                        placeHolder={translate("CreateAccount.Name")}
                     />
                     <Text
                         style={{
@@ -99,17 +100,17 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                                 props.isBlackTheme ? Colors.white :
                                     Colors.black,
                         }}
-                    >Create Password</Text>
+                    >{translate("CreateAccount.CreatePassword")}</Text>
 
                     <InputField
                         secureText={true}
                         backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
                         placeholderTextColor={props.isBlackTheme ? Colors.white : Colors.black}
                         onChangeText={(p:string) => setPasswd(p)}
-                        placeHolder={'Password'}/>
+                        placeHolder={translate("Common.Password")}/>
                     <Text
                         style={styles.hintStyle}
-                    >Password should containt a number and alphabet</Text>
+                    >{translate("ChangeSpendingPassword.Requirements")}</Text>
                     <Text
                         style={{
                             ...styles.filedHeader, color:
@@ -117,23 +118,23 @@ const CreateAccount: FC<CreateAccountProps> = (props) => {
                                 props.isBlackTheme ? Colors.white :
                                     Colors.black,
                         }}
-                    >Confirm Password</Text>
+                    >{translate("CreateAccount.ConfirmPassword")}</Text>
                     <InputField
                         secureText={true}
                         backgroundColor={props.isBlackTheme ? Colors.darkInput : Colors.inputFieldBackground}
                         placeholderTextColor={props.isBlackTheme ? Colors.white : Colors.black}
                         onChangeText={(p:string) => setConfirmPassd(p)}
-                        placeHolder={'Enter password again'}/>
+                        placeHolder={translate("Common.PasswordAgain")}/>
                     <Text
                         style={styles.hintStyle}
-                    >Password should containt a number and alphabet</Text>
+                    >{translate("ChangeSpendingPassword.Requirements")}</Text>
                     <View
                         style={{ height: heightPercentageToDP(5) }}
                     />
                     <Button
                         disabled={passwd !== confirmPasswd && passwd !== ''}
                         backgroundColor={"#603EDA"}
-                        buttonTitle={props.fromScreen == "CreateAccount" ? "Continue" : "Now Set"}
+                        buttonTitle={translate("Common.Continue")}
                         titleTextColor={props.isBlackTheme ? Colors.black : Colors.white}
                         onPress={() => props.onContinuePress({name, passwd})}
                     />

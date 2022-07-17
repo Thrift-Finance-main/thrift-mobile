@@ -15,6 +15,7 @@ import {addressSlice} from "../utils";
 import {setCurrentAccount} from "../store/Action";
 import CustomModal from "./PopUps/CustomModal";
 import {Button} from "react-native-ui-lib";
+import {translate} from "../i18n";
 
 interface CreateAccountProps {
     onBackIconPress: () => void
@@ -173,7 +174,7 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
                             style={{height: 60, width: 200, marginTop:20}}
                         >
                             <Text style={{color: props.isBlackTheme ? Colors.black : Colors.white, padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
-                                Create Account
+                                {translate("ManageAccounts.CreateAccount")}
                             </Text>
                         </Button>
                         <Button
@@ -182,7 +183,7 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
                             style={{height: 60, width: 200, marginTop:20}}
                         >
                             <Text style={{color: props.isBlackTheme ? Colors.black : Colors.white, padding:4, fontSize: 16,  fontFamily: 'AvenirNextCyr-Medium'}}>
-                                Restore Account
+                                {translate("ManageAccounts.RestoreAccount")}
                             </Text>
                         </Button>
                     </View>
@@ -194,7 +195,7 @@ const ManageAccount: FC<CreateAccountProps> = (props) => {
                 visible={removeModal}
                 hideModal={() => hideModal1()}
                 inputText={false}
-                modalText={'Remove account'}
+                modalText={translate("ManageAccounts.RemoveAccount")}
                 security={'remove'}
                 justHideModal={() => setRemoveModal(false)}
                 showCancel={true}

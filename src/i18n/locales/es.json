@@ -2,7 +2,10 @@
   "Common": {
     "Continue": "Continuar",
     "Confirm": "Confirmar",
-    "Cancel": "Cancelar"
+    "Cancel": "Cancelar",
+    "IUnderstand": "Entiendo",
+    "Password": "Contraseña",
+    "PasswordAgain": "Introduzca otra vez la contraseña"
   },
   "LanguageScreen": {
     "selectLanguage": "Seleccionar Lenguaje"
@@ -94,5 +97,39 @@
     "New": "Otra",
     "NotTagged": "Sin Tagear",
     "IntroduceSpendingPassword": "Introduce la contraseña de gastos"
+  },
+
+  "ManageAccounts": {
+    "ManageAccounts": "Gestionar Cuentas",
+    "CreateAccount": "Crear Cuenta",
+    "RestoreAccount": "Restaurar Cuenta",
+    "RemoveAccount": "Eliminar Cuenta"
+  },
+
+  "CreateAccount": {
+    "CreateAccount": "Crear Cuenta",
+    "Name": "Nombre",
+    "CreatePassword": "Crear Contraseña",
+    "ConfirmPassword": "Confirmar Contraseña"
+  },
+
+  "Tips": {
+    "Tip0": "La frase de recuperación sirve como único acceso a su\n cuenta.",
+    "Tip1": "El equipo de Thrift nunca le pedirá su\n frase.",
+    "Tip2": "Si pierdes tu frase de recuperación, ni siquiera Thrift puede\n recuperarla."
+  },
+
+  "CopyPhrase": {
+    "Tip0": "No compartas nunca tu frase de recuperación con nadie ni con terceros.",
+    "Tip1": "El equipo de Thrift nunca le pedirá su frase de recuperación.",
+    "ButtonTitle": "Lo he anotado"
+  },
+
+  "VerifyPhrase": {
+    "VerifyPhrase": "Confirma la clave privada",
+    "Tip0": "Por favor, toque el orden correcto de las palabras para verificar su frase de recuperación.",
+    "Tip1": "Es aconsejable que haga una copia de seguridad o guarde su frase de recuperación en algún lugar."
   }
+
+
 }

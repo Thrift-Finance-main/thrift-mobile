@@ -11,6 +11,7 @@ import Key from '../assets/Key.svg';
 import Caution from '../assets/Caution.svg';
 import CustomColors from "../constants/CustomColors";
 import { Button } from 'react-native-ui-lib';
+import {translate} from "../i18n";
 
 const TermsScreen = ({navigation, route}) => {
   const isBlackTheme = useSelector(state => state.Reducers.isBlackTheme);
@@ -56,8 +57,7 @@ const TermsScreen = ({navigation, route}) => {
           <View style={styles.accountsContainer}>
             <Key />
             <Text style={styles.termsText}>
-              The recovery phrase serves as the {'\n'}only access to your
-              account.
+              {translate("Tips.Tip0")}
             </Text>
           </View>
           <View
@@ -67,8 +67,7 @@ const TermsScreen = ({navigation, route}) => {
             }}>
             <Bulb />
             <Text style={styles.termsText}>
-              Thrift finance team will never ask you {'\n'}for your recovery
-              phrase.
+              {translate("Tips.Tip1")}
             </Text>
           </View>
           <View
@@ -78,13 +77,12 @@ const TermsScreen = ({navigation, route}) => {
             }}>
             <Caution />
             <Text style={styles.termsText}>
-              If you lose your reovery phrase even {'\n'}Thrift finance can’t
-              get it back.
+              {translate("Tips.Tip2")}
             </Text>
           </View>
-          <View style={{height: heightPercentageToDP(12)}} />
+          <View style={{height: heightPercentageToDP(6)}} />
           <Button
-              label="I understand"
+              label={translate("Common.IUnderstand")}
               borderRadius={5}
               size={Button.sizes.large}
               text60

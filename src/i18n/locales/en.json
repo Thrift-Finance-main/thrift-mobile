@@ -2,7 +2,10 @@
   "Common": {
     "Continue": "Continue",
     "Confirm": "Confirm",
-    "Cancel": "Cancel"
+    "Cancel": "Cancel",
+    "IUnderstand": "I Understand",
+    "Password": "Password",
+    "PasswordAgain": "Enter password again"
   },
   "LanguageScreen": {
     "selectLanguage": "Select Language"
@@ -94,5 +97,39 @@
     "New": "New",
     "NotTagged": "Not Tagged",
     "IntroduceSpendingPassword": "Introduce Spending Password"
+  },
+
+  "ManageAccounts": {
+    "ManageAccounts": "Manage Accounts",
+    "CreateAccount": "Create Account",
+    "RestoreAccount": "Restore Account",
+    "RemoveAccount": "Remove Account"
+  },
+
+  "CreateAccount": {
+    "CreateAccount": "Create Account",
+    "Name": "Name",
+    "CreatePassword": "Create Password",
+    "ConfirmPassword": "Confirm Password"
+  },
+
+  "Tips": {
+    "Tip0": "The recovery phrase serves as the {'\\n'}only access to your\n account.",
+    "Tip1": " Thrift finance team will never ask you {'\\n'}for your recovery\n phrase.",
+    "Tip2": "If you lose your recovery phrase even {'\\n'}Thrift finance can’t\n get it back."
+  },
+
+  "CopyPhrase": {
+    "Tip0": "Don’t ever share your recovery phrase with{\"\\n\"}any one or third party.",
+    "Tip1": "Thrift finance team will never ask you {\"\\n\"}for your recovery phrase.",
+    "ButtonTitle": "I’ve Written it Down"
+  },
+
+  "VerifyPhrase": {
+    "VerifyPhrase": "Confirm Keyphrase.",
+    "Tip0": "Please tap the correct order of the words to verify your recovery phrase.",
+    "Tip1": "It is advisable for you to backup or{\"\\n\"}save your recovery phrase{\"\\n\"}somewhere.",
+    "ButtonTitle": "Lo he anotado"
   }
+
 }
