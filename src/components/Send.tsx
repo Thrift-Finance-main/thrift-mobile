@@ -26,6 +26,7 @@ import {setCurrentAccount} from "../store/Action";
 import moment from "moment";
 import {ERROR_TRANSACTION} from "../constants/error";
 import {translate} from "../i18n";
+import Toast from "react-native-toast-message";
 
 
 interface SendProps {
@@ -618,7 +619,14 @@ const Send: FC<SendProps> = (props) => {
     const onPressLongTag = (tag) => {
         let address = currentAccount.externalPubAddress.filter(addr => addr.tags.includes(tag));
         address = address[0];
-        copyToClipboard(address.address).then(r=>{})
+        copyToClipboard(address.address).then(r=>{
+            Toast.show({
+                type: 'info',
+                text1: 'Address Copied',
+                autoHide: true,
+                visibilityTime: 1000
+            });
+        })
     };
 
     const onSelectNotTagged = () => {
