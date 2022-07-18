@@ -1123,6 +1123,18 @@ export const getTransactionBuilder = async (protocolParams): Promise<Transaction
     );
 }
 
+export const isValidPolicyId = async (policyIdHex:string): Promise<boolean> => {
+
+    try {
+        await ScriptHash.from_bytes(
+            Buffer.from(policyIdHex, "hex")
+        );
+        return true;
+    } catch (e) {
+        return false;
+    }
+
+}
 export const toValue = async (assets:{quantity: string, unit: string}[]): Promise<Value> => {
 
     //console.log('\n\ntoValue');

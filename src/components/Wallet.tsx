@@ -18,7 +18,7 @@ import WalletIcon from "../assets/wallet.svg";
 import {fetchBlockfrost, getBlockInfo, getTxInfo, getTxUTxOs, getTxUTxOsByAddress} from "../api/Blockfrost";
 import {apiDb} from "../db/LiteDb";
 import {setCurrentAccount, setCurrentLanguage, setCurrentPrice} from "../store/Action";
-import {classifyTx, RECEIVE_TX, SELF_TX, SEND_TX} from "../lib/transactions";
+import {classifyTx, isValidPolicyId, RECEIVE_TX, SELF_TX, SEND_TX} from "../lib/transactions";
 import Ada from '../assets/Ada.svg'
 import moment from "moment";
 import {addressSlice, capitalizeFirstLetter} from "../utils";
@@ -340,6 +340,32 @@ const Wallet: FC<WalletProps> = (props) => {
     }
 
     const renderAssetsList = ({item, index}) => {
+
+
+        console.log('\n\nitem');
+        let assetName = '';
+        if (item.onchain_metadata){
+            console.log('item.onchain_metadata');
+            console.log(item.onchain_metadata);
+            console.log(Object.keys(item.onchain_metadata));
+            if(item.onchain_metadata.name) assetName = item.onchain_metadata.name;
+
+            for (const key of Object.keys(item.onchain_metadata)) {
+
+                if(isValidPolicyId(key)){
+
+                }
+            }
+        }
+        if (item.metadata){
+            console.log('item.metadata');
+            console.log(item.metadata);
+            if(item.metadata.name) assetName = item.metadata.name;
+        }
+
+        console.log('assetName');
+        console.log(assetName);
+
         return (
             <View
                 style={{
@@ -380,7 +406,7 @@ const Wallet: FC<WalletProps> = (props) => {
                                 fontSize: 14,
                                 fontFamily: 'AvenirNextCyr-Medium'
                             }}>
-                            {item && item.metadata && item.metadata.name}
+                            {assetName}
                             {/*Buffer.from(item.asset_name,"hex").toString()*/}
                         </Text>
                         <View style={{flexDirection: 'row'}} >
@@ -419,6 +445,7 @@ const Wallet: FC<WalletProps> = (props) => {
             </View>
         );
     };
+
     const getIconTxType = (type:string) => {
         switch (type) {
             case RECEIVE_TX:

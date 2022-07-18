@@ -144,9 +144,10 @@ const Send: FC<SendProps> = (props) => {
                 tags = [...tags,...addr.tags]
             }
         })
-        setAvailableTags(Array.from(tags));
+        setAvailableTags(tags);
 
         const fetchData = async () => {
+
             console.log('fetchData');
 
             let endpoint = "accounts/" + currentAccount.rewardAddress;
@@ -301,11 +302,28 @@ const Send: FC<SendProps> = (props) => {
 
         console.log('\n\n\nmergeAssets');
         setTxError('');
-        const taggedUtxos = utxos.filter((utxo) => utxo.tags.length);
+
+        const updatedUtxos = currentAccount.utxos.map(utxo => {
+            const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
+            if (data){
+                utxo = {...utxo, ...data};
+                return utxo;
+            }
+        }).filter(r => r !== undefined);
+
+        const taggedUtxos = updatedUtxos.filter((utxo) => utxo.tags.length);
+
+        console.log('taggedUtxos');
+        console.log(taggedUtxos);
+        console.log('updatedUtxos');
+        console.log(updatedUtxos);
 
         const utxosFromSelectedTag = taggedUtxos.filter((utxo) => utxo.tags.length && utxo.tags.some(t =>
             currentTabData && currentTabData.fromTags.includes(t)
         ));
+
+        console.log('utxosFromSelectedTag');
+        console.log(utxosFromSelectedTag);
 
         let joinUtxos = utxosFromSelectedTag;
         if (currentTabData && currentTabData.notTagged){
