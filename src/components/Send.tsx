@@ -13,12 +13,12 @@ import {
     buildTransaction, classifyTx, dictToAssetsList,
     mergeAssetsFromOutputs,
     mergeAssetsFromUtxos,
-    removeAssetNameFromKey, SEND_TX,
+    removeAssetNameFromKey, SELF_TX, SEND_TX,
     validOutputs
 } from "../lib/transactions";
 import {fetchBlockfrost, getProtocolParams, getTxUTxOsByAddress} from "../api/Blockfrost";
 import {validateAddress} from "../lib/account";
-import {isDictEmpty} from "../utils";
+import {addressSlice, isDictEmpty} from "../utils";
 import BigNumber from "bignumber.js";
 import CustomModal from "./PopUps/CustomModal";
 import {apiDb} from "../db/LiteDb";
@@ -493,6 +493,11 @@ const Send: FC<SendProps> = (props) => {
             }
         });
 
+        let type = SELF_TX;
+        if (otherAddressesInput.length && otherAddressesOutput.length){
+            type = SEND_TX
+        }
+
         let pendingTx = {
             txHash: tx.txHash,
             blockTime: moment().utc(),
@@ -509,7 +514,7 @@ const Send: FC<SendProps> = (props) => {
             amount: {
                 lovelace: tx.mergedOutputs["lovelace"]
             },
-            type: SEND_TX
+            type
         }
 
         console.log('pendingTx');
@@ -622,9 +627,9 @@ const Send: FC<SendProps> = (props) => {
         copyToClipboard(address.address).then(r=>{
             Toast.show({
                 type: 'info',
-                text1: 'Address Copied',
+                text1: tag+' Address Copied '+addressSlice(address.address, 10),
                 autoHide: true,
-                visibilityTime: 1000
+                visibilityTime: 2500
             });
         })
     };
