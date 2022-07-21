@@ -340,14 +340,9 @@ const Wallet: FC<WalletProps> = (props) => {
     }
 
     const renderAssetsList = ({item, index}) => {
-
-
-        console.log('\n\nitem');
         let assetName = '';
+        /*
         if (item.onchain_metadata){
-            console.log('item.onchain_metadata');
-            console.log(item.onchain_metadata);
-            console.log(Object.keys(item.onchain_metadata));
             if(item.onchain_metadata.name) assetName = item.onchain_metadata.name;
 
             for (const key of Object.keys(item.onchain_metadata)) {
@@ -363,8 +358,7 @@ const Wallet: FC<WalletProps> = (props) => {
             if(item.metadata.name) assetName = item.metadata.name;
         }
 
-        console.log('assetName');
-        console.log(assetName);
+         */
 
         return (
             <View

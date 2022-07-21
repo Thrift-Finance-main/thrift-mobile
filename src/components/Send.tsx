@@ -453,16 +453,17 @@ const Send: FC<SendProps> = (props) => {
 
         const allAddresses = [...currentAccount.externalPubAddress,...currentAccount.internalPubAddress]
         console.log("Inputs");
-        let otherAddressesInput = [];
+        let otherAddressesInput: { address: any; amount: {}; }[] = [];
         let usedAddressesInput: { address: any; amount: { quantity: string; unit: string; }[]; }[] = [];
-        inputs.map(input => console.log(input.utxos));
 
         inputs.map(input => {
             const isOwnAddress = allAddresses.some(addr => addr.address === input.address);
-            const amount = input.assets ? dictToAssetsList(input.assets) : {};
+            console.log('input.assets');
+            console.log(input.assets);
+            const amount = input.assets && Object.keys(input.assets).length ? dictToAssetsList(input.assets) : {};
             if (isOwnAddress){
                 usedAddressesInput.push({
-                    address: input.toAddress,
+                    address: input.address,
                     amount
                 });
             } else {
@@ -494,7 +495,7 @@ const Send: FC<SendProps> = (props) => {
         });
 
         let type = SELF_TX;
-        if (otherAddressesInput.length && otherAddressesOutput.length){
+        if (!otherAddressesInput.length && otherAddressesOutput.length){
             type = SEND_TX
         }
 
@@ -504,7 +505,7 @@ const Send: FC<SendProps> = (props) => {
             fees: tx.fee,
             status: "pending",
             inputs: {
-                otherAddresses: otherAddressesOutput,
+                otherAddresses: otherAddressesInput,
                 usedAddresses: usedAddressesInput
             },
             outputs: {
@@ -519,6 +520,16 @@ const Send: FC<SendProps> = (props) => {
 
         console.log('pendingTx');
         console.log(pendingTx);
+        console.log('otherAddressesInput');
+        console.log(otherAddressesInput);
+        console.log('\n\n\n---------------------------------------');
+        console.log('\n\n\nusedAddressesInput');
+        console.log(usedAddressesInput);
+        console.log('otherAddressesOutput');
+        console.log(otherAddressesOutput);
+        console.log('usedAddressesOutput');
+        console.log(usedAddressesOutput);
+
         pendingTxs.push(pendingTx);
 
         account.pendingTxs = pendingTxs;
