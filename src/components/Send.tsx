@@ -71,6 +71,18 @@ const Send: FC<SendProps> = (props) => {
     const [selectedTags, setSelectedTags] = useState(selectAddr[0].tags);
     const [outputs, setOutputs] = useState([
         {
+            toAddress: '',
+            validAddress: true,
+            assets: {lovelace: '0'},
+            fromTags: selectedTags,
+            notTagged: selectNotTagged,
+            valid: true,
+            label: '1'
+        }
+    ])
+    /*
+    const [outputs, setOutputs] = useState([
+        {
             toAddress: 'addr_test1qpwj2v4q7w5y9cqp4v8yvn8n0ly872aulxslq2vzckt7jdyg6rs5upesk5wzeg55yx69rn5ygh899q6lxku9h7435g0qu8ly5u',
             validAddress: true,
             assets: {lovelace: '2000000'},
@@ -89,6 +101,7 @@ const Send: FC<SendProps> = (props) => {
             label: '2'
         }
     ]);
+     */
 
     let currentTabData = outputs.filter(output => output.label === activeTab);
     currentTabData = currentTabData[0];
