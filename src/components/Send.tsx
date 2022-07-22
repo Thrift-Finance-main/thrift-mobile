@@ -139,27 +139,29 @@ const Send: FC<SendProps> = (props) => {
 
     useEffect(() =>{
 
-        const updatedUtxos = currentAccount.utxos.map(utxo => {
-            const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
-            if (data){
-                utxo = {...utxo, ...data};
-                return utxo;
-            }
-        }).filter(r => r !== undefined);
-        setUtxos(updatedUtxos);
+        if (currentAccount.utxos && currentAccount.utxos.length){
+            const updatedUtxos = currentAccount.utxos.map(utxo => {
+                const data = getAddrData(utxo.address, [...currentAccount.externalPubAddress, ...currentAccount.internalPubAddress]);
+                if (data){
+                    utxo = {...utxo, ...data};
+                    return utxo;
+                }
+            }).filter(r => r !== undefined);
+            setUtxos(updatedUtxos);
 
-        const mergedAssetsFromUtxos = mergeAssetsFromUtxos(updatedUtxos);
+            const mergedAssetsFromUtxos = mergeAssetsFromUtxos(updatedUtxos);
 
-        setMergedUtxos(mergedAssetsFromUtxos);
+            setMergedUtxos(mergedAssetsFromUtxos);
 
-        let tags = [];   // TODO: show all tags even with no assets
-        currentAccount.externalPubAddress.map(addr => {
-            if (addr.tags && addr.tags.length){
-                tags = [...tags,...addr.tags]
-            }
-        })
-        setAvailableTags(tags);
+            let tags = [];   // TODO: show all tags even with no assets
+            currentAccount.externalPubAddress.map(addr => {
+                if (addr.tags && addr.tags.length){
+                    tags = [...tags,...addr.tags]
+                }
+            })
+            setAvailableTags(tags);
 
+        }
         const fetchData = async () => {
 
             console.log('fetchData');
@@ -819,7 +821,7 @@ const Send: FC<SendProps> = (props) => {
     const mergedLovelace =  new BigNumber(mergedUtxos.lovelace || 0).dividedBy(1000000).toString();
 
     const listOfAssets = Object.entries(mergedUtxos).filter(a => a[0] !== 'lovelace');
-    const filterAssets = assets.filter(a => listOfAssets.some(l => l[0] === a.unit));
+    const filterAssets = assets && assets.length && assets.filter(a => listOfAssets.some(l => l[0] === a.unit)) || [];
     return (
         <SafeAreaView style={{
             ...styles.mainContainer, backgroundColor:

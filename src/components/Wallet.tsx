@@ -456,19 +456,39 @@ const Wallet: FC<WalletProps> = (props) => {
     const renderContentTab = () => {
         switch (walletRoute) {
             case WALLET_ROUTE_ASSETS:
-                return  <FlatList
-                    style={{marginTop: heightPercentageToDP(1)}}
-                    data={currentAccount && currentAccount.assets || []}
-                    renderItem={renderAssetsList}
-                    keyExtractor={(item, index) => index.toString()}
-                />
+                return  <>
+                    {currentAccount && Object.keys(currentAccount.assets).length ? <FlatList
+                        style={{marginTop: heightPercentageToDP(1)}}
+                        data={currentAccount && currentAccount.assets || []}
+                        renderItem={renderAssetsList}
+                        keyExtractor={(item, index) => index.toString()}
+                    />
+                    :
+                        <View>
+                            <Image
+                                style={{ margin: 60, marginTop: 20, }}
+                                source={require('../assets/nomoney.png')}/>
+                        </View>
+                    }
+
+                </>
             case WALLET_ROUTE_TRANSACTIONS:
-                return  <FlatList
-                    style={{marginTop: heightPercentageToDP(1)}}
-                    data={txList}
-                    renderItem={renderItemTransaction}
-                    keyExtractor={(item, index) => index.toString()}
-                />
+                return  <>
+                    {currentAccount && Object.keys(currentAccount.assets).length ? <FlatList
+                            style={{marginTop: heightPercentageToDP(1)}}
+                            data={txList}
+                            renderItem={renderItemTransaction}
+                            keyExtractor={(item, index) => index.toString()}
+                        />
+                    :
+                        <View>
+                            <Image
+                                style={{ margin: 60, marginTop: 20, }}
+                                source={require('../assets/nomoney.png')}/>
+                        </View>
+                    }
+
+                </>
             default:
                 //
         }
